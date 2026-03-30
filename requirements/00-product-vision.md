@@ -3,6 +3,7 @@
 Purpose of the application at business level.
 
 ## Application Name
+Application name goes here.
 
 ## Summary
 Short description of what the app is.

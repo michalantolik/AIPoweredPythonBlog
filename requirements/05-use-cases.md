@@ -2,10 +2,20 @@
 
 Business scenarios from user perspective.
 
-## UC-001 - User registers account
-**Primary Actor:**  
-**Goal:**  
+## UC-01.01 - User registers account
+
+**Primary Actor:**
+- ...
+
+**Goal:**
+- ...
+
+**Implemented:**
+- [NO] / [YES]
+
 **Preconditions:**  
+- ...
+
 **Main Success Scenario:**  
 1. ...
 2. ...
@@ -15,4 +25,4 @@ Business scenarios from user perspective.
 - ...
 
 **Outcome:**  
-...
+- ...

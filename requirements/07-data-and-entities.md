@@ -3,8 +3,9 @@
 Early domain model, technology-neutral.
 
 ## Entity: User
+
 **Description:**  
-...
+- ...
 
 **Key Attributes:**  
 - UserId
@@ -16,6 +17,10 @@ Early domain model, technology-neutral.
 **Relationships:**  
 - User can create many Requests
 - User can belong to one Role
+
+**Implemented:** 
+- [NO] / [YES]
+
 
 ## Entity: Request
 **Description:**  
@@ -29,3 +34,6 @@ Early domain model, technology-neutral.
 
 **Relationships:**  
 - Request belongs to one User
+
+**Implemented:** 
+- [NO] / [YES]

@@ -2,14 +2,56 @@
 
 Rules that must always hold true.
 
-## BR-001
+## BR-01.01
 Description:
-Only managers can approve requests above a defined threshold.
+- ...
+Implemented:
+- [NO] / [YES]
 
-## BR-002
+## BR-01.02
 Description:
-A submitted record cannot be edited after final approval.
+- ...
+Implemented:
+- [NO] / [YES]
 
-## BR-003
+## BR-01.03
 Description:
-Each account must belong to exactly one active user profile.
+- ...
+Implemented:
+- [NO] / [YES]
+
+## BR-02.01
+Description:
+- ...
+Implemented:
+- [NO] / [YES]
+
+## BR-02.02
+Description:
+- ...
+Implemented:
+- [NO] / [YES]
+
+## BR-02.03
+Description:
+- ...
+Implemented:
+- [NO] / [YES]
+
+## BR-03.01
+Description:
+- ...
+Implemented:
+- [NO] / [YES]
+
+## BR-03.02
+Description:
+- ...
+Implemented:
+- [NO] / [YES]
+
+## BR-03.03
+Description:
+- ...
+Implemented:
+- [NO] / [YES]
