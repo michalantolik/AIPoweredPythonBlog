@@ -2,20 +2,119 @@
 
 All external dependencies.
 
-## INT-001 - Email Provider
-Purpose:
-Used for notifications and confirmations.
+## INT-01.01 - ...
+**Purpose:**
+- Used for notifications and confirmations.
 
-Input / Output:
-...
+**Implemented:**
+- [NO] / [YES]  
 
-Failure Handling:
-...
+**Input / Output:**
+- ...
 
-## INT-002 - Payment Gateway
-Purpose:
-...
+**Failure Handling:**
+- ...
 
-## INT-003 - External API
-Purpose:
-...
+## INT-01.02 - ...
+**Purpose:**
+- Used for notifications and confirmations.
+
+**Implemented:**
+- [NO] / [YES]  
+
+**Input / Output:**
+- ...
+
+**Failure Handling:**
+- ...
+
+## INT-01.03 - ...
+**Purpose:**
+- Used for notifications and confirmations.
+
+**Implemented:**
+- [NO] / [YES]  
+
+**Input / Output:**
+- ...
+
+**Failure Handling:**
+- ...
+
+## INT-02.01 - ...
+**Purpose:**
+- Used for notifications and confirmations.
+
+**Implemented:**
+- [NO] / [YES]  
+
+**Input / Output:**
+- ...
+
+**Failure Handling:**
+- ...
+
+## INT-02.02 - ...
+**Purpose:**
+- Used for notifications and confirmations.
+
+**Implemented:**
+- [NO] / [YES]  
+
+**Input / Output:**
+- ...
+
+**Failure Handling:**
+- ...
+
+## INT-02.03 - ...
+**Purpose:**
+- Used for notifications and confirmations.
+
+**Implemented:**
+- [NO] / [YES]  
+
+**Input / Output:**
+- ...
+
+**Failure Handling:**
+- ...
+
+## INT-03.01 - ...
+**Purpose:**
+- Used for notifications and confirmations.
+
+**Implemented:**
+- [NO] / [YES]  
+
+**Input / Output:**
+- ...
+
+**Failure Handling:**
+- ...
+
+## INT-03.02 - ...
+**Purpose:**
+- Used for notifications and confirmations.
+
+**Implemented:**
+- [NO] / [YES]  
+
+**Input / Output:**
+- ...
+
+**Failure Handling:**
+- ...
+
+## INT-03.03 - ...
+**Purpose:**
+- Used for notifications and confirmations.
+
+**Implemented:**
+- [NO] / [YES]  
+
+**Input / Output:**
+- ...
+
+**Failure Handling:**
+- ...
