@@ -4,9 +4,16 @@ AIPoweredPythonBlogEngine is a Django-based blogging platform built with Python 
 ## Prerequisites
 
 ```powershell
-#################################################
-# Install Python 3 via Chocolatey and verify
-#################################################
+
+#################################################################
+# Install PyCharm Community edition
+#################################################################
+
+choco install pycharm-community -y
+
+#################################################################
+# Install Python 3 via Chocolatey (in PyCharm terminal)
+#################################################################
 
 choco install python -y
 python --version
@@ -15,21 +22,28 @@ pip --version
 python --version
 pip --version
 
-#################################################
-# Install Django and verify
-#################################################
+#################################################################
+# Install Django and verify (in PyCharm terminal)
+#################################################################
 
 pip install django
 
 django-admin --version
 ```
 
-## Create Django project
+## Create and run Django project
 
 ```powershell
-#################################################
-# Create Django project in PyCharm terminal
-#################################################
+#################################################################
+# Create Django project (in PyCharm terminal)
+#################################################################
 
 django-admin startproject ai_powered_blog
+
+#################################################################
+# Run Django development web server (in PyCharm terminal)
+#################################################################
+
+cd ai_powered_blog
+python manage.py runserver
 ```
