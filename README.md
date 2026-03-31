@@ -26,7 +26,7 @@ pip --version
 # Install Django and verify (in PyCharm terminal)
 #################################################################
 
-pip install django
+python -m pip install django
 
 django-admin --version
 ```
