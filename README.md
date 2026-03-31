@@ -103,7 +103,7 @@ from website.views import welcome
 7. Add the following URL mapping in the `urlpattern` array
 
 ```python
-path('welcome.html', welcome)
+path('', welcome)
 ```
 
 8. Run Django project
