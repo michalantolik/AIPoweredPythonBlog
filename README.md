@@ -106,4 +106,6 @@ from website.views import welcome
 path('welcome.html', welcome)
 ```
 
-8. ...
+8. Run Django project
+
+👉 `python manage.py runserver`
