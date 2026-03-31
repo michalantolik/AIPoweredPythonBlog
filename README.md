@@ -75,3 +75,6 @@ python manage.py startapp website
 # --> scroll down to INSTALLED_APPS
 # --> add 'website' to INSTALLED_APPS array
 ```
+
+1. Remove from `website` folder: `migrations`, `admin.py`, `apps.py`, `models.py`, `tests.py`
+2. Keep in `website` folder: `views.py`, `__init__.py`
