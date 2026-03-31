@@ -45,5 +45,6 @@ django-admin startproject ai_powered_blog
 #################################################################
 
 cd ai_powered_blog
+
 python manage.py runserver
 ```
