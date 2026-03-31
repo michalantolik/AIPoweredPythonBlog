@@ -23,3 +23,13 @@ pip install django
 
 django-admin --version
 ```
+
+## Create Django project
+
+```powershell
+#################################################
+# Create Django project in PyCharm terminal
+#################################################
+
+django-admin startproject ai_powered_blog
+```
