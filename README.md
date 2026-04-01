@@ -6,10 +6,13 @@ AIPoweredPythonBlogEngine is a Django-based blogging platform built with Python 
 
 
 
-
-
-
 ```powershell
+#################################################################
+# Install SQLite
+#################################################################
+
+choco install sqlite
+
 #################################################################
 # Install PyCharm Community edition
 #################################################################
@@ -34,6 +37,7 @@ pip --version
 python -m pip install django
 
 django-admin --version
+
 ```
 
 
