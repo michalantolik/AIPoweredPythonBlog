@@ -149,3 +149,11 @@ from posts.models import Post
 
 admin.site.register(Post)
 ```
+
+```python
+python manage.py createsuperuser
+
+python manage.py runserver
+
+# --> navigate to "127.0.0.1:8000/admin
+```
