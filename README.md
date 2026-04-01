@@ -159,3 +159,5 @@ python manage.py runserver
 
 # --> navigate to "127.0.0.1:8000/admin
 ```
+
+## MTV Pattern (Model-Template-View)
