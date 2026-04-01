@@ -127,8 +127,10 @@ python manage.py dbshell
 
 select * from django_migrations;
 
-[define your data model classes]
+# [define your data model classes]
 
 python manage.py makemigrations
+
+python manage.py sqlmigrate posts 0001 # --> to see the actual SQL commands generated from this migration
 
 ```
