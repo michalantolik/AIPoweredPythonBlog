@@ -131,6 +131,8 @@ select * from django_migrations;
 
 python manage.py makemigrations
 
+python manage.py showmigrations
+
 python manage.py sqlmigrate posts 0001 # --> to see the actual SQL commands generated from this migration
 
 python manage.py migrate
