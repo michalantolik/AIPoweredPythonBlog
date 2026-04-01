@@ -1,6 +1,6 @@
 # AIPoweredPythonBlog
 
-AI-powered blog written in Python/Django.
+AI-powered blog written in Python.
 
 Built from scratch to showcase:
 
