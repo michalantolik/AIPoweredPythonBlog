@@ -138,6 +138,14 @@ python manage.py migrate
 ```
 
 ## Data Model (admin interface)
-```python
 
+- 👉 Register your models in `admin.py` files for your apps, so they appear in the Django Admin Panel.
+- 👉 Do this like in this example for posts
+
+```python
+from django.contrib import admin
+
+from posts.models import Post
+
+admin.site.register(Post)
 ```
