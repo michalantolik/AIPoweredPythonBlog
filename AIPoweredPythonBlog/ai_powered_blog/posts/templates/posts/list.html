@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}Posts | AI Powered Python Blog{% endblock %}
+
+{% block content %}
+<section>
+    <h1>Posts</h1>
+
+    {% if posts %}
+        <div class="post-list">
+            {% for post in posts %}
+                <article class="post-card">
+                    <h2>
+                        <a href="{% url 'posts:detail' post.slug %}">{{ post.title }}</a>
+                    </h2>
+
+                    <p>{{ post.excerpt|default:"[EXCERPT PLACEHOLDER]" }}</p>
+
+                    <small>
+                        By {{ post.author.username }}
+                    </small>
+                </article>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>No published posts yet.</p>
+    {% endif %}
+</section>
+{% endblock %}

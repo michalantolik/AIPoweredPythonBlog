@@ -1,0 +1,19 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}AI Powered Python Blog{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/site.css' %}">
+</head>
+<body>
+    {% include "partials/nav.html" %}
+
+    <main class="container">
+        {% block content %}
+        <!-- page content goes here -->
+        {% endblock %}
+    </main>
+</body>
+</html>

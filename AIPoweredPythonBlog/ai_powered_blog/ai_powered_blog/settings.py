@@ -62,7 +62,7 @@ ROOT_URLCONF = 'ai_powered_blog.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],                                  # enable global templates
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -73,6 +73,9 @@ TEMPLATES = [
         },
     },
 ]
+
+STATIC_URL = 'static/'                                                     # enable 'static' dir
+STATICFILES_DIRS = [BASE_DIR / 'static']                                   # enable 'static' dir
 
 WSGI_APPLICATION = 'ai_powered_blog.wsgi.application'
 
