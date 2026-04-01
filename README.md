@@ -114,7 +114,7 @@ path('', welcome)
 - 👉 navigate in web brwoser to `http://127.0.0.1:8000/welcome.html`
 - 👉 you should see the content of the `welcome.html` page
 
-## Data Model
+## Data Model (create)
 
 ```python
 python manage.py showmigrations
@@ -134,5 +134,10 @@ python manage.py makemigrations
 python manage.py sqlmigrate posts 0001 # --> to see the actual SQL commands generated from this migration
 
 python manage.py migrate
+
+```
+
+## Data Model (admin interface)
+```python
 
 ```
