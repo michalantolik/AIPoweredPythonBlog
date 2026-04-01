@@ -126,4 +126,9 @@ python manage.py dbshell
 .tables
 
 select * from django_migrations;
+
+[define your data model classes]
+
+python manage.py makemigrations
+
 ```
