@@ -96,9 +96,8 @@ def welcome(request):
 from website.views import welcome
 ```
 
-6. Solve the `unresolved reference errors for #5
-   
-👉 right-click on "ai_powered_blog" Django project 👉 Mark Directory as 👉 Source Root
+6. Solve the `unresolved reference errors for #5   
+- 👉 right-click on "ai_powered_blog" Django project 👉 Mark Directory as 👉 Source Root
 
 7. Add the following URL mapping in the `urlpattern` array
 
@@ -108,6 +107,6 @@ path('', welcome)
 
 8. Run Django project
 
-👉 `python manage.py runserver`
-👉 navigate in web brwoser to `http://127.0.0.1:8000/welcome.html`
-👉 you should see the content of the `welcome.html` page
+- 👉 `python manage.py runserver`
+- 👉 navigate in web brwoser to `http://127.0.0.1:8000/welcome.html`
+- 👉 you should see the content of the `welcome.html` page
