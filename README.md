@@ -104,9 +104,18 @@ from website.views import welcome
 ```python
 path('', welcome)
 ```
-
 8. Run Django project
 
 - 👉 `python manage.py runserver`
 - 👉 navigate in web brwoser to `http://127.0.0.1:8000/welcome.html`
 - 👉 you should see the content of the `welcome.html` page
+
+## Data Model
+
+```python
+python manage.py showmigrations
+
+python manage.py migrate
+
+python manage.py dbshell
+```
