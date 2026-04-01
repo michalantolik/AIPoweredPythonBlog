@@ -1,6 +1,15 @@
 # AIPoweredPythonBlog
 
-AI-powered blog written in Python/Django. Built from scratch to showcase clean architecture, fullstack skills, PlantUML documentation, and GenAI-assisted development.
+AI-powered blog written in Python/Django.
+
+Built from scratch to showcase:
+
+- Clean architecture
+- Fullstack web development experience
+- Python programming language skills
+- PlantUML documentation
+- GenAI-assisted development
+- AI integration
 
 
 ## Prerequisites
