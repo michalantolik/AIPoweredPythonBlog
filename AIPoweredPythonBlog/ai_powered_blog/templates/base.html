@@ -8,12 +8,72 @@
     <link rel="stylesheet" href="{% static 'css/site.css' %}">
 </head>
 <body>
-    <div class="app-bg">
-        {% include "partials/nav.html" %}
+    <div
+        class="intro-stage"
+        data-intro-enabled="{% if INTRO_OVERLAY_ENABLED and request.path == '/' %}true{% else %}false{% endif %}"
+        data-intro-duration="{{ INTRO_OVERLAY_DURATION_MS }}"
+    >
+        <div id="siteExperience" class="site-experience">
+            <div class="app-bg">
+                {% include "partials/nav.html" %}
 
-        <main class="page-wrap">
-            {% block content %}{% endblock %}
-        </main>
+                <main class="page-wrap">
+                    {% block content %}{% endblock %}
+                </main>
+            </div>
+        </div>
+
+        {% if request.path == '/' %}
+            <div id="introOverlay" class="intro-overlay" aria-hidden="true">
+                <div class="intro-overlay__backdrop"></div>
+
+                <div class="intro-overlay__content">
+                    <span class="intro-overlay__glow"></span>
+                    <img
+                        class="intro-overlay__portrait"
+                        src="{% static INTRO_OVERLAY_IMAGE %}"
+                        alt="Intro portrait"
+                    >
+                </div>
+            </div>
+        {% endif %}
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const stage = document.querySelector('.intro-stage');
+            const overlay = document.getElementById('introOverlay');
+
+            if (!stage || !overlay) {
+                return;
+            }
+
+            const introEnabled = stage.dataset.introEnabled === 'true';
+            const duration = Number(stage.dataset.introDuration || 3200);
+
+            if (!introEnabled) {
+                return;
+            }
+
+            document.body.classList.add('intro-lock');
+
+            requestAnimationFrame(() => {
+                stage.classList.add('intro-active');
+            });
+
+            const fadeOutStart = Math.max(duration - 1100, 1400);
+
+            window.setTimeout(() => {
+                stage.classList.add('intro-fade-out');
+            }, fadeOutStart);
+
+            window.setTimeout(() => {
+                stage.classList.remove('intro-active');
+                stage.classList.add('intro-complete');
+                document.body.classList.remove('intro-lock');
+                overlay.setAttribute('hidden', 'hidden');
+            }, duration);
+        });
+    </script>
 </body>
 </html>
