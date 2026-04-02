@@ -3,9 +3,75 @@
 {% block title %}About | AI Powered Python Blog{% endblock %}
 
 {% block content %}
-<section>
-    <h1>About</h1>
-    <p>Hi, I’m Michał.</p>
-    <p>[SHORT BIO PLACEHOLDER]</p>
-</section>
+<div class="shell">
+    <section class="hero-panel hero-panel-small">
+        <div class="hero-top hero-top-single">
+            <div class="hero-left">
+                <div class="hero-badge">
+                    <span class="hero-badge-dot"></span>
+                    About the author
+                </div>
+
+                <h1 class="hero-title hero-title-small">
+                    Michał
+                    <span>software developer and technical writer</span>
+                </h1>
+
+                <p class="hero-description">
+                    I write practical notes about Python, Django, architecture,
+                    backend design, clean code, and database thinking.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <section class="content-shell">
+        <aside class="sidebar-panel">
+            <div class="sidebar-block">
+                <h3 class="sidebar-title">Categories</h3>
+                <p class="sidebar-subtitle">Topics available on the blog.</p>
+
+                <div class="sidebar-links">
+                    {% for tag in categories %}
+                        <a class="sidebar-link-card" href="{% url 'posts:list' %}?category={{ tag.slug }}">
+                            <div class="sidebar-link-left">
+                                <span class="category-icon category-icon-generic"></span>
+                                <div>
+                                    <strong>{{ tag.name }}</strong>
+                                    <span>Topic archive</span>
+                                </div>
+                            </div>
+                            <span class="category-count">{{ tag.published_posts_count }}</span>
+                        </a>
+                    {% empty %}
+                        <div class="empty-box dark-empty">No categories yet.</div>
+                    {% endfor %}
+                </div>
+            </div>
+        </aside>
+
+        <div class="content-main">
+            <div class="content-area-box">
+                <div class="section-label">ABOUT</div>
+                <h2 class="section-title-dark">Why this blog exists</h2>
+
+                <p class="content-paragraph">
+                    This blog is meant to feel like a clean technical workspace:
+                    calm, structured, readable, and pleasant to explore.
+                </p>
+
+                <p class="content-paragraph">
+                    The focus is practical software development knowledge:
+                    Python, Django, architecture, backend design, naming,
+                    databases, and simple engineering habits that scale well.
+                </p>
+
+                <p class="content-paragraph">
+                    The goal is clarity over noise — clean presentation,
+                    short useful articles, and a layout that makes browsing easy.
+                </p>
+            </div>
+        </div>
+    </section>
+</div>
 {% endblock %}
