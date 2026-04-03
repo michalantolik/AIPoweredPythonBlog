@@ -1,0 +1,55 @@
+<aside class="sidebar-panel">
+    <div class="sidebar-block">
+        <h3 class="sidebar-title">Categories</h3>
+        <p class="sidebar-subtitle">
+            Click a topic to filter post previews.
+        </p>
+
+        <div class="sidebar-links">
+            <a class="sidebar-link-card {% if not selected_category %}active{% endif %}" href="{% url 'posts:list' %}">
+                <div class="sidebar-link-left">
+                    <span class="category-icon category-icon-generic"></span>
+                    <div>
+                        <strong>All posts</strong>
+                        <span>Full archive</span>
+                    </div>
+                </div>
+            </a>
+
+            {% for tag in categories %}
+                <a
+                    class="sidebar-link-card {% if selected_category and selected_category.slug == tag.slug %}active{% endif %}"
+                    href="{% url 'posts:list' %}?category={{ tag.slug }}"
+                >
+                    <div class="sidebar-link-left">
+                        <span class="
+                            category-icon
+                            {% if tag.slug == 'python' %}category-icon-python
+                            {% elif tag.slug == 'django' %}category-icon-django
+                            {% elif tag.slug == 'architecture' %}category-icon-architecture
+                            {% elif tag.slug == 'clean-code' %}category-icon-clean-code
+                            {% elif tag.slug == 'databases' %}category-icon-databases
+                            {% else %}category-icon-generic{% endif %}
+                        "></span>
+                        <div>
+                            <strong>{{ tag.name }}</strong>
+                            <span>Topic archive</span>
+                        </div>
+                    </div>
+                    <span class="category-count">{{ tag.published_posts_count }}</span>
+                </a>
+            {% empty %}
+                <div class="empty-box dark-empty">No categories yet.</div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="author-card">
+        <div class="author-card-label">About the author</div>
+        <h3>Michał</h3>
+        <p>
+            Software developer writing short, practical notes about
+            backend, Django, architecture, and clean design.
+        </p>
+    </div>
+</aside>

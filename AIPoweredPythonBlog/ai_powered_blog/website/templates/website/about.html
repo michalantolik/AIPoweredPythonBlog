@@ -26,29 +26,7 @@
     </section>
 
     <section class="content-shell">
-        <aside class="sidebar-panel">
-            <div class="sidebar-block">
-                <h3 class="sidebar-title">Categories</h3>
-                <p class="sidebar-subtitle">Topics available on the blog.</p>
-
-                <div class="sidebar-links">
-                    {% for tag in categories %}
-                        <a class="sidebar-link-card" href="{% url 'posts:list' %}?category={{ tag.slug }}">
-                            <div class="sidebar-link-left">
-                                <span class="category-icon category-icon-generic"></span>
-                                <div>
-                                    <strong>{{ tag.name }}</strong>
-                                    <span>Topic archive</span>
-                                </div>
-                            </div>
-                            <span class="category-count">{{ tag.published_posts_count }}</span>
-                        </a>
-                    {% empty %}
-                        <div class="empty-box dark-empty">No categories yet.</div>
-                    {% endfor %}
-                </div>
-            </div>
-        </aside>
+        {% include "partials/blog_sidebar.html" %}
 
         <div class="content-main">
             <div class="content-area-box">

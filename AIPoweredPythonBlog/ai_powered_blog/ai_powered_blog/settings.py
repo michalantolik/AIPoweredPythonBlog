@@ -57,7 +57,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'core.context_processors.intro_overlay_settings',
+                'core.context_processors.site_ui_settings',
             ],
         },
     },
@@ -98,5 +98,13 @@ STATICFILES_DIRS = [BASE_DIR / 'static']
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 INTRO_OVERLAY_ENABLED = True
-INTRO_OVERLAY_DURATION_MS = 3600  # 2800 = faster, 3200 = balanced, 3600 = more cinematic
+INTRO_OVERLAY_DURATION_MS = 3600
 INTRO_OVERLAY_IMAGE = 'images/intro/michal-portrait.png'
+
+# ---------------------------------------------------------
+# UI FEATURE FLAG
+# False = keep current behavior:
+#         homepage starts WITHOUT left sidebar
+# True  = show the left sidebar immediately on homepage too
+# ---------------------------------------------------------
+SHOW_SIDEBAR_ON_HOME_STARTUP = True

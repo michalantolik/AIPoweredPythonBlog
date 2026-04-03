@@ -45,71 +45,144 @@
         </div>
     </section>
 
-    <section class="content-shell home-content-shell">
-        <div class="content-main-full">
-            <div class="section-header">
-                <div>
-                    <div class="section-label">LATEST CONTENT</div>
-                    <h2 class="section-title-dark">Recent posts</h2>
-                    <p class="section-text-dark">
-                        Short previews in neat cards. Click any card title to open the full article page.
-                    </p>
-                </div>
+    {% if SHOW_SIDEBAR_ON_HOME_STARTUP %}
+        <section class="content-shell">
+            {% include "partials/blog_sidebar.html" %}
 
-                <a class="search-placeholder" href="{% url 'posts:list' %}">
-                    Browse all posts
-                </a>
-            </div>
-
-            {% if latest_posts %}
-                <div class="post-list-stack">
-                    {% for post in latest_posts %}
-                        <article class="post-preview-card">
-                            <div class="post-meta-row">
-                                <div class="chip-row">
-                                    {% for tag in post.tags.all %}
-                                        <a class="mini-chip" href="{% url 'posts:list' %}?category={{ tag.slug }}">
-                                            {{ tag.name }}
-                                        </a>
-                                    {% empty %}
-                                        <span class="mini-chip muted">General</span>
-                                    {% endfor %}
-                                </div>
-
-                                <div class="meta-inline">
-                                    <span>By {{ post.author.username }}</span>
-                                </div>
-                            </div>
-
-                            <h3 class="post-preview-title">
-                                <a href="{% url 'posts:detail' post.slug %}">{{ post.title }}</a>
-                            </h3>
-
-                            <p class="post-preview-text">
-                                {% if post.excerpt %}
-                                    {{ post.excerpt }}
-                                {% else %}
-                                    {{ post.content|truncatewords:30 }}
-                                {% endif %}
+            <div class="content-main">
+                <div class="content-area-box">
+                    <div class="section-header">
+                        <div>
+                            <div class="section-label">LATEST CONTENT</div>
+                            <h2 class="section-title-dark">Recent posts</h2>
+                            <p class="section-text-dark">
+                                Short previews in neat cards. Click any card title to open the full article page.
                             </p>
+                        </div>
 
-                            <div class="post-preview-footer">
-                                <a class="open-article-link" href="{% url 'posts:detail' post.slug %}">
-                                    Open full article
-                                </a>
-                                <a class="read-post-btn" href="{% url 'posts:detail' post.slug %}">
-                                    Read post →
-                                </a>
-                            </div>
-                        </article>
-                    {% endfor %}
+                        <a class="search-placeholder" href="{% url 'posts:list' %}">
+                            Browse all posts
+                        </a>
+                    </div>
+
+                    {% if latest_posts %}
+                        <div class="post-list-stack">
+                            {% for post in latest_posts %}
+                                <article class="post-preview-card">
+                                    <div class="post-meta-row">
+                                        <div class="chip-row">
+                                            {% for tag in post.tags.all %}
+                                                <a class="mini-chip" href="{% url 'posts:list' %}?category={{ tag.slug }}">
+                                                    {{ tag.name }}
+                                                </a>
+                                            {% empty %}
+                                                <span class="mini-chip muted">General</span>
+                                            {% endfor %}
+                                        </div>
+
+                                        <div class="meta-inline">
+                                            <span>By {{ post.author.username }}</span>
+                                        </div>
+                                    </div>
+
+                                    <h3 class="post-preview-title">
+                                        <a href="{% url 'posts:detail' post.slug %}">{{ post.title }}</a>
+                                    </h3>
+
+                                    <p class="post-preview-text">
+                                        {% if post.excerpt %}
+                                            {{ post.excerpt }}
+                                        {% else %}
+                                            {{ post.content|truncatewords:30 }}
+                                        {% endif %}
+                                    </p>
+
+                                    <div class="post-preview-footer">
+                                        <a class="open-article-link" href="{% url 'posts:detail' post.slug %}">
+                                            Open full article
+                                        </a>
+                                        <a class="read-post-btn" href="{% url 'posts:detail' post.slug %}">
+                                            Read post →
+                                        </a>
+                                    </div>
+                                </article>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="empty-box">
+                            No published posts yet.
+                        </div>
+                    {% endif %}
                 </div>
-            {% else %}
-                <div class="empty-box">
-                    No published posts yet.
+            </div>
+        </section>
+    {% else %}
+        <section class="content-shell home-content-shell">
+            <div class="content-main-full">
+                <div class="section-header">
+                    <div>
+                        <div class="section-label">LATEST CONTENT</div>
+                        <h2 class="section-title-dark">Recent posts</h2>
+                        <p class="section-text-dark">
+                            Short previews in neat cards. Click any card title to open the full article page.
+                        </p>
+                    </div>
+
+                    <a class="search-placeholder" href="{% url 'posts:list' %}">
+                        Browse all posts
+                    </a>
                 </div>
-            {% endif %}
-        </div>
-    </section>
+
+                {% if latest_posts %}
+                    <div class="post-list-stack">
+                        {% for post in latest_posts %}
+                            <article class="post-preview-card">
+                                <div class="post-meta-row">
+                                    <div class="chip-row">
+                                        {% for tag in post.tags.all %}
+                                            <a class="mini-chip" href="{% url 'posts:list' %}?category={{ tag.slug }}">
+                                                {{ tag.name }}
+                                            </a>
+                                        {% empty %}
+                                            <span class="mini-chip muted">General</span>
+                                        {% endfor %}
+                                    </div>
+
+                                    <div class="meta-inline">
+                                        <span>By {{ post.author.username }}</span>
+                                    </div>
+                                </div>
+
+                                <h3 class="post-preview-title">
+                                    <a href="{% url 'posts:detail' post.slug %}">{{ post.title }}</a>
+                                </h3>
+
+                                <p class="post-preview-text">
+                                    {% if post.excerpt %}
+                                        {{ post.excerpt }}
+                                    {% else %}
+                                        {{ post.content|truncatewords:30 }}
+                                    {% endif %}
+                                </p>
+
+                                <div class="post-preview-footer">
+                                    <a class="open-article-link" href="{% url 'posts:detail' post.slug %}">
+                                        Open full article
+                                    </a>
+                                    <a class="read-post-btn" href="{% url 'posts:detail' post.slug %}">
+                                        Read post →
+                                    </a>
+                                </div>
+                            </article>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="empty-box">
+                        No published posts yet.
+                    </div>
+                {% endif %}
+            </div>
+        </section>
+    {% endif %}
 </div>
 {% endblock %}
