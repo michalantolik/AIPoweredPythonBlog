@@ -15,12 +15,12 @@
 | 9 | Env config (dev/prod) | ✅ Done | [f6edb8d](https://github.com/michalantolik/AIPoweredPythonBlog/commit/f6edb8d71e436670cd402cef723ea2426de8ad1d) |
 | 10 | SQLite → PostgreSQL | ✅ Done | [3213707](https://github.com/michalantolik/AIPoweredPythonBlog/commit/321370754ce9bf17cdd7bee1369a8dc7abc868ed) |
 | 11 | Two DB seeding modes (dev/prod) | ✅ Done | [18226c5](https://github.com/michalantolik/AIPoweredPythonBlog/commit/18226c59ebee1d15a52333ac937472a7c33c36ae) |
+| 12 | Dockerize the app with PostgreSQL | ✅ Done | [2204d82](https://github.com/michalantolik/AIPoweredPythonBlog/commit/2204d821ca3b78090da6eee9ea71dd4473c78bb2) |
 
 ## Status: 🚧 NEXT TO IMPLEMENT
 
 | # | Phase | Status | Commit |
 |---|---|---|---|
-| 12 | Dockerize the app | ⏳ To do | - |
 | 13 | Provision AWS infrastructure with Terraform | ⏳ To do | - |
 | 14 | Push Docker images to Amazon ECR | ⏳ To do | - |
 | 15 | Create AWS PostgreSQL with Amazon RDS for PostgreSQL | ⏳ To do | - |
