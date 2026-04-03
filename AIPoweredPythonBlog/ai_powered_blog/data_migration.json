@@ -1,0 +1,637 @@
+[
+{
+  "model": "comments.comment",
+  "pk": 1,
+  "fields": {
+    "created_at": "2026-04-01T04:01:03.912Z",
+    "updated_at": "2026-04-01T04:01:03.912Z",
+    "post": 2,
+    "author": 4,
+    "content": "Very useful post. Clear and practical.",
+    "is_approved": false
+  }
+},
+{
+  "model": "comments.comment",
+  "pk": 2,
+  "fields": {
+    "created_at": "2026-04-01T04:01:03.934Z",
+    "updated_at": "2026-04-01T04:01:03.934Z",
+    "post": 7,
+    "author": 5,
+    "content": "I like this explanation. Simple and clean.",
+    "is_approved": true
+  }
+},
+{
+  "model": "comments.comment",
+  "pk": 3,
+  "fields": {
+    "created_at": "2026-04-01T04:01:03.944Z",
+    "updated_at": "2026-04-01T04:01:03.944Z",
+    "post": 8,
+    "author": 6,
+    "content": "Good summary. Easy to follow.",
+    "is_approved": true
+  }
+},
+{
+  "model": "comments.comment",
+  "pk": 4,
+  "fields": {
+    "created_at": "2026-04-01T04:01:03.951Z",
+    "updated_at": "2026-04-01T04:01:03.951Z",
+    "post": 9,
+    "author": 7,
+    "content": "Nice article. This helped me understand the topic better.",
+    "is_approved": true
+  }
+},
+{
+  "model": "comments.comment",
+  "pk": 5,
+  "fields": {
+    "created_at": "2026-04-01T04:01:03.958Z",
+    "updated_at": "2026-04-01T04:01:03.958Z",
+    "post": 10,
+    "author": 8,
+    "content": "I would like to read part two of this.",
+    "is_approved": false
+  }
+},
+{
+  "model": "comments.comment",
+  "pk": 6,
+  "fields": {
+    "created_at": "2026-04-01T04:01:03.962Z",
+    "updated_at": "2026-04-01T04:01:03.962Z",
+    "post": 11,
+    "author": 3,
+    "content": "This is exactly the kind of practical content I need.",
+    "is_approved": true
+  }
+},
+{
+  "model": "comments.comment",
+  "pk": 7,
+  "fields": {
+    "created_at": "2026-04-01T04:01:03.962Z",
+    "updated_at": "2026-04-01T04:01:03.962Z",
+    "post": 12,
+    "author": 4,
+    "content": "Great structure and clean examples.",
+    "is_approved": true
+  }
+},
+{
+  "model": "comments.comment",
+  "pk": 8,
+  "fields": {
+    "created_at": "2026-04-01T04:01:03.979Z",
+    "updated_at": "2026-04-01T04:01:03.979Z",
+    "post": 13,
+    "author": 5,
+    "content": "Short, direct, and helpful.",
+    "is_approved": true
+  }
+},
+{
+  "model": "comments.comment",
+  "pk": 9,
+  "fields": {
+    "created_at": "2026-04-01T04:01:03.979Z",
+    "updated_at": "2026-04-01T04:01:03.979Z",
+    "post": 2,
+    "author": 6,
+    "content": "This topic is explained very well here.",
+    "is_approved": false
+  }
+},
+{
+  "model": "comments.comment",
+  "pk": 10,
+  "fields": {
+    "created_at": "2026-04-01T04:01:03.995Z",
+    "updated_at": "2026-04-01T04:01:03.995Z",
+    "post": 7,
+    "author": 7,
+    "content": "Thanks, this gave me a good starting point.",
+    "is_approved": true
+  }
+},
+{
+  "model": "posts.post",
+  "pk": 1,
+  "fields": {
+    "created_at": "2026-04-01T02:01:04.660Z",
+    "updated_at": "2026-04-01T02:01:04.660Z",
+    "title": "jhj",
+    "slug": "jhgjg",
+    "author": 1,
+    "content": "jghjgh",
+    "excerpt": "jghjg",
+    "status": "draft",
+    "published_at": "2026-04-01T02:00:53Z",
+    "tags": []
+  }
+},
+{
+  "model": "posts.post",
+  "pk": 2,
+  "fields": {
+    "created_at": "2026-04-01T03:53:37.363Z",
+    "updated_at": "2026-04-01T04:01:03.804Z",
+    "title": "Getting Started with Django",
+    "slug": "getting-started-with-django",
+    "author": 3,
+    "content": "This is a demo post about Django basics, project structure, apps, templates, and urls.",
+    "excerpt": "A simple introduction to Django project structure.",
+    "status": "published",
+    "published_at": "2026-04-01T03:53:37.363Z",
+    "tags": [
+      1,
+      2
+    ]
+  }
+},
+{
+  "model": "posts.post",
+  "pk": 3,
+  "fields": {
+    "created_at": "2026-04-01T03:53:37.379Z",
+    "updated_at": "2026-04-01T03:53:37.379Z",
+    "title": "Why Clean Architecture Matters",
+    "slug": "why-clean-architecture-matters",
+    "author": 2,
+    "content": "This is dummy content about clean architecture.\n\nKeep code simple and modular.",
+    "excerpt": "A short post about structure and maintainability.",
+    "status": "published",
+    "published_at": "2026-04-01T03:53:37.379Z",
+    "tags": [
+      3,
+      4
+    ]
+  }
+},
+{
+  "model": "posts.post",
+  "pk": 4,
+  "fields": {
+    "created_at": "2026-04-01T03:53:37.399Z",
+    "updated_at": "2026-04-01T03:53:37.399Z",
+    "title": "Testing a Django App",
+    "slug": "testing-a-django-app",
+    "author": 2,
+    "content": "This is dummy testing content.\n\nStart small and test important flows first.",
+    "excerpt": "Basic thoughts on testing views and models.",
+    "status": "draft",
+    "published_at": null,
+    "tags": [
+      2,
+      5
+    ]
+  }
+},
+{
+  "model": "posts.post",
+  "pk": 5,
+  "fields": {
+    "created_at": "2026-04-01T03:53:37.429Z",
+    "updated_at": "2026-04-01T03:53:37.429Z",
+    "title": "Python for Web Developers",
+    "slug": "python-for-web-developers",
+    "author": 2,
+    "content": "This is dummy Python content.\n\nUseful for your blog list and detail pages.",
+    "excerpt": "A placeholder post for Python web development.",
+    "status": "published",
+    "published_at": "2026-04-01T03:53:37.428Z",
+    "tags": [
+      1,
+      4
+    ]
+  }
+},
+{
+  "model": "posts.post",
+  "pk": 6,
+  "fields": {
+    "created_at": "2026-04-01T03:53:37.445Z",
+    "updated_at": "2026-04-01T03:53:37.445Z",
+    "title": "Designing a Simple Blog Layout",
+    "slug": "designing-a-simple-blog-layout",
+    "author": 2,
+    "content": "This is dummy content about layout and navigation.\n\nMinimal, clean, readable.",
+    "excerpt": "A short placeholder article about blog UI structure.",
+    "status": "published",
+    "published_at": "2026-04-01T03:53:37.444Z",
+    "tags": [
+      2,
+      3
+    ]
+  }
+},
+{
+  "model": "posts.post",
+  "pk": 7,
+  "fields": {
+    "created_at": "2026-04-01T04:01:03.812Z",
+    "updated_at": "2026-04-01T04:01:03.812Z",
+    "title": "Clean Architecture for Small Projects",
+    "slug": "clean-architecture-for-small-projects",
+    "author": 4,
+    "content": "This post explains practical clean architecture ideas for small and medium web apps.",
+    "excerpt": "How to keep code simple and organized.",
+    "status": "published",
+    "published_at": "2026-04-01T04:01:03.812Z",
+    "tags": [
+      1,
+      3,
+      6
+    ]
+  }
+},
+{
+  "model": "posts.post",
+  "pk": 8,
+  "fields": {
+    "created_at": "2026-04-01T04:01:03.829Z",
+    "updated_at": "2026-04-01T04:01:03.829Z",
+    "title": "Why Good Naming Matters",
+    "slug": "why-good-naming-matters",
+    "author": 5,
+    "content": "This article covers naming in models, views, templates, and services.",
+    "excerpt": "Good naming makes code easier to read.",
+    "status": "published",
+    "published_at": "2026-04-01T04:01:03.829Z",
+    "tags": [
+      5,
+      7
+    ]
+  }
+},
+{
+  "model": "posts.post",
+  "pk": 9,
+  "fields": {
+    "created_at": "2026-04-01T04:01:03.846Z",
+    "updated_at": "2026-04-01T04:01:03.846Z",
+    "title": "Testing Django Views",
+    "slug": "testing-django-views",
+    "author": 6,
+    "content": "This post shows a minimal approach to testing list pages, detail pages, and forms.",
+    "excerpt": "Start with the most important flows.",
+    "status": "draft",
+    "published_at": null,
+    "tags": [
+      4,
+      7
+    ]
+  }
+},
+{
+  "model": "posts.post",
+  "pk": 10,
+  "fields": {
+    "created_at": "2026-04-01T04:01:03.862Z",
+    "updated_at": "2026-04-01T04:01:03.862Z",
+    "title": "Simple Blog Layout Ideas",
+    "slug": "simple-blog-layout-ideas",
+    "author": 7,
+    "content": "This article describes a practical layout with base template, nav, content area, and footer.",
+    "excerpt": "A clean layout for a technical blog.",
+    "status": "published",
+    "published_at": "2026-04-01T04:01:03.862Z",
+    "tags": [
+      1,
+      4,
+      7,
+      8
+    ]
+  }
+},
+{
+  "model": "posts.post",
+  "pk": 11,
+  "fields": {
+    "created_at": "2026-04-01T04:01:03.878Z",
+    "updated_at": "2026-04-01T04:01:03.878Z",
+    "title": "Working with Slugs in Django",
+    "slug": "working-with-slugs-in-django",
+    "author": 8,
+    "content": "This post explains slug generation, uniqueness, and routing.",
+    "excerpt": "How and why to use slugs.",
+    "status": "published",
+    "published_at": "2026-04-01T04:01:03.862Z",
+    "tags": [
+      5,
+      6,
+      7
+    ]
+  }
+},
+{
+  "model": "posts.post",
+  "pk": 12,
+  "fields": {
+    "created_at": "2026-04-01T04:01:03.878Z",
+    "updated_at": "2026-04-01T04:01:03.878Z",
+    "title": "Database Design Basics",
+    "slug": "database-design-basics",
+    "author": 3,
+    "content": "This article discusses foreign keys, many-to-many tables, and consistent schema naming.",
+    "excerpt": "Small practical rules for tables and relations.",
+    "status": "published",
+    "published_at": "2026-04-01T04:01:03.878Z",
+    "tags": [
+      1,
+      3,
+      4,
+      5
+    ]
+  }
+},
+{
+  "model": "posts.post",
+  "pk": 13,
+  "fields": {
+    "created_at": "2026-04-01T04:01:03.895Z",
+    "updated_at": "2026-04-01T04:01:03.895Z",
+    "title": "Building a Posts List Page",
+    "slug": "building-a-posts-list-page",
+    "author": 4,
+    "content": "This post covers list views, template loops, and simple styling.",
+    "excerpt": "How to show posts in a clean way.",
+    "status": "draft",
+    "published_at": null,
+    "tags": [
+      2,
+      3,
+      6
+    ]
+  }
+},
+{
+  "model": "tags.tag",
+  "pk": 1,
+  "fields": {
+    "created_at": "2026-04-01T03:53:37.332Z",
+    "updated_at": "2026-04-01T03:53:37.332Z",
+    "name": "python",
+    "slug": "python"
+  }
+},
+{
+  "model": "tags.tag",
+  "pk": 2,
+  "fields": {
+    "created_at": "2026-04-01T03:53:37.332Z",
+    "updated_at": "2026-04-01T03:53:37.332Z",
+    "name": "django",
+    "slug": "django"
+  }
+},
+{
+  "model": "tags.tag",
+  "pk": 3,
+  "fields": {
+    "created_at": "2026-04-01T03:53:37.348Z",
+    "updated_at": "2026-04-01T03:53:37.348Z",
+    "name": "architecture",
+    "slug": "architecture"
+  }
+},
+{
+  "model": "tags.tag",
+  "pk": 4,
+  "fields": {
+    "created_at": "2026-04-01T03:53:37.348Z",
+    "updated_at": "2026-04-01T03:53:37.348Z",
+    "name": "backend",
+    "slug": "backend"
+  }
+},
+{
+  "model": "tags.tag",
+  "pk": 5,
+  "fields": {
+    "created_at": "2026-04-01T03:53:37.363Z",
+    "updated_at": "2026-04-01T03:53:37.363Z",
+    "name": "testing",
+    "slug": "testing"
+  }
+},
+{
+  "model": "tags.tag",
+  "pk": 6,
+  "fields": {
+    "created_at": "2026-04-01T04:01:03.778Z",
+    "updated_at": "2026-04-01T04:01:03.778Z",
+    "name": "api",
+    "slug": "api"
+  }
+},
+{
+  "model": "tags.tag",
+  "pk": 7,
+  "fields": {
+    "created_at": "2026-04-01T04:01:03.778Z",
+    "updated_at": "2026-04-01T04:01:03.778Z",
+    "name": "clean-code",
+    "slug": "clean-code"
+  }
+},
+{
+  "model": "tags.tag",
+  "pk": 8,
+  "fields": {
+    "created_at": "2026-04-01T04:01:03.796Z",
+    "updated_at": "2026-04-01T04:01:03.796Z",
+    "name": "database",
+    "slug": "database"
+  }
+},
+{
+  "model": "users.user",
+  "pk": 1,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$fx00cR6mx5dTMib4B7UGKL$r+mI1NgEQ+FhSxur1394TcOBJw8Yzu9S8AH9BYdvgs4=",
+    "last_login": "2026-04-01T01:50:54.184Z",
+    "is_superuser": true,
+    "username": "mik",
+    "first_name": "",
+    "last_name": "",
+    "email": "mik@mik.com",
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2026-04-01T01:50:34.834Z",
+    "created_at": "2026-04-01T01:50:35.561Z",
+    "updated_at": "2026-04-01T01:50:35.561Z",
+    "bio": "",
+    "avatar": "",
+    "website": "",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "users.user",
+  "pk": 2,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$YCwTlT6kyF6VNwFcP1TQO6$gayUvf5OqfAd2i0z/YWyBv6LCF2PhGco+BRl5UkwZPc=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "demo_author",
+    "first_name": "",
+    "last_name": "",
+    "email": "demo@example.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-04-01T03:53:36.645Z",
+    "created_at": "2026-04-01T03:53:36.645Z",
+    "updated_at": "2026-04-01T03:53:37.301Z",
+    "bio": "Demo blog author",
+    "avatar": "",
+    "website": "",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "users.user",
+  "pk": 3,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$oWJ3C1IvkSvgdLd80DEJCE$EtZiLzdqD2I6HpIgHJX9ZU5RsBXHDAY7AXT8qGK9NuE=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "michal_dev",
+    "first_name": "",
+    "last_name": "",
+    "email": "michal@example.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-04-01T04:00:59.295Z",
+    "created_at": "2026-04-01T04:00:59.295Z",
+    "updated_at": "2026-04-01T04:01:00.030Z",
+    "bio": "Software developer writing about Django and architecture.",
+    "avatar": "https://picsum.photos/seed/michal/200/200",
+    "website": "https://example.com/michal",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "users.user",
+  "pk": 4,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$yepopmiVBZ1rnSkaqzKVf5$QerOUtQfCzvCYBaZ6hP0H20GfKSwZDOyq8xzaFvar1A=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "anna_arch",
+    "first_name": "",
+    "last_name": "",
+    "email": "anna@example.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-04-01T04:01:00.045Z",
+    "created_at": "2026-04-01T04:01:00.045Z",
+    "updated_at": "2026-04-01T04:01:00.762Z",
+    "bio": "Clean architecture enthusiast.",
+    "avatar": "https://picsum.photos/seed/anna/200/200",
+    "website": "https://example.com/anna",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "users.user",
+  "pk": 5,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$ex0Qz2S4fo5Kgb2vCZeW96$HjUyJmfUFRGsQNBOxveujngBbF4/iN6kN//NanCSfT4=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "tom_python",
+    "first_name": "",
+    "last_name": "",
+    "email": "tom@example.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-04-01T04:01:00.779Z",
+    "created_at": "2026-04-01T04:01:00.779Z",
+    "updated_at": "2026-04-01T04:01:01.512Z",
+    "bio": "Python backend developer.",
+    "avatar": "https://picsum.photos/seed/tom/200/200",
+    "website": "https://example.com/tom",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "users.user",
+  "pk": 6,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$8TXJV2YqIWgbUBygsYmwjd$i2r67kXzLWMKllGesmLUZsB3U/zRt3DVY8UA+zLz3bE=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "kate_testing",
+    "first_name": "",
+    "last_name": "",
+    "email": "kate@example.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-04-01T04:01:01.529Z",
+    "created_at": "2026-04-01T04:01:01.529Z",
+    "updated_at": "2026-04-01T04:01:02.261Z",
+    "bio": "I like tests, quality, and automation.",
+    "avatar": "https://picsum.photos/seed/kate/200/200",
+    "website": "https://example.com/kate",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "users.user",
+  "pk": 7,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$UHyzHtaF52EtcupxfmXWTi$rS8w67qxues61DbMzSPWhQD6EDIojkxIQ318dakpVno=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "john_cloud",
+    "first_name": "",
+    "last_name": "",
+    "email": "john@example.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-04-01T04:01:02.294Z",
+    "created_at": "2026-04-01T04:01:02.294Z",
+    "updated_at": "2026-04-01T04:01:03.012Z",
+    "bio": "Cloud and infrastructure notes.",
+    "avatar": "https://picsum.photos/seed/john/200/200",
+    "website": "https://example.com/john",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "users.user",
+  "pk": 8,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$RPhWFKB8n9LhjpVMMQpBgT$rZli4Zs/zt2VCGBrNGCiMNIhCgEvjs/6NOCUDLjBMMQ=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "eva_data",
+    "first_name": "",
+    "last_name": "",
+    "email": "eva@example.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-04-01T04:01:03.028Z",
+    "created_at": "2026-04-01T04:01:03.028Z",
+    "updated_at": "2026-04-01T04:01:03.745Z",
+    "bio": "Data, APIs, and practical engineering.",
+    "avatar": "https://picsum.photos/seed/eva/200/200",
+    "website": "https://example.com/eva",
+    "groups": [],
+    "user_permissions": []
+  }
+}
+]
