@@ -13,12 +13,12 @@
 | 7 | UI redesign | ✅ Done | - |
 | 8 | UX improvements (animation, sidebar) | ✅ Done | - |
 | 9 | Env config (dev/prod) | ✅ Done | [f6edb8d](https://github.com/michalantolik/AIPoweredPythonBlog/commit/f6edb8d71e436670cd402cef723ea2426de8ad1d) |
+| 10 | SQLite → PostgreSQL | ✅ Done | [3213707](https://github.com/michalantolik/AIPoweredPythonBlog/commit/321370754ce9bf17cdd7bee1369a8dc7abc868ed) |
 
 ## Status: 🚧 NEXT TO IMPLEMENT
 
 | # | Phase | Status | Commit |
 |---|---|---|---|
-| 10 | SQLite → PostgreSQL | ⏳ To do | - |
 | 11 | Two seed modes (dev/private) | ⏳ To do | - |
 | 12 | Docker + Postgres | ⏳ To do | - |
 | 13 | Unit tests | ⏳ To do | - |
