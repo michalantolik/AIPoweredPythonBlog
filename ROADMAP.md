@@ -23,7 +23,6 @@
 
 | # | Phase | Status | Commit |
 |---|---|---|---|
-
 | 15 | Push Docker images to Amazon ECR | ⏳ To do | - |
 | 16 | Create AWS PostgreSQL with Amazon RDS for PostgreSQL | ⏳ To do | - |
 | 17 | Deploy the containerized app to AWS | ⏳ To do | - |
