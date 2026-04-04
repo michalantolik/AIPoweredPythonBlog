@@ -17,7 +17,7 @@
 | 11 | Two DB seeding modes (dev/prod) | ✅ Done | [18226c5](https://github.com/michalantolik/AIPoweredPythonBlog/commit/18226c59ebee1d15a52333ac937472a7c33c36ae) |
 | 12 | Dockerize the app with PostgreSQL | ✅ Done | [2204d82](https://github.com/michalantolik/AIPoweredPythonBlog/commit/2204d821ca3b78090da6eee9ea71dd4473c78bb2) |
 | 13 | Set up GitHub Actions CI pipeline | ✅ Done | [07cfbcc](https://github.com/michalantolik/AIPoweredPythonBlog/commit/07cfbcc922d803365405390c4b4d0c605dde1a01) |
-| 14 | Provision initial AWS infrastructure with Terraform | ✅ Done | - | [892862a](https://github.com/michalantolik/AIPoweredPythonBlog/commit/892862aae8c22937e0fe43ab5466ff21cd7a7452) |
+| 14 | Provision initial AWS infrastructure with Terraform | ✅ Done | [892862a](https://github.com/michalantolik/AIPoweredPythonBlog/commit/892862aae8c22937e0fe43ab5466ff21cd7a7452) |
 
 ## Status: 🚧 NEXT TO IMPLEMENT
 
