@@ -22,13 +22,13 @@
 | 16 | Push Docker images to Amazon ECR | ✅ Done | [0cd3c55](https://github.com/michalantolik/AIPoweredPythonBlog/commit/0cd3c55c2e5bda111b229548d4f82bffa7921466) |
 | 17 | Create AWS PostgreSQL with Amazon RDS for PostgreSQL | ✅ Done | [354b27f](https://github.com/michalantolik/AIPoweredPythonBlog/commit/354b27fc3c71c83bd98e5321145c6e224b888497) |
 | 18 | Deploy the containerized app to AWS | ✅ Done | [96176bd](https://github.com/michalantolik/AIPoweredPythonBlog/commit/96176bde416392bc09bf9c97a78c3d9e443e6f2e) |
+| 19 | Unit tests | ✅ Done | [e9cd443](https://github.com/michalantolik/AIPoweredPythonBlog/commit/e9cd443c6d826a14fbf666d597b118a2acfba117) |
 
 ## Status: 🚧 NEXT TO IMPLEMENT
 
 | # | Phase | Status | Commit |
 |---|---|---|---|
-| 19 | Add Kubernetes only after the basic deployment works | ⏳ To do | - |
-| 20 | Unit tests | ⏳ To do | - |
+| 20 | Add Kubernetes only after the basic deployment works | ⏳ To do | - |
 | 21 | Integration tests | ⏳ To do | - |
 | 22 | REST API (read-only) | ⏳ To do | - |
 | 23 | Playwright smoke tests | ⏳ To do | - |
