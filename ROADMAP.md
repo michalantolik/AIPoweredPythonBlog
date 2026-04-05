@@ -9,32 +9,33 @@
 | 3 | Data model | ✅ Done | [e2098b6](https://github.com/michalantolik/AIPoweredPythonBlog/commit/e2098b6f2393f853a612e92b6a0dd9ea6af54cab) |
 | 4 | Admin integration | ✅ Done | [30473a1](https://github.com/michalantolik/AIPoweredPythonBlog/commit/30473a15e0631deae6f4839c3b1b4c8218ebc971)   [23ab4d2](https://github.com/michalantolik/AIPoweredPythonBlog/commit/23ab4d2596d93942a6fc044109f27fbcaa07772b) |
 | 5 | Layout & navigation | ✅ Done | [f17339e](https://github.com/michalantolik/AIPoweredPythonBlog/commit/f17339e2f2e3e911a4adcc494074ba7106e3b9ee) |
-| 6 | Seed DB data | ✅ Done | - |
-| 7 | UI redesign | ✅ Done | - |
-| 8 | UX improvements (animation, sidebar) | ✅ Done | - |
-| 9 | Env config (dev/prod) | ✅ Done | [f6edb8d](https://github.com/michalantolik/AIPoweredPythonBlog/commit/f6edb8d71e436670cd402cef723ea2426de8ad1d) |
-| 10 | SQLite → PostgreSQL | ✅ Done | [3213707](https://github.com/michalantolik/AIPoweredPythonBlog/commit/321370754ce9bf17cdd7bee1369a8dc7abc868ed) |
-| 11 | Two DB seeding modes (dev/prod) | ✅ Done | [18226c5](https://github.com/michalantolik/AIPoweredPythonBlog/commit/18226c59ebee1d15a52333ac937472a7c33c36ae) |
-| 12 | Dockerize the app with PostgreSQL | ✅ Done | [2204d82](https://github.com/michalantolik/AIPoweredPythonBlog/commit/2204d821ca3b78090da6eee9ea71dd4473c78bb2) |
-| 13 | Set up GitHub Actions CI pipeline | ✅ Done | [07cfbcc](https://github.com/michalantolik/AIPoweredPythonBlog/commit/07cfbcc922d803365405390c4b4d0c605dde1a01) |
-| 14 | Provision initial AWS infrastructure with Terraform | ✅ Done | [892862a](https://github.com/michalantolik/AIPoweredPythonBlog/commit/892862aae8c22937e0fe43ab5466ff21cd7a7452) |
-| 15 | Push Docker images to Amazon ECR | ✅ Done | [0cd3c55](https://github.com/michalantolik/AIPoweredPythonBlog/commit/0cd3c55c2e5bda111b229548d4f82bffa7921466) |
-| 16 | Create AWS PostgreSQL with Amazon RDS for PostgreSQL | ✅ Done | [354b27f](https://github.com/michalantolik/AIPoweredPythonBlog/commit/354b27fc3c71c83bd98e5321145c6e224b888497) |
-| 17 | Deploy the containerized app to AWS | ✅ Done | [96176bd](https://github.com/michalantolik/AIPoweredPythonBlog/commit/96176bde416392bc09bf9c97a78c3d9e443e6f2e) |
+| 6 | Seed database | ✅ Done | [ccff967](https://github.com/michalantolik/AIPoweredPythonBlog/commit/ccff967cd7b77d0b7a3a4f3d99f81851f07d61af) |
+| 7 | UI redesign and restyling | ✅ Done | [66f116f](https://github.com/michalantolik/AIPoweredPythonBlog/commit/66f116f2d921e4e62e2c298db57e4408de0491ab) |
+| 8 | UX improvements (show intro animation toggle) | ✅ Done | [1073d1e](https://github.com/michalantolik/AIPoweredPythonBlog/commit/1073d1e66e688c7faa9d1a48143c0156ebbd665d) |
+| 9 | UX improvements (show sidebar toggle) | ✅ Done | [802dbe6](https://github.com/michalantolik/AIPoweredPythonBlog/commit/802dbe6b5ac695538b57351bba44f94f8c507dea) |
+| 10 | Env config (dev/prod) | ✅ Done | [f6edb8d](https://github.com/michalantolik/AIPoweredPythonBlog/commit/f6edb8d71e436670cd402cef723ea2426de8ad1d) |
+| 11 | SQLite → PostgreSQL | ✅ Done | [3213707](https://github.com/michalantolik/AIPoweredPythonBlog/commit/321370754ce9bf17cdd7bee1369a8dc7abc868ed) |
+| 12 | Two DB seeding modes (dev/prod) | ✅ Done | [18226c5](https://github.com/michalantolik/AIPoweredPythonBlog/commit/18226c59ebee1d15a52333ac937472a7c33c36ae) |
+| 13 | Dockerize the app with PostgreSQL | ✅ Done | [2204d82](https://github.com/michalantolik/AIPoweredPythonBlog/commit/2204d821ca3b78090da6eee9ea71dd4473c78bb2) |
+| 14 | Set up GitHub Actions CI pipeline | ✅ Done | [07cfbcc](https://github.com/michalantolik/AIPoweredPythonBlog/commit/07cfbcc922d803365405390c4b4d0c605dde1a01) |
+| 15 | Provision initial AWS infrastructure with Terraform | ✅ Done | [892862a](https://github.com/michalantolik/AIPoweredPythonBlog/commit/892862aae8c22937e0fe43ab5466ff21cd7a7452) |
+| 16 | Push Docker images to Amazon ECR | ✅ Done | [0cd3c55](https://github.com/michalantolik/AIPoweredPythonBlog/commit/0cd3c55c2e5bda111b229548d4f82bffa7921466) |
+| 17 | Create AWS PostgreSQL with Amazon RDS for PostgreSQL | ✅ Done | [354b27f](https://github.com/michalantolik/AIPoweredPythonBlog/commit/354b27fc3c71c83bd98e5321145c6e224b888497) |
+| 18 | Deploy the containerized app to AWS | ✅ Done | [96176bd](https://github.com/michalantolik/AIPoweredPythonBlog/commit/96176bde416392bc09bf9c97a78c3d9e443e6f2e) |
 
 ## Status: 🚧 NEXT TO IMPLEMENT
 
 | # | Phase | Status | Commit |
 |---|---|---|---|
-| 18 | Add Kubernetes only after the basic deployment works | ⏳ To do | - |
-| 19 | Unit tests | ⏳ To do | - |
-| 20 | Integration tests | ⏳ To do | - |
-| 21 | REST API (read-only) | ⏳ To do | - |
-| 22 | Playwright smoke tests | ⏳ To do | - |
-| 23 | Security hardening | ⏳ To do | - |
-| 24 | AI feature (summary/tags) | ⏳ To do | - |
-| 25 | React + TS widget | ⏳ To do | - |
-| 26 | Small JS enhancement | ⏳ To do | - |
+| 19 | Add Kubernetes only after the basic deployment works | ⏳ To do | - |
+| 20 | Unit tests | ⏳ To do | - |
+| 21 | Integration tests | ⏳ To do | - |
+| 22 | REST API (read-only) | ⏳ To do | - |
+| 23 | Playwright smoke tests | ⏳ To do | - |
+| 24 | Security hardening | ⏳ To do | - |
+| 25 | AI feature (summary/tags) | ⏳ To do | - |
+| 26 | React + TS widget | ⏳ To do | - |
+| 27 | Small JS enhancement | ⏳ To do | - |
 
 
 ## What each piece is for
