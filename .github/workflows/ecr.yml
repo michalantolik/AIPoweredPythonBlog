@@ -1,0 +1,73 @@
+name: Build and push Docker image to Amazon ECR
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/ecr.yml"
+      - "AIPoweredPythonBlog/**"
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  AWS_REGION: ${{ vars.AWS_REGION || 'eu-central-1' }}
+  ECR_REPOSITORY: ${{ vars.ECR_REPOSITORY || 'ai-powered-python-blog' }}
+
+jobs:
+  build-and-push:
+    name: Build and push image
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: ${{ secrets.AWS_GITHUB_ACTIONS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Log in to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Prepare image tags
+        id: image-meta
+        shell: bash
+        run: |
+          SHORT_SHA="${GITHUB_SHA::7}"
+          IMAGE_URI="${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}"
+
+          {
+            echo "image_uri=${IMAGE_URI}"
+            echo "short_sha=${SHORT_SHA}"
+            echo "tags<<EOF"
+            echo "${IMAGE_URI}:sha-${SHORT_SHA}"
+            echo "${IMAGE_URI}:latest"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v7
+        with:
+          context: ./AIPoweredPythonBlog
+          file: ./AIPoweredPythonBlog/Dockerfile
+          push: true
+          tags: ${{ steps.image-meta.outputs.tags }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Show pushed image references
+        shell: bash
+        run: |
+          echo "Pushed image:"
+          echo "${{ steps.image-meta.outputs.image_uri }}:sha-${{ steps.image-meta.outputs.short_sha }}"
+          echo "${{ steps.image-meta.outputs.image_uri }}:latest"

@@ -27,3 +27,18 @@ output "availability_zones" {
   description = "Availability zones used by this stack."
   value       = local.azs
 }
+
+output "ecr_repository_name" {
+  description = "Amazon ECR repository name."
+  value       = aws_ecr_repository.app.name
+}
+
+output "ecr_repository_url" {
+  description = "Amazon ECR repository URL."
+  value       = aws_ecr_repository.app.repository_url
+}
+
+output "ecr_registry_id" {
+  description = "Amazon ECR registry ID."
+  value       = aws_ecr_repository.app.registry_id
+}
