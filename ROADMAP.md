@@ -7,7 +7,7 @@
 | 1 | Set up Django project | ✅ Done | [c0cc0bc](https://github.com/michalantolik/AIPoweredPythonBlog/commit/c0cc0bc462ab79018e65af91a8e15fd6c6ceaa51) |
 | 2 | Set up Django apps | ✅ Done | [803e475](https://github.com/michalantolik/AIPoweredPythonBlog/commit/803e475da7afa33eae6c493e7001fabad2cdb11e)   [b647229](https://github.com/michalantolik/AIPoweredPythonBlog/commit/b6472299a35dc0a23eabf84aaae437df77f98948)   [763a74f](https://github.com/michalantolik/AIPoweredPythonBlog/commit/763a74fabc4e07b2bc06c8e084a7a90f95e2fc97)   [34f1c18](https://github.com/michalantolik/AIPoweredPythonBlog/commit/34f1c18083e40892e3870c67b664361f81830dc5) |
 | 3 | Define data model | ✅ Done | [e2098b6](https://github.com/michalantolik/AIPoweredPythonBlog/commit/e2098b6f2393f853a612e92b6a0dd9ea6af54cab) |
-| 4 | Admin integration | ✅ Done | - |
+| 4 | Admin integration | ✅ Done | [30473a1](https://github.com/michalantolik/AIPoweredPythonBlog/commit/30473a15e0631deae6f4839c3b1b4c8218ebc971)   [23ab4d2](https://github.com/michalantolik/AIPoweredPythonBlog/commit/23ab4d2596d93942a6fc044109f27fbcaa07772b) |
 | 5 | Layout & navigation | ✅ Done | - |
 | 6 | Demo data | ✅ Done | - |
 | 7 | UI redesign | ✅ Done | - |
