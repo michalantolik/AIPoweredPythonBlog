@@ -24,13 +24,13 @@
 | 18 | Deploy the containerized app to AWS | ✅ Done | [96176bd](https://github.com/michalantolik/AIPoweredPythonBlog/commit/96176bde416392bc09bf9c97a78c3d9e443e6f2e) |
 | 19 | Unit tests | ✅ Done | [e9cd443](https://github.com/michalantolik/AIPoweredPythonBlog/commit/e9cd443c6d826a14fbf666d597b118a2acfba117) |
 | 20 | Integration tests | ✅ Done | [0faf114](https://github.com/michalantolik/AIPoweredPythonBlog/commit/0faf114d13efeeb4f9f716706888112b620cb74e) |
+| 21 | REST API (read-only) | ✅ Done | [e60d9fb](https://github.com/michalantolik/AIPoweredPythonBlog/commit/e60d9fb7255ba84d5d119fc851a420775cf412dc) |
 
 ## Status: 🚧 NEXT TO IMPLEMENT
 
 | # | Phase | Status | Commit |
 |---|---|---|---|
-| 21 | Add Kubernetes only after the basic deployment works | ⏳ To do | - |
-| 22 | REST API (read-only) | ⏳ To do | - |
+| 22 | Add Kubernetes only after the basic deployment works | ⏳ To do | - |
 | 23 | Playwright smoke tests | ⏳ To do | - |
 | 24 | Security hardening | ⏳ To do | - |
 | 25 | AI feature (summary/tags) | ⏳ To do | - |
