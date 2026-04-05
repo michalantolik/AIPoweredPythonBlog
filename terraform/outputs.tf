@@ -1,3 +1,5 @@
+# path: terraform/outputs.tf
+
 output "vpc_id" {
   description = "VPC ID."
   value       = aws_vpc.main.id
@@ -41,4 +43,45 @@ output "ecr_repository_url" {
 output "ecr_registry_id" {
   description = "Amazon ECR registry ID."
   value       = aws_ecr_repository.app.registry_id
+}
+
+output "rds_instance_id" {
+  description = "Amazon RDS instance identifier."
+  value       = aws_db_instance.postgres.id
+}
+
+output "rds_instance_arn" {
+  description = "Amazon RDS instance ARN."
+  value       = aws_db_instance.postgres.arn
+}
+
+output "rds_endpoint" {
+  description = "Amazon RDS endpoint address."
+  value       = aws_db_instance.postgres.address
+}
+
+output "rds_port" {
+  description = "Amazon RDS port."
+  value       = aws_db_instance.postgres.port
+}
+
+output "rds_db_name" {
+  description = "Initial database name."
+  value       = aws_db_instance.postgres.db_name
+}
+
+output "rds_master_username" {
+  description = "Amazon RDS master username."
+  value       = aws_db_instance.postgres.username
+}
+
+output "rds_db_subnet_group_name" {
+  description = "Amazon RDS DB subnet group name."
+  value       = aws_db_subnet_group.postgres.name
+}
+
+output "rds_master_user_secret_arn" {
+  description = "Secrets Manager ARN for the RDS master user secret, when AWS manages the password."
+  value       = try(aws_db_instance.postgres.master_user_secret[0].secret_arn, null)
+  sensitive   = true
 }

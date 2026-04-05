@@ -1,10 +1,12 @@
+# path: terraform/README.md
+
 # Terraform infrastructure for AI Powered Python Blog
 
-This folder contains the first AWS infrastructure layer for the project.
+This folder contains the AWS infrastructure for the project.
 
-## Scope of this phase
+## Current scope
 
-This Terraform setup currently provisions:
+This Terraform setup now provisions:
 
 - VPC
 - 2 public subnets
@@ -13,16 +15,21 @@ This Terraform setup currently provisions:
 - Route tables
 - Optional NAT Gateway
 - Security group for the future app
-- Security group for the future PostgreSQL database
+- Security group for PostgreSQL
+- Amazon ECR repository
+- Amazon RDS for PostgreSQL
+- DB subnet group for RDS
 
-This phase does **not** yet provision:
+## Not yet included
 
-- Amazon ECR
-- Amazon RDS
-- App Runner / ECS / EC2 deployment
+This phase still does **not** provision:
+
+- ECS / EC2 / App Runner deployment
+- Load balancer
+- Domain / TLS
 - Kubernetes / EKS
 
-Those should be added in the next phases.
+Those belong to the next phases.
 
 ---
 

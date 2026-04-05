@@ -1,3 +1,5 @@
+# path: terraform/dev.tfvars.example
+
 project_name       = "ai-powered-python-blog"
 environment        = "dev"
 aws_region         = "eu-central-1"
@@ -14,3 +16,17 @@ private_subnet_cidrs = [
   "10.20.11.0/24",
   "10.20.12.0/24"
 ]
+
+rds_db_name                  = "ai_powered_blog"
+rds_db_username              = "blog_admin"
+rds_instance_class           = "db.t3.micro"
+rds_allocated_storage        = 20
+rds_max_allocated_storage    = 100
+rds_storage_type             = "gp3"
+rds_multi_az                 = false
+rds_publicly_accessible      = false
+rds_backup_retention_period  = 7
+rds_deletion_protection      = false
+rds_skip_final_snapshot      = true
+rds_final_snapshot_identifier = "ai-powered-python-blog-dev-final-snapshot"
+rds_manage_master_user_password = true
