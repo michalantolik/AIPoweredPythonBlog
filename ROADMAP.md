@@ -19,12 +19,12 @@
 | 13 | Set up GitHub Actions CI pipeline | ✅ Done | [07cfbcc](https://github.com/michalantolik/AIPoweredPythonBlog/commit/07cfbcc922d803365405390c4b4d0c605dde1a01) |
 | 14 | Provision initial AWS infrastructure with Terraform | ✅ Done | [892862a](https://github.com/michalantolik/AIPoweredPythonBlog/commit/892862aae8c22937e0fe43ab5466ff21cd7a7452) |
 | 15 | Push Docker images to Amazon ECR | ✅ Done | [0cd3c55](https://github.com/michalantolik/AIPoweredPythonBlog/commit/0cd3c55c2e5bda111b229548d4f82bffa7921466) |
+| 16 | Create AWS PostgreSQL with Amazon RDS for PostgreSQL | ✅ Done | [354b27f](https://github.com/michalantolik/AIPoweredPythonBlog/commit/354b27fc3c71c83bd98e5321145c6e224b888497) |
 
 ## Status: 🚧 NEXT TO IMPLEMENT
 
 | # | Phase | Status | Commit |
 |---|---|---|---|
-| 16 | Create AWS PostgreSQL with Amazon RDS for PostgreSQL | ⏳ To do | - |
 | 17 | Deploy the containerized app to AWS | ⏳ To do | - |
 | 18 | Add Kubernetes only after the basic deployment works | ⏳ To do | - |
 | 19 | Unit tests | ⏳ To do | - |
