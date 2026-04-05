@@ -23,13 +23,13 @@
 | 17 | Create AWS PostgreSQL with Amazon RDS for PostgreSQL | ✅ Done | [354b27f](https://github.com/michalantolik/AIPoweredPythonBlog/commit/354b27fc3c71c83bd98e5321145c6e224b888497) |
 | 18 | Deploy the containerized app to AWS | ✅ Done | [96176bd](https://github.com/michalantolik/AIPoweredPythonBlog/commit/96176bde416392bc09bf9c97a78c3d9e443e6f2e) |
 | 19 | Unit tests | ✅ Done | [e9cd443](https://github.com/michalantolik/AIPoweredPythonBlog/commit/e9cd443c6d826a14fbf666d597b118a2acfba117) |
+| 21 | Integration tests | ✅ Done | [0faf114](https://github.com/michalantolik/AIPoweredPythonBlog/commit/0faf114d13efeeb4f9f716706888112b620cb74e) |
 
 ## Status: 🚧 NEXT TO IMPLEMENT
 
 | # | Phase | Status | Commit |
 |---|---|---|---|
 | 20 | Add Kubernetes only after the basic deployment works | ⏳ To do | - |
-| 21 | Integration tests | ⏳ To do | - |
 | 22 | REST API (read-only) | ⏳ To do | - |
 | 23 | Playwright smoke tests | ⏳ To do | - |
 | 24 | Security hardening | ⏳ To do | - |
