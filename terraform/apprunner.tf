@@ -41,8 +41,8 @@ resource "aws_apprunner_service" "app" {
           DJANGO_CSRF_COOKIE_SECURE    = "True"
           DJANGO_SECURE_SSL_REDIRECT   = "False"
 
-          INTRO_OVERLAY_ENABLED        = "0"
-          SHOW_SIDEBAR_ON_HOME_STARTUP = "0"
+          INTRO_OVERLAY_ENABLED        = "1"
+          SHOW_SIDEBAR_ON_HOME_STARTUP = "1"
         }
 
         runtime_environment_secrets = {
