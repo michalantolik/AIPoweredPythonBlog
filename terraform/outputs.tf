@@ -85,3 +85,29 @@ output "rds_master_user_secret_arn" {
   value       = try(aws_db_instance.postgres.master_user_secret[0].secret_arn, null)
   sensitive   = true
 }
+
+output "app_runner_service_arn" {
+  description = "AWS App Runner service ARN."
+  value       = aws_apprunner_service.app.arn
+}
+
+output "app_runner_service_id" {
+  description = "AWS App Runner service ID."
+  value       = aws_apprunner_service.app.service_id
+}
+
+output "app_runner_service_url" {
+  description = "Public URL of the AWS App Runner service."
+  value       = aws_apprunner_service.app.service_url
+}
+
+output "app_runner_vpc_connector_arn" {
+  description = "AWS App Runner VPC connector ARN."
+  value       = aws_apprunner_vpc_connector.app.arn
+}
+
+output "django_secret_key_secret_arn" {
+  description = "Secrets Manager ARN for the Django SECRET_KEY."
+  value       = aws_secretsmanager_secret.django_secret_key.arn
+  sensitive   = true
+}

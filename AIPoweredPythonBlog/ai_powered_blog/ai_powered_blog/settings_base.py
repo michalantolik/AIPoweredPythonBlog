@@ -1,3 +1,4 @@
+import json
 import os
 from pathlib import Path
 
@@ -90,6 +91,15 @@ ASGI_APPLICATION = "ai_powered_blog.asgi.application"
 
 DATABASE_ENGINE = get_env("DJANGO_DB_ENGINE", "django.db.backends.sqlite3")
 
+db_secret = {}
+db_secret_raw = get_env("DJANGO_DB_SECRET_JSON", "")
+
+if db_secret_raw:
+    try:
+        db_secret = json.loads(db_secret_raw)
+    except json.JSONDecodeError as exc:
+        raise ValueError("DJANGO_DB_SECRET_JSON must contain valid JSON.") from exc
+
 if DATABASE_ENGINE == "django.db.backends.sqlite3":
     DATABASES = {
         "default": {
@@ -101,11 +111,11 @@ else:
     DATABASES = {
         "default": {
             "ENGINE": DATABASE_ENGINE,
-            "NAME": get_env("DJANGO_DB_NAME", ""),
-            "USER": get_env("DJANGO_DB_USER", ""),
-            "PASSWORD": get_env("DJANGO_DB_PASSWORD", ""),
-            "HOST": get_env("DJANGO_DB_HOST", "localhost"),
-            "PORT": get_env("DJANGO_DB_PORT", "5432"),
+            "NAME": get_env("DJANGO_DB_NAME", db_secret.get("dbname", "")),
+            "USER": get_env("DJANGO_DB_USER", db_secret.get("username", "")),
+            "PASSWORD": get_env("DJANGO_DB_PASSWORD", db_secret.get("password", "")),
+            "HOST": get_env("DJANGO_DB_HOST", db_secret.get("host", "localhost")),
+            "PORT": get_env("DJANGO_DB_PORT", str(db_secret.get("port", "5432"))),
         }
     }
 

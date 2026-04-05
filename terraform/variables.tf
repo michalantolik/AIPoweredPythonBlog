@@ -143,3 +143,69 @@ variable "rds_manage_master_user_password" {
   type        = bool
   default     = true
 }
+
+variable "app_runner_service_name" {
+  description = "Optional explicit App Runner service name. Leave empty to derive from project/environment."
+  type        = string
+  default     = ""
+}
+
+variable "app_runner_image_tag" {
+  description = "Container image tag in ECR that App Runner should deploy."
+  type        = string
+  default     = "latest"
+}
+
+variable "app_runner_port" {
+  description = "Container port exposed by the web app."
+  type        = number
+  default     = 8000
+}
+
+variable "app_runner_cpu" {
+  description = "App Runner CPU setting."
+  type        = string
+  default     = "1024"
+}
+
+variable "app_runner_memory" {
+  description = "App Runner memory setting."
+  type        = string
+  default     = "2048"
+}
+
+variable "app_runner_auto_deployments_enabled" {
+  description = "Whether App Runner should automatically deploy when a new image is pushed to same-account ECR."
+  type        = bool
+  default     = true
+}
+
+variable "app_runner_is_publicly_accessible" {
+  description = "Whether the App Runner service should be publicly accessible."
+  type        = bool
+  default     = true
+}
+
+variable "app_runner_health_check_path" {
+  description = "Health check path for App Runner."
+  type        = string
+  default     = "/admin/login/"
+}
+
+variable "django_allowed_hosts" {
+  description = "Comma-separated Django ALLOWED_HOSTS value for the deployed service."
+  type        = string
+  default     = ".awsapprunner.com,localhost,127.0.0.1"
+}
+
+variable "django_csrf_trusted_origins" {
+  description = "Comma-separated Django CSRF trusted origins for the deployed service."
+  type        = string
+  default     = "https://*.awsapprunner.com"
+}
+
+variable "django_time_zone" {
+  description = "Django time zone for the deployed environment."
+  type        = string
+  default     = "UTC"
+}

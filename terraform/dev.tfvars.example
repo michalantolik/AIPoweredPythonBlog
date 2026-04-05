@@ -30,3 +30,16 @@ rds_deletion_protection      = false
 rds_skip_final_snapshot      = true
 rds_final_snapshot_identifier = "ai-powered-python-blog-dev-final-snapshot"
 rds_manage_master_user_password = true
+
+app_runner_service_name             = ""
+app_runner_image_tag                = "latest"
+app_runner_port                     = 8000
+app_runner_cpu                      = "1024"
+app_runner_memory                   = "2048"
+app_runner_auto_deployments_enabled = true
+app_runner_is_publicly_accessible   = true
+app_runner_health_check_path        = "/"
+
+django_allowed_hosts        = ".awsapprunner.com,localhost,127.0.0.1"
+django_csrf_trusted_origins = "https://*.awsapprunner.com"
+django_time_zone            = "UTC"
