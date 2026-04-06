@@ -822,6 +822,10 @@ a {
     will-change: filter, transform, opacity;
 }
 
+.intro-overlay[hidden] {
+    display: none !important;
+}
+
 .intro-overlay {
     position: fixed;
     inset: 0;

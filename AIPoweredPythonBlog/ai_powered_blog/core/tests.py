@@ -1,4 +1,5 @@
 from django.test import RequestFactory, TestCase, override_settings
+from django.templatetags.static import static
 from django.utils import timezone
 
 from core.context_processors import site_ui_settings
@@ -45,6 +46,7 @@ class SiteUiSettingsContextProcessorTests(TestCase):
                 'INTRO_OVERLAY_ENABLED': True,
                 'INTRO_OVERLAY_DURATION_MS': 4500,
                 'INTRO_OVERLAY_IMAGE': 'images/custom-intro.png',
+                'INTRO_OVERLAY_IMAGE_URL': static('images/custom-intro.png'),
                 'SHOW_SIDEBAR_ON_HOME_STARTUP': True,
             }
         )
@@ -68,3 +70,18 @@ class SiteUiSettingsContextProcessorTests(TestCase):
         self.assertEqual(context['INTRO_OVERLAY_DURATION_MS'], 3200)
         self.assertEqual(context['INTRO_OVERLAY_IMAGE'], 'images/intro/michal-portrait.png')
         self.assertEqual(context['SHOW_SIDEBAR_ON_HOME_STARTUP'], False)
+
+        self.assertEqual(context['INTRO_OVERLAY_IMAGE'], 'images/intro/michal-portrait.png')
+        self.assertEqual(
+            context['INTRO_OVERLAY_IMAGE_URL'],
+            static('images/intro/michal-portrait.png')
+        )
+
+    @override_settings(INTRO_OVERLAY_IMAGE='https://cdn.example.com/michal.png')
+    def test_context_processor_preserves_absolute_intro_image_url(self):
+        context = site_ui_settings(self.request)
+
+        self.assertEqual(
+            context['INTRO_OVERLAY_IMAGE_URL'],
+            'https://cdn.example.com/michal.png'
+        )
