@@ -27,19 +27,21 @@
 | 21 | REST API (read-only) | ✅ Done | [e60d9fb](https://github.com/michalantolik/AIPoweredPythonBlog/commit/e60d9fb7255ba84d5d119fc851a420775cf412dc) |
 | 22 | Playwright smoke tests | ✅ Done | [c9f3565](https://github.com/michalantolik/AIPoweredPythonBlog/commit/c9f3565652c2f96492ecad8994e1fb24d6e8c3f7) |
 | 23 | Security hardening | ✅ Done | [953587f](https://github.com/michalantolik/AIPoweredPythonBlog/commit/953587f5d5b9aa51e01e408f560d2252e89c379a) |
+| 24 | Live post filtering on archive page | ✅ Done | - |
 
 ## Status: ✅ BROKEN (NOT WORKING)
 
 | # | Phase | Status | Commit |
 |---|------|--------|-----|
-| 24 |Live post filtering on archive page | Broken (not working) | - |
+
 
 ## Status: 🚧 NEXT TO IMPLEMENT
 
 | # | Phase | Status | Commit |
 |---|---|---|---|
-| 25 | Add Kubernetes only after the basic deployment works | ⏳ To do | - |
-| 26 | Small JS enhancement | ⏳ To do | - |
+| 25 | Add styling to "Live post filtering" feautre to be very consistent with the whole application styling | ⏳ To do | - |
+| 26 | Add Kubernetes only after the basic deployment works | ⏳ To do | - |
+| 27 | Small JS enhancement | ⏳ To do | - |
 
 
 ## What each piece is for
