@@ -29,4 +29,9 @@ def site_ui_settings(request):
             'SHOW_SIDEBAR_ON_HOME_STARTUP',
             False
         ),
+        'LIVE_POST_FILTER_ENABLED': getattr(
+            settings,
+            'LIVE_POST_FILTER_ENABLED',
+            False
+        ),
     }

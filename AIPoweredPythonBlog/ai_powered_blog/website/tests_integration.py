@@ -116,6 +116,7 @@ class PublicBlogIntegrationTests(TestCase):
         self.assertContains(response, 'All posts')
         self.assertContains(response, 'Full archive')
 
+    @override_settings(LIVE_POST_FILTER_ENABLED=True)
     def test_archive_search_filters_server_side_and_preserves_query_in_links(self):
         response = self.client.get(reverse('posts:list'), {'q': 'django'})
 
@@ -128,6 +129,7 @@ class PublicBlogIntegrationTests(TestCase):
         self.assertContains(response, 'category=python')
         self.assertContains(response, 'q=django')
 
+    @override_settings(LIVE_POST_FILTER_ENABLED=True)
     def test_archive_search_combines_with_category_filter(self):
         response = self.client.get(reverse('posts:list'), {
             'category': 'python',

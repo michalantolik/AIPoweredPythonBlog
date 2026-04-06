@@ -36,6 +36,7 @@ class SiteUiSettingsContextProcessorTests(TestCase):
         INTRO_OVERLAY_DURATION_MS=4500,
         INTRO_OVERLAY_IMAGE='images/custom-intro.png',
         SHOW_SIDEBAR_ON_HOME_STARTUP=True,
+        LIVE_POST_FILTER_ENABLED=True,
     )
     def test_context_processor_uses_settings_values(self):
         context = site_ui_settings(self.request)
@@ -48,6 +49,7 @@ class SiteUiSettingsContextProcessorTests(TestCase):
                 'INTRO_OVERLAY_IMAGE': 'images/custom-intro.png',
                 'INTRO_OVERLAY_IMAGE_URL': static('images/custom-intro.png'),
                 'SHOW_SIDEBAR_ON_HOME_STARTUP': True,
+                'LIVE_POST_FILTER_ENABLED': True,
             }
         )
 
@@ -60,6 +62,7 @@ class SiteUiSettingsContextProcessorTests(TestCase):
             'INTRO_OVERLAY_DURATION_MS',
             'INTRO_OVERLAY_IMAGE',
             'SHOW_SIDEBAR_ON_HOME_STARTUP',
+            'LIVE_POST_FILTER_ENABLED',
         ):
             if hasattr(settings, attr):
                 delattr(settings, attr)
@@ -70,8 +73,8 @@ class SiteUiSettingsContextProcessorTests(TestCase):
         self.assertEqual(context['INTRO_OVERLAY_DURATION_MS'], 3200)
         self.assertEqual(context['INTRO_OVERLAY_IMAGE'], 'images/intro/michal-portrait.png')
         self.assertEqual(context['SHOW_SIDEBAR_ON_HOME_STARTUP'], False)
+        self.assertEqual(context['LIVE_POST_FILTER_ENABLED'], False)
 
-        self.assertEqual(context['INTRO_OVERLAY_IMAGE'], 'images/intro/michal-portrait.png')
         self.assertEqual(
             context['INTRO_OVERLAY_IMAGE_URL'],
             static('images/intro/michal-portrait.png')

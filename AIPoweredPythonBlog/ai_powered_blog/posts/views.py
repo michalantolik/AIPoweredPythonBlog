@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db.models import Count, Q
 from django.shortcuts import get_object_or_404, render
 
@@ -21,7 +22,8 @@ def get_categories():
 
 def post_list(request):
     category_slug = request.GET.get('category')
-    search_query = request.GET.get('q', '').strip()
+    live_post_filter_enabled = getattr(settings, 'LIVE_POST_FILTER_ENABLED', False)
+    search_query = request.GET.get('q', '').strip() if live_post_filter_enabled else ''
 
     posts = (
         Post.objects.filter(status=Post.Status.PUBLISHED)

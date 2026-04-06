@@ -170,6 +170,11 @@ SHOW_SIDEBAR_ON_HOME_STARTUP = get_bool_env(
     True,
 )
 
+LIVE_POST_FILTER_ENABLED = get_bool_env(
+    "LIVE_POST_FILTER_ENABLED",
+    False,
+)
+
 SECURE_CONTENT_TYPE_NOSNIFF = True
 X_FRAME_OPTIONS = "DENY"
 

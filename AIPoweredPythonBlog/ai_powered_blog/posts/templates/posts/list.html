@@ -1,5 +1,4 @@
 {% extends "base.html" %}
-{% load static %}
 
 {% block title %}
     {% if selected_category %}
@@ -7,10 +6,6 @@
     {% else %}
         Posts | AI Powered Python Blog
     {% endif %}
-{% endblock %}
-
-{% block extra_head %}
-    <link rel="stylesheet" href="{% static 'css/archive-tools.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -36,7 +31,7 @@
                 <div class="hero-pills">
                     {% for tag in categories|slice:":4" %}
                         <a
-                            href="{% url 'posts:list' %}?category={{ tag.slug }}{% if search_query %}&q={{ search_query|urlencode }}{% endif %}"
+                            href="{% url 'posts:list' %}?category={{ tag.slug }}{% if LIVE_POST_FILTER_ENABLED and search_query %}&q={{ search_query|urlencode }}{% endif %}"
                             class="hero-pill"
                         >
                             {{ tag.name }}
@@ -81,48 +76,44 @@
                         {% endif %}
                     </div>
 
-                    <div class="archive-tools" data-post-filter="true">
-                        <div class="archive-tools__copy">
-                            <div class="archive-tools__eyebrow">Quick filter</div>
-                            <p class="archive-tools__hint">
-                                Search by title, excerpt, author, or tag.
-                            </p>
+                    {% if LIVE_POST_FILTER_ENABLED %}
+                        <div class="archive-tools" data-post-filter="true">
+                            <label class="archive-search" for="postFilterInput">
+                                <span class="archive-search__label">Quick filter</span>
+
+                                <div class="archive-search__controls">
+                                    <input
+                                        id="postFilterInput"
+                                        class="archive-search__input"
+                                        type="search"
+                                        name="q"
+                                        value="{{ search_query }}"
+                                        placeholder="Search title, excerpt, author, or tag..."
+                                        autocomplete="off"
+                                        data-post-filter-input="true"
+                                    >
+
+                                    <button
+                                        type="button"
+                                        class="archive-search__clear"
+                                        data-post-filter-clear="true"
+                                        aria-label="Clear search"
+                                        {% if not search_query %}hidden disabled{% endif %}
+                                    >
+                                        Clear
+                                    </button>
+                                </div>
+                            </label>
+
+                            <div class="archive-search__summary" data-post-filter-count="true">
+                                {% if search_query %}
+                                    {{ posts|length }} result{{ posts|length|pluralize }} for “{{ search_query }}”.
+                                {% else %}
+                                    Showing {{ posts|length }} post{{ posts|length|pluralize }}.
+                                {% endif %}
+                            </div>
                         </div>
-
-                        <div class="archive-search">
-                            <span class="archive-search__icon" aria-hidden="true">⌕</span>
-
-                            <input
-                                id="postFilterInput"
-                                class="archive-search__input"
-                                type="search"
-                                name="q"
-                                value="{{ search_query }}"
-                                placeholder="Search title, excerpt, author, or tag..."
-                                autocomplete="off"
-                                aria-label="Quick filter posts"
-                                data-post-filter-input="true"
-                            >
-
-                            <button
-                                type="button"
-                                class="archive-search__clear"
-                                data-post-filter-clear="true"
-                                aria-label="Clear search"
-                                {% if not search_query %}hidden disabled{% endif %}
-                            >
-                                Clear
-                            </button>
-                        </div>
-
-                        <div class="archive-search__summary" data-post-filter-count="true">
-                            {% if search_query %}
-                                {{ posts|length }} result{{ posts|length|pluralize }} for “{{ search_query }}”.
-                            {% else %}
-                                Showing {{ posts|length }} post{{ posts|length|pluralize }}.
-                            {% endif %}
-                        </div>
-                    </div>
+                    {% endif %}
                 </div>
 
                 <div class="post-list-stack" data-post-filter-list="true">
@@ -137,7 +128,7 @@
                                     {% for tag in post.tags.all %}
                                         <a
                                             class="mini-chip"
-                                            href="{% url 'posts:list' %}?category={{ tag.slug }}{% if search_query %}&q={{ search_query|urlencode }}{% endif %}"
+                                            href="{% url 'posts:list' %}?category={{ tag.slug }}{% if LIVE_POST_FILTER_ENABLED and search_query %}&q={{ search_query|urlencode }}{% endif %}"
                                         >
                                             {{ tag.name }}
                                         </a>

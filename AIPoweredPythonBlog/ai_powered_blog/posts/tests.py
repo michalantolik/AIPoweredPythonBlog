@@ -1,5 +1,5 @@
 from django.contrib.auth import get_user_model
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.urls import reverse
 from django.utils import timezone
 
@@ -92,6 +92,7 @@ class PostListViewTests(TestCase):
         self.assertEqual(posts, [self.new_post])
         self.assertEqual(response.context['selected_category'], self.django_tag)
 
+    @override_settings(LIVE_POST_FILTER_ENABLED=True)
     def test_post_list_filters_by_search_query(self):
         response = self.client.get(reverse('posts:list'), {'q': 'django'})
 
@@ -103,6 +104,7 @@ class PostListViewTests(TestCase):
         self.assertNotIn(self.old_post, posts)
         self.assertNotIn(self.draft_post, posts)
 
+    @override_settings(LIVE_POST_FILTER_ENABLED=True)
     def test_post_list_combines_category_and_search_query(self):
         response = self.client.get(reverse('posts:list'), {
             'category': 'python',
@@ -116,6 +118,7 @@ class PostListViewTests(TestCase):
         self.assertEqual(response.context['selected_category'], self.python_tag)
         self.assertEqual(response.context['search_query'], 'async')
 
+    @override_settings(LIVE_POST_FILTER_ENABLED=True)
     def test_post_list_search_matches_author_username(self):
         response = self.client.get(reverse('posts:list'), {'q': 'author'})
 
@@ -123,6 +126,30 @@ class PostListViewTests(TestCase):
         posts = list(response.context['posts'])
 
         self.assertEqual(posts, [self.new_post, self.old_post])
+
+    @override_settings(LIVE_POST_FILTER_ENABLED=False)
+    def test_post_list_ignores_search_query_when_feature_is_disabled(self):
+        response = self.client.get(reverse('posts:list'), {'q': 'django'})
+
+        self.assertEqual(response.status_code, 200)
+        posts = list(response.context['posts'])
+
+        self.assertEqual(posts, [self.new_post, self.old_post])
+        self.assertEqual(response.context['search_query'], '')
+
+    @override_settings(LIVE_POST_FILTER_ENABLED=False)
+    def test_post_list_hides_live_filter_markup_when_feature_is_disabled(self):
+        response = self.client.get(reverse('posts:list'))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, 'data-post-filter="true"')
+
+    @override_settings(LIVE_POST_FILTER_ENABLED=True)
+    def test_post_list_shows_live_filter_markup_when_feature_is_enabled(self):
+        response = self.client.get(reverse('posts:list'))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'data-post-filter="true"')
 
     def test_post_list_returns_404_for_unknown_category_slug(self):
         response = self.client.get(reverse('posts:list'), {'category': 'missing-category'})
