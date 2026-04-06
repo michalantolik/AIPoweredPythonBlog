@@ -508,15 +508,81 @@ a {
     max-width: 760px;
 }
 
-.search-placeholder {
-    padding: 14px 18px;
-    border-radius: 18px;
+.archive-tools {
+    display: grid;
+    gap: 10px;
+    min-width: min(100%, 420px);
+}
+
+.archive-search {
+    display: grid;
+    gap: 10px;
+}
+
+.archive-search__label {
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #6f89af;
+}
+
+.archive-search__controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px;
+    border-radius: 20px;
     border: 1px solid #d0d8e2;
     background: #fbfcfe;
-    color: #687b99;
     box-shadow: 0 3px 0 rgba(15, 23, 42, 0.04), 0 10px 16px rgba(15, 23, 42, 0.05);
+}
+
+.archive-search__input {
+    width: 100%;
+    border: 0;
+    outline: none;
+    background: transparent;
+    color: var(--text-dark);
+    font-size: 0.98rem;
+}
+
+.archive-search__input::placeholder {
+    color: #8b9bb4;
+}
+
+.archive-search__clear {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 0;
+    border-radius: 12px;
+    padding: 10px 12px;
+    background: #e9eef6;
+    color: #35527e;
+    font-weight: 700;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease;
     white-space: nowrap;
-    font-size: 0.96rem;
+}
+
+.archive-search__clear:hover {
+    background: #dbe6f3;
+    color: #1d3e70;
+}
+
+.archive-search__clear[hidden] {
+    display: none;
+}
+
+.archive-search__summary {
+    color: #687b99;
+    font-size: 0.94rem;
+}
+
+.archive-empty-state {
+    margin-top: 20px;
 }
 
 /* POST STACK */
@@ -532,6 +598,10 @@ a {
     border-radius: 28px;
     padding: 24px 24px 24px;
     box-shadow: var(--shadow-card);
+}
+
+.post-preview-card[hidden] {
+    display: none !important;
 }
 
 .post-meta-row {
@@ -757,8 +827,16 @@ a {
         align-items: flex-start;
     }
 
-    .search-placeholder {
-        white-space: normal;
+    .archive-tools {
+        min-width: 100%;
+    }
+
+    .archive-search__controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .archive-search__clear {
         width: 100%;
     }
 

@@ -73,15 +73,47 @@
                         {% endif %}
                     </div>
 
-                    <div class="search-placeholder">
-                        Search / filter area can live here later
+                    <div class="archive-tools" data-post-filter="true">
+                        <label class="archive-search" for="postFilterInput">
+                            <span class="archive-search__label">Quick filter</span>
+
+                            <div class="archive-search__controls">
+                                <input
+                                    id="postFilterInput"
+                                    class="archive-search__input"
+                                    type="search"
+                                    name="q"
+                                    value="{{ request.GET.q|default:'' }}"
+                                    placeholder="Search title, excerpt, author, or tag..."
+                                    autocomplete="off"
+                                    data-post-filter-input="true"
+                                >
+
+                                <button
+                                    type="button"
+                                    class="archive-search__clear"
+                                    data-post-filter-clear="true"
+                                    aria-label="Clear search"
+                                >
+                                    Clear
+                                </button>
+                            </div>
+                        </label>
+
+                        <div class="archive-search__summary" data-post-filter-count="true">
+                            Showing {{ posts|length }} post{{ posts|length|pluralize }}.
+                        </div>
                     </div>
                 </div>
 
                 {% if posts %}
-                    <div class="post-list-stack">
+                    <div class="post-list-stack" data-post-filter-list="true">
                         {% for post in posts %}
-                            <article class="post-preview-card">
+                            <article
+                                class="post-preview-card"
+                                data-post-card="true"
+                                data-post-search="{{ post.title|striptags|escape }} {{ post.author.username|striptags|escape }} {% if post.excerpt %}{{ post.excerpt|striptags|escape }}{% else %}{{ post.content|truncatewords:35|striptags|escape }}{% endif %} {% for tag in post.tags.all %}{{ tag.name|striptags|escape }} {% endfor %}"
+                            >
                                 <div class="post-meta-row">
                                     <div class="chip-row">
                                         {% for tag in post.tags.all %}
@@ -121,6 +153,10 @@
                                 </div>
                             </article>
                         {% endfor %}
+                    </div>
+
+                    <div class="empty-box archive-empty-state" data-post-filter-empty="true" hidden>
+                        No posts match your current search.
                     </div>
                 {% else %}
                     <div class="empty-box">

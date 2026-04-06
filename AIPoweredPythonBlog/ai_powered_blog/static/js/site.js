@@ -88,9 +88,109 @@
         });
     }
 
-    if (document.readyState === "loading") {
-        document.addEventListener("DOMContentLoaded", initIntro, { once: true });
-    } else {
+    function normalizeText(value) {
+        return (value || "")
+            .toLowerCase()
+            .replace(/\s+/g, " ")
+            .trim();
+    }
+
+    function getPostWord(value, singular, plural) {
+        return value === 1 ? singular : plural;
+    }
+
+    function syncArchiveQueryParam(query) {
+        const url = new URL(window.location.href);
+
+        if (query) {
+            url.searchParams.set("q", query);
+        } else {
+            url.searchParams.delete("q");
+        }
+
+        window.history.replaceState({}, "", `${url.pathname}${url.search}${url.hash}`);
+    }
+
+    function initPostArchiveFilter() {
+        const root = document.querySelector("[data-post-filter='true']");
+
+        if (!root) {
+            return;
+        }
+
+        const input = root.querySelector("[data-post-filter-input='true']");
+        const clearButton = root.querySelector("[data-post-filter-clear='true']");
+        const countLabel = root.querySelector("[data-post-filter-count='true']");
+        const list = document.querySelector("[data-post-filter-list='true']");
+        const emptyState = document.querySelector("[data-post-filter-empty='true']");
+
+        if (!input || !list) {
+            return;
+        }
+
+        const cards = Array.from(list.querySelectorAll("[data-post-card='true']"));
+        const totalPosts = cards.length;
+
+        function render() {
+            const query = normalizeText(input.value);
+            const tokens = query ? query.split(" ") : [];
+            let visibleCount = 0;
+
+            cards.forEach(function (card) {
+                const haystack = normalizeText(card.dataset.postSearch);
+
+                const isMatch = !tokens.length || tokens.every(function (token) {
+                    return haystack.includes(token);
+                });
+
+                card.hidden = !isMatch;
+
+                if (isMatch) {
+                    visibleCount += 1;
+                }
+            });
+
+            if (countLabel) {
+                if (query) {
+                    countLabel.textContent = `${visibleCount} ${getPostWord(visibleCount, "post", "posts")} match “${input.value.trim()}”.`;
+                } else {
+                    countLabel.textContent = `Showing ${visibleCount} of ${totalPosts} ${getPostWord(totalPosts, "post", "posts")}.`;
+                }
+            }
+
+            if (clearButton) {
+                clearButton.hidden = !query;
+                clearButton.disabled = !query;
+            }
+
+            if (emptyState) {
+                emptyState.hidden = visibleCount !== 0;
+            }
+
+            syncArchiveQueryParam(input.value.trim());
+        }
+
+        input.addEventListener("input", render);
+
+        if (clearButton) {
+            clearButton.addEventListener("click", function () {
+                input.value = "";
+                input.focus();
+                render();
+            });
+        }
+
+        render();
+    }
+
+    function initSite() {
         initIntro();
+        initPostArchiveFilter();
+    }
+
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", initSite, { once: true });
+    } else {
+        initSite();
     }
 })();

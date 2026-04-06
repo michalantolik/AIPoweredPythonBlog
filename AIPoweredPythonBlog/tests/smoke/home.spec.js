@@ -47,9 +47,28 @@ test.describe('public blog smoke flow', () => {
     await expect(page.getByRole('link', { name: smokePost.relatedTitle }).first()).toBeVisible();
   });
 
+  test('reader can live-filter posts on the archive page', async ({ page }) => {
+    await page.goto('/posts/');
+
+    const filterInput = page.locator('[data-post-filter-input="true"]');
+    const emptyState = page.locator('[data-post-filter-empty="true"]');
+    const countLabel = page.locator('[data-post-filter-count="true"]');
+
+    await expect(filterInput).toBeVisible();
+
+    await filterInput.fill(smokePost.title);
+
+    await expect(page.getByRole('link', { name: smokePost.title }).first()).toBeVisible();
+    await expect(countLabel).toContainText('1 post match');
+
+    await filterInput.fill('zzzz-no-match-value');
+
+    await expect(emptyState).toBeVisible();
+    await expect(countLabel).toContainText('0 posts match');
+  });
+
   test('API health check', async ({ request }) => {
     const response = await request.get('/api/posts/');
     expect(response.ok()).toBeTruthy();
-    });
-
+  });
 });
