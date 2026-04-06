@@ -1,0 +1,14 @@
+{
+  "name": "ai-powered-python-blog-playwright",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Playwright smoke tests for AI Powered Python Blog",
+  "scripts": {
+    "test:smoke": "playwright test",
+    "test:smoke:ui": "playwright test --ui",
+    "test:smoke:headed": "playwright test --headed"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.52.0"
+  }
+}

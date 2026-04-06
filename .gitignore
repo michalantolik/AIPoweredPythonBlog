@@ -221,3 +221,10 @@ override.tf.json
 # Local Terraform variable files
 terraform/*.tfvars
 !terraform/*.tfvars.example
+
+# Playwright
+playwright.sqlite3
+playwright.sqlite3-journal
+node_modules/
+playwright-report/
+test-results/
