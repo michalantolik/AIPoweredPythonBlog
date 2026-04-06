@@ -33,9 +33,8 @@
 | # | Phase | Status | Commit |
 |---|---|---|---|
 | 24 | Add Kubernetes only after the basic deployment works | ⏳ To do | - |
-| 25 | AI feature (summary/tags) | ⏳ To do | - |
-| 26 | React + TS widget | ⏳ To do | - |
-| 27 | Small JS enhancement | ⏳ To do | - |
+| 25 | React + TS widget | ⏳ To do | - |
+| 26 | Small JS enhancement | ⏳ To do | - |
 
 
 ## What each piece is for
