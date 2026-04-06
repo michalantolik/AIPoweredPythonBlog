@@ -26,13 +26,13 @@
 | 20 | Integration tests | ✅ Done | [0faf114](https://github.com/michalantolik/AIPoweredPythonBlog/commit/0faf114d13efeeb4f9f716706888112b620cb74e) |
 | 21 | REST API (read-only) | ✅ Done | [e60d9fb](https://github.com/michalantolik/AIPoweredPythonBlog/commit/e60d9fb7255ba84d5d119fc851a420775cf412dc) |
 | 22 | Playwright smoke tests | ✅ Done | [c9f3565](https://github.com/michalantolik/AIPoweredPythonBlog/commit/c9f3565652c2f96492ecad8994e1fb24d6e8c3f7) |
+| 23 | Security hardening | ✅ Done | [953587f](https://github.com/michalantolik/AIPoweredPythonBlog/commit/953587f5d5b9aa51e01e408f560d2252e89c379a) |
 
 ## Status: 🚧 NEXT TO IMPLEMENT
 
 | # | Phase | Status | Commit |
 |---|---|---|---|
-| 23 | Add Kubernetes only after the basic deployment works | ⏳ To do | - |
-| 24 | Security hardening | ⏳ To do | - |
+| 24 | Add Kubernetes only after the basic deployment works | ⏳ To do | - |
 | 25 | AI feature (summary/tags) | ⏳ To do | - |
 | 26 | React + TS widget | ⏳ To do | - |
 | 27 | Small JS enhancement | ⏳ To do | - |
