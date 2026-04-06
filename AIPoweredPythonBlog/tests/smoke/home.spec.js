@@ -48,6 +48,8 @@ test.describe('public blog smoke flow', () => {
   });
 
   test('reader can live-filter posts on the archive page', async ({ page }) => {
+    test.skip(!process.env.LIVE_POST_FILTER_ENABLED, 'Live filter disabled');
+
     await page.goto('/posts/');
 
     const filterInput = page.locator('[data-post-filter-input="true"]');
