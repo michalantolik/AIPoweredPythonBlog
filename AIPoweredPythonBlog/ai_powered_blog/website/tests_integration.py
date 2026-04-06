@@ -116,6 +116,30 @@ class PublicBlogIntegrationTests(TestCase):
         self.assertContains(response, 'All posts')
         self.assertContains(response, 'Full archive')
 
+    def test_archive_search_filters_server_side_and_preserves_query_in_links(self):
+        response = self.client.get(reverse('posts:list'), {'q': 'django'})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'posts/list.html')
+        self.assertContains(response, 'Django testing guide')
+        self.assertNotContains(response, 'Python patterns for APIs')
+        self.assertNotContains(response, 'Architecture notes')
+        self.assertContains(response, 'value="django"', html=False)
+        self.assertContains(response, 'category=python')
+        self.assertContains(response, 'q=django')
+
+    def test_archive_search_combines_with_category_filter(self):
+        response = self.client.get(reverse('posts:list'), {
+            'category': 'python',
+            'q': 'api',
+        })
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Python patterns for APIs')
+        self.assertNotContains(response, 'Django testing guide')
+        self.assertNotContains(response, 'Architecture notes')
+        self.assertContains(response, 'value="api"', html=False)
+
     def test_related_posts_section_shows_only_published_related_articles(self):
         response = self.client.get(reverse('posts:detail', args=[self.python_patterns_post.slug]))
 

@@ -21,6 +21,7 @@ def get_categories():
 
 def post_list(request):
     category_slug = request.GET.get('category')
+    search_query = request.GET.get('q', '').strip()
 
     posts = (
         Post.objects.filter(status=Post.Status.PUBLISHED)
@@ -35,10 +36,25 @@ def post_list(request):
         selected_category = get_object_or_404(Tag, slug=category_slug)
         posts = posts.filter(tags__slug=category_slug).distinct()
 
+    if search_query:
+        search_terms = search_query.split()
+
+        for term in search_terms:
+            posts = posts.filter(
+                Q(title__icontains=term)
+                | Q(excerpt__icontains=term)
+                | Q(content__icontains=term)
+                | Q(author__username__icontains=term)
+                | Q(tags__name__icontains=term)
+            )
+
+        posts = posts.distinct()
+
     context = {
         'posts': posts,
         'categories': get_categories(),
         'selected_category': selected_category,
+        'search_query': search_query,
     }
     return render(request, 'posts/list.html', context)
 

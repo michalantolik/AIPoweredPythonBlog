@@ -47,7 +47,8 @@ class PostListViewTests(TestCase):
             title='Old published',
             slug='old-published',
             author=cls.user,
-            content='Old content',
+            content='Old content about async Python patterns.',
+            excerpt='Async Python notes.',
             status=Post.Status.PUBLISHED,
             published_at=timezone.now() - timezone.timedelta(days=3),
         )
@@ -57,7 +58,8 @@ class PostListViewTests(TestCase):
             title='New published',
             slug='new-published',
             author=cls.user,
-            content='New content',
+            content='New content about Django forms and testing.',
+            excerpt='Django testing tips.',
             status=Post.Status.PUBLISHED,
             published_at=timezone.now(),
         )
@@ -89,6 +91,38 @@ class PostListViewTests(TestCase):
 
         self.assertEqual(posts, [self.new_post])
         self.assertEqual(response.context['selected_category'], self.django_tag)
+
+    def test_post_list_filters_by_search_query(self):
+        response = self.client.get(reverse('posts:list'), {'q': 'django'})
+
+        self.assertEqual(response.status_code, 200)
+        posts = list(response.context['posts'])
+
+        self.assertEqual(posts, [self.new_post])
+        self.assertEqual(response.context['search_query'], 'django')
+        self.assertNotIn(self.old_post, posts)
+        self.assertNotIn(self.draft_post, posts)
+
+    def test_post_list_combines_category_and_search_query(self):
+        response = self.client.get(reverse('posts:list'), {
+            'category': 'python',
+            'q': 'async',
+        })
+
+        self.assertEqual(response.status_code, 200)
+        posts = list(response.context['posts'])
+
+        self.assertEqual(posts, [self.old_post])
+        self.assertEqual(response.context['selected_category'], self.python_tag)
+        self.assertEqual(response.context['search_query'], 'async')
+
+    def test_post_list_search_matches_author_username(self):
+        response = self.client.get(reverse('posts:list'), {'q': 'author'})
+
+        self.assertEqual(response.status_code, 200)
+        posts = list(response.context['posts'])
+
+        self.assertEqual(posts, [self.new_post, self.old_post])
 
     def test_post_list_returns_404_for_unknown_category_slug(self):
         response = self.client.get(reverse('posts:list'), {'category': 'missing-category'})

@@ -6,7 +6,10 @@
         </p>
 
         <div class="sidebar-links">
-            <a class="sidebar-link-card {% if not selected_category %}active{% endif %}" href="{% url 'posts:list' %}">
+            <a
+                class="sidebar-link-card {% if not selected_category %}active{% endif %}"
+                href="{% url 'posts:list' %}{% if search_query %}?q={{ search_query|urlencode }}{% endif %}"
+            >
                 <div class="sidebar-link-left">
                     <span class="category-icon category-icon-generic"></span>
                     <div>
@@ -19,7 +22,7 @@
             {% for tag in categories %}
                 <a
                     class="sidebar-link-card {% if selected_category and selected_category.slug == tag.slug %}active{% endif %}"
-                    href="{% url 'posts:list' %}?category={{ tag.slug }}"
+                    href="{% url 'posts:list' %}?category={{ tag.slug }}{% if search_query %}&q={{ search_query|urlencode }}{% endif %}"
                 >
                     <div class="sidebar-link-left">
                         <span class="

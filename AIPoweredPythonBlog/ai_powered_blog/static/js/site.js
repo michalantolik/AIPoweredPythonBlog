@@ -95,7 +95,7 @@
             .trim();
     }
 
-    function getPostWord(value, singular, plural) {
+    function getCountLabel(value, singular, plural) {
         return value === 1 ? singular : plural;
     }
 
@@ -132,7 +132,8 @@
         const totalPosts = cards.length;
 
         function render() {
-            const query = normalizeText(input.value);
+            const rawQuery = input.value.trim();
+            const query = normalizeText(rawQuery);
             const tokens = query ? query.split(" ") : [];
             let visibleCount = 0;
 
@@ -152,9 +153,9 @@
 
             if (countLabel) {
                 if (query) {
-                    countLabel.textContent = `${visibleCount} ${getPostWord(visibleCount, "post", "posts")} match “${input.value.trim()}”.`;
+                    countLabel.textContent = `${visibleCount} ${getCountLabel(visibleCount, "result", "results")} for “${rawQuery}”.`;
                 } else {
-                    countLabel.textContent = `Showing ${visibleCount} of ${totalPosts} ${getPostWord(totalPosts, "post", "posts")}.`;
+                    countLabel.textContent = `Showing ${visibleCount} of ${totalPosts} ${getCountLabel(totalPosts, "post", "posts")}.`;
                 }
             }
 
@@ -164,10 +165,17 @@
             }
 
             if (emptyState) {
-                emptyState.hidden = visibleCount !== 0;
+                if (visibleCount === 0) {
+                    emptyState.hidden = false;
+                    emptyState.textContent = query
+                        ? `No posts match “${rawQuery}”.`
+                        : (emptyState.dataset.emptyDefault || "No posts found.");
+                } else {
+                    emptyState.hidden = true;
+                }
             }
 
-            syncArchiveQueryParam(input.value.trim());
+            syncArchiveQueryParam(rawQuery);
         }
 
         input.addEventListener("input", render);
