@@ -28,7 +28,7 @@ resource "aws_apprunner_service" "app" {
         runtime_environment_variables = {
           DJANGO_ENV                  = "prod"
           DJANGO_DEBUG                = "0"
-          DJANGO_ALLOWED_HOSTS        = "*"
+          DJANGO_ALLOWED_HOSTS        = var.django_allowed_hosts
           DJANGO_CSRF_TRUSTED_ORIGINS = var.django_csrf_trusted_origins
           DJANGO_TIME_ZONE            = var.django_time_zone
 
@@ -37,9 +37,12 @@ resource "aws_apprunner_service" "app" {
           DJANGO_DB_HOST   = aws_db_instance.postgres.address
           DJANGO_DB_PORT   = tostring(aws_db_instance.postgres.port)
 
-          DJANGO_SESSION_COOKIE_SECURE = "True"
-          DJANGO_CSRF_COOKIE_SECURE    = "True"
-          DJANGO_SECURE_SSL_REDIRECT   = "False"
+          DJANGO_SESSION_COOKIE_SECURE         = "True"
+          DJANGO_CSRF_COOKIE_SECURE            = "True"
+          DJANGO_SECURE_SSL_REDIRECT           = "True"
+          DJANGO_SECURE_HSTS_SECONDS           = "3600"
+          DJANGO_SECURE_HSTS_INCLUDE_SUBDOMAINS = "False"
+          DJANGO_SECURE_HSTS_PRELOAD           = "False"
 
           INTRO_OVERLAY_ENABLED        = "1"
           SHOW_SIDEBAR_ON_HOME_STARTUP = "1"
