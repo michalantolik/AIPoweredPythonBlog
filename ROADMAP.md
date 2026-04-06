@@ -38,7 +38,6 @@
 | # | Phase | Status | Commit |
 |---|---|---|---|
 | 26 | Add Kubernetes only after the basic deployment works | ⏳ To do | - |
-| 27 | Small JS enhancement | ⏳ To do | - |
 
 
 ## What each piece is for
