@@ -28,12 +28,17 @@
 | 22 | Playwright smoke tests | ✅ Done | [c9f3565](https://github.com/michalantolik/AIPoweredPythonBlog/commit/c9f3565652c2f96492ecad8994e1fb24d6e8c3f7) |
 | 23 | Security hardening | ✅ Done | [953587f](https://github.com/michalantolik/AIPoweredPythonBlog/commit/953587f5d5b9aa51e01e408f560d2252e89c379a) |
 
+## Status: ✅ BROKEN (NOT WORKING)
+
+| # | Phase | Status | Commit |
+|---|------|--------|-----|
+| 24 |Live post filtering on archive page | Broken (not working) | - |
+
 ## Status: 🚧 NEXT TO IMPLEMENT
 
 | # | Phase | Status | Commit |
 |---|---|---|---|
-| 24 | Add Kubernetes only after the basic deployment works | ⏳ To do | - |
-| 25 | React + TS widget | ⏳ To do | - |
+| 25 | Add Kubernetes only after the basic deployment works | ⏳ To do | - |
 | 26 | Small JS enhancement | ⏳ To do | - |
 
 
