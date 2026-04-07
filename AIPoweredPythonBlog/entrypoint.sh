@@ -1,5 +1,9 @@
 #!/bin/sh
 
+echo "=== ENV DEBUG ==="
+env | sort
+echo "================="
+
 set -eu
 
 MAX_ATTEMPTS=30
@@ -27,4 +31,11 @@ python manage.py collectstatic --noinput
 
 echo "Starting Gunicorn..."
 
-exec gunicorn --bind 0.0.0.0:8000 ai_powered_blog.wsgi:application
+exec gunicorn \
+  --bind 0.0.0.0:8000 \
+  --workers 2 \
+  --threads 2 \
+  --timeout 120 \
+  --log-level debug \
+  ai_powered_blog.wsgi:application
+

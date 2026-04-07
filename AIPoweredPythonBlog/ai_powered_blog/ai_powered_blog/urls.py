@@ -19,10 +19,12 @@ from django.urls import include, path
 
 from website.views import home
 from website import views
+from core.views import health
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('api.urls')),
     path('', include('website.urls')),
     path('posts/', include('posts.urls')),
+    path("health/", health),
 ]
