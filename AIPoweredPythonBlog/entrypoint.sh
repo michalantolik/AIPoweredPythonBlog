@@ -23,10 +23,9 @@ while ! nc -z "${DJANGO_DB_HOST:-}" "${DJANGO_DB_PORT:-5432}"; do
   sleep 2
 done
 
-echo "PostgreSQL is up - running migrations, seed, and collectstatic..."
+echo "PostgreSQL is up - running migrations and collectstatic..."
 
 python manage.py migrate --noinput
-python manage.py seed_blog --mode prod
 python manage.py collectstatic --noinput
 
 echo "Starting Gunicorn..."
@@ -38,4 +37,3 @@ exec gunicorn \
   --timeout 120 \
   --log-level debug \
   ai_powered_blog.wsgi:application
-

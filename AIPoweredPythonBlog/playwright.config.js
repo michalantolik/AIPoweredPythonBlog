@@ -13,13 +13,11 @@ const serverCommand = isWindows
   ? [
       `if exist ai_powered_blog\\${DJANGO_SQLITE_NAME} del ai_powered_blog\\${DJANGO_SQLITE_NAME}`,
       `python ai_powered_blog\\manage.py migrate --noinput`,
-      `python ai_powered_blog\\manage.py seed_smoke_data`,
       `python ai_powered_blog\\manage.py runserver 127.0.0.1:${PORT}`,
     ].join(' && ')
   : [
       `rm -f "ai_powered_blog/${DJANGO_SQLITE_NAME}"`,
       `python ai_powered_blog/manage.py migrate --noinput`,
-      `python ai_powered_blog/manage.py seed_smoke_data`,
       `python ai_powered_blog/manage.py runserver 127.0.0.1:${PORT}`,
     ].join(' && ');
 
