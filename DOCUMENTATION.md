@@ -1,5 +1,11 @@
 # Documentation
 
+## Start application
+
+```powershell
+python manage.py runserver
+```
+
 ## Run unit tests & integration tests
 
 ```powershell
