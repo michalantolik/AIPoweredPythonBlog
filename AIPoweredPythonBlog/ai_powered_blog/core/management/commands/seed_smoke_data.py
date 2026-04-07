@@ -2,7 +2,8 @@ from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 
-from posts.models import Post
+from core.seeding.category_seed_data import seed_categories
+from posts.models import Category, Post
 from tags.models import Tag
 
 
@@ -22,6 +23,8 @@ class Command(BaseCommand):
         author.set_password("Demo12345!")
         author.save(update_fields=["password"])
 
+        categories = seed_categories(Category, self.stdout, self.style)
+
         python_tag, _ = Tag.objects.get_or_create(name="Python", slug="python")
         testing_tag, _ = Tag.objects.get_or_create(name="Testing", slug="testing")
         django_tag, _ = Tag.objects.get_or_create(name="Django", slug="django")
@@ -32,6 +35,7 @@ class Command(BaseCommand):
             defaults={
                 "title": "Smoke Test Post",
                 "author": author,
+                "category": categories["python-ecosystem"],
                 "content": (
                     "This post is used by Playwright to verify that the public blog pages "
                     "render correctly from the browser perspective."
@@ -48,6 +52,7 @@ class Command(BaseCommand):
             defaults={
                 "title": "Smoke Related Post",
                 "author": author,
+                "category": categories["python-ecosystem"],
                 "content": "A related public article used to validate the related posts section.",
                 "excerpt": "Related post visible from the smoke detail page.",
                 "status": Post.Status.PUBLISHED,
@@ -61,6 +66,7 @@ class Command(BaseCommand):
             defaults={
                 "title": "Archive Smoke Post",
                 "author": author,
+                "category": categories["python-ecosystem"],
                 "content": "Another public article to make the archive page look realistic.",
                 "excerpt": "Archive coverage for Playwright smoke tests.",
                 "status": Post.Status.PUBLISHED,
@@ -74,6 +80,7 @@ class Command(BaseCommand):
             defaults={
                 "title": "Hidden Smoke Draft",
                 "author": author,
+                "category": categories["architecture-and-patterns"],
                 "content": "Draft-only post that must never appear on public pages.",
                 "excerpt": "This excerpt should stay private.",
                 "status": Post.Status.DRAFT,

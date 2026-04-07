@@ -1,8 +1,12 @@
 {% extends "base.html" %}
 
 {% block title %}
-    {% if selected_category %}
+    {% if selected_category and selected_tag %}
+        {{ selected_category.name }} / {{ selected_tag.name }} | AI Powered Python Blog
+    {% elif selected_category %}
         {{ selected_category.name }} | AI Powered Python Blog
+    {% elif selected_tag %}
+        {{ selected_tag.name }} | AI Powered Python Blog
     {% else %}
         Posts | AI Powered Python Blog
     {% endif %}
@@ -24,17 +28,17 @@
                 </h1>
 
                 <p class="hero-description">
-                    A clean technical blog about Python, Django, architecture,
-                    and practical software design.
+                    A technical blog covering .NET, Python, cloud platforms,
+                    DevOps, containers, Infrastructure as Code, and architecture.
                 </p>
 
                 <div class="hero-pills">
-                    {% for tag in categories|slice:":4" %}
+                    {% for category in categories|slice:":4" %}
                         <a
-                            href="{% url 'posts:list' %}?category={{ tag.slug }}{% if LIVE_POST_FILTER_ENABLED and search_query %}&q={{ search_query|urlencode }}{% endif %}"
+                            href="{% url 'posts:list' %}?category={{ category.slug }}{% if LIVE_POST_FILTER_ENABLED and search_query %}&q={{ search_query|urlencode }}{% endif %}"
                             class="hero-pill"
                         >
-                            {{ tag.name }}
+                            {{ category.name }}
                         </a>
                     {% endfor %}
                 </div>
@@ -61,12 +65,22 @@
             <div class="content-area-box">
                 <div class="section-header">
                     <div>
-                        <div class="section-label">SELECTED CATEGORY</div>
+                        <div class="section-label">ARCHIVE</div>
 
-                        {% if selected_category %}
+                        {% if selected_category and selected_tag %}
+                            <h1 class="section-title-dark">{{ selected_category.name }} / {{ selected_tag.name }}</h1>
+                            <p class="section-text-dark">
+                                Browsing published posts in this category filtered by the selected tag.
+                            </p>
+                        {% elif selected_category %}
                             <h1 class="section-title-dark">{{ selected_category.name }}</h1>
                             <p class="section-text-dark">
-                                Short previews in neat cards. Click any card title to open the full article page.
+                                Browse published posts that belong to this category.
+                            </p>
+                        {% elif selected_tag %}
+                            <h1 class="section-title-dark">Tag: {{ selected_tag.name }}</h1>
+                            <p class="section-text-dark">
+                                Browse published posts that use this tag.
                             </p>
                         {% else %}
                             <h1 class="section-title-dark">All posts</h1>
@@ -88,7 +102,7 @@
                                         type="search"
                                         name="q"
                                         value="{{ search_query }}"
-                                        placeholder="Search title, excerpt, author, or tag..."
+                                        placeholder="Search title, excerpt, author, category, or tag..."
                                         autocomplete="off"
                                         data-post-filter-input="true"
                                     >
@@ -121,19 +135,26 @@
                         <article
                             class="post-preview-card"
                             data-post-card="true"
-                            data-post-search="{{ post.title|striptags|escape }} {{ post.author.username|striptags|escape }} {% if post.excerpt %}{{ post.excerpt|striptags|escape }}{% else %}{{ post.content|truncatewords:35|striptags|escape }}{% endif %} {% for tag in post.tags.all %}{{ tag.name|striptags|escape }} {% endfor %}"
+                            data-post-search="{{ post.title|striptags|escape }} {{ post.author.username|striptags|escape }} {{ post.category.name|striptags|escape }} {% if post.excerpt %}{{ post.excerpt|striptags|escape }}{% else %}{{ post.content|truncatewords:35|striptags|escape }}{% endif %} {% for tag in post.tags.all %}{{ tag.name|striptags|escape }} {% endfor %}"
                         >
                             <div class="post-meta-row">
                                 <div class="chip-row">
+                                    <a
+                                        class="mini-chip"
+                                        href="{% url 'posts:list' %}?category={{ post.category.slug }}{% if LIVE_POST_FILTER_ENABLED and search_query %}&q={{ search_query|urlencode }}{% endif %}"
+                                    >
+                                        {{ post.category.name }}
+                                    </a>
+
                                     {% for tag in post.tags.all %}
                                         <a
                                             class="mini-chip"
-                                            href="{% url 'posts:list' %}?category={{ tag.slug }}{% if LIVE_POST_FILTER_ENABLED and search_query %}&q={{ search_query|urlencode }}{% endif %}"
+                                            href="{% url 'posts:list' %}?category={{ post.category.slug }}&tag={{ tag.slug }}{% if LIVE_POST_FILTER_ENABLED and search_query %}&q={{ search_query|urlencode }}{% endif %}"
                                         >
                                             {{ tag.name }}
                                         </a>
                                     {% empty %}
-                                        <span class="mini-chip muted">General</span>
+                                        <span class="mini-chip muted">No tags</span>
                                     {% endfor %}
                                 </div>
 
@@ -170,13 +191,15 @@
                 <div
                     class="empty-box archive-empty-state"
                     data-post-filter-empty="true"
-                    data-empty-default="{% if selected_category %}No published posts found in this category.{% else %}No published posts found.{% endif %}"
+                    data-empty-default="{% if selected_category %}No published posts found in this category.{% elif selected_tag %}No published posts found for this tag.{% else %}No published posts found.{% endif %}"
                     {% if posts %}hidden{% endif %}
                 >
                     {% if search_query %}
                         No posts match “{{ search_query }}”.
                     {% elif selected_category %}
                         No published posts found in this category.
+                    {% elif selected_tag %}
+                        No published posts found for this tag.
                     {% else %}
                         No published posts found.
                     {% endif %}

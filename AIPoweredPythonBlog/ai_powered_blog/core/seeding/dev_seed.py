@@ -1,10 +1,9 @@
-import random
-
 from django.utils import timezone
 from django.utils.text import slugify
 
 from comments.models import Comment
-from posts.models import Post
+from core.seeding.category_seed_data import seed_categories
+from posts.models import Category, Post
 from tags.models import Tag
 from users.models import User
 
@@ -13,11 +12,11 @@ def run_dev_seed(stdout, style):
     stdout.write("Seeding dev users...")
     users = _seed_dev_users(stdout, style)
 
-    stdout.write("Seeding tags...")
-    tags = _seed_tags(stdout, style)
+    stdout.write("Seeding categories...")
+    categories = seed_categories(Category, stdout, style)
 
     stdout.write("Seeding dev posts...")
-    posts = _seed_dev_posts(users, tags, stdout, style)
+    posts = _seed_dev_posts(users, categories, stdout, style)
 
     stdout.write("Seeding dev comments...")
     _seed_dev_comments(users, posts, stdout, style)
@@ -28,7 +27,7 @@ def _seed_dev_users(stdout, style):
         {
             "username": "michal_dev",
             "email": "michal@example.com",
-            "bio": "Software developer writing about Django and architecture.",
+            "bio": "Software developer writing about architecture, cloud, DevOps, and application design.",
             "website": "https://example.com/michal",
             "avatar": "https://picsum.photos/seed/michal/200/200",
             "password": "Demo12345!",
@@ -36,7 +35,7 @@ def _seed_dev_users(stdout, style):
         {
             "username": "anna_arch",
             "email": "anna@example.com",
-            "bio": "Clean architecture enthusiast.",
+            "bio": "Architecture and patterns enthusiast.",
             "website": "https://example.com/anna",
             "avatar": "https://picsum.photos/seed/anna/200/200",
             "password": "Demo12345!",
@@ -52,7 +51,7 @@ def _seed_dev_users(stdout, style):
         {
             "username": "kate_testing",
             "email": "kate@example.com",
-            "bio": "I like tests, quality, and automation.",
+            "bio": "I like tests, quality, CI/CD, and automation.",
             "website": "https://example.com/kate",
             "avatar": "https://picsum.photos/seed/kate/200/200",
             "password": "Demo12345!",
@@ -68,7 +67,7 @@ def _seed_dev_users(stdout, style):
         {
             "username": "eva_data",
             "email": "eva@example.com",
-            "bio": "Data, APIs, and practical engineering.",
+            "bio": "APIs, backend systems, and practical engineering.",
             "website": "https://example.com/eva",
             "avatar": "https://picsum.photos/seed/eva/200/200",
             "password": "Demo12345!",
@@ -119,90 +118,126 @@ def _seed_dev_users(stdout, style):
     return users
 
 
-def _seed_tags(stdout, style):
-    tag_names = [
-        "python",
-        "django",
-        "architecture",
-        "backend",
-        "testing",
-        "api",
-        "clean-code",
-        "database",
-    ]
-
+def _get_or_create_tags(tag_names):
     tags = []
 
     for name in tag_names:
-        slug = slugify(name)
-        tag, created = Tag.objects.get_or_create(
-            slug=slug,
-            defaults={"name": name},
+        normalized_name = name.strip()
+        tag, _ = Tag.objects.get_or_create(
+            slug=slugify(normalized_name),
+            defaults={"name": normalized_name},
         )
 
-        if tag.name != name:
-            tag.name = name
-            tag.save()
-
-        if created:
-            stdout.write(style.SUCCESS(f"Created tag: {tag.name}"))
-        else:
-            stdout.write(f"Tag already exists: {tag.name}")
+        if tag.name != normalized_name:
+            tag.name = normalized_name
+            tag.save(update_fields=["name"])
 
         tags.append(tag)
 
     return tags
 
 
-def _seed_dev_posts(users, tags, stdout, style):
+def _seed_dev_posts(users, categories, stdout, style):
+    now = timezone.now()
+
     posts_data = [
         {
-            "title": "Getting Started with Django",
-            "excerpt": "A simple introduction to Django project structure.",
-            "content": "This is a demo post about Django basics, project structure, apps, templates, and urls.",
+            "title": "Dependency Injection Lifetimes in ASP.NET Core",
+            "excerpt": "A practical guide to singleton, scoped, and transient services in .NET.",
+            "content": (
+                "This post explains dependency injection lifetimes in ASP.NET Core. "
+                "It covers singleton, scoped, and transient services, common mistakes, "
+                "and how service lifetime choices affect C# web applications."
+            ),
             "status": Post.Status.PUBLISHED,
+            "published_at": now - timezone.timedelta(days=10),
+            "category_slug": "dotnet-ecosystem",
+            "tags": ["ASP.NET Core", "Dependency Injection", "C#", "Service Lifetimes"],
         },
         {
-            "title": "Clean Architecture for Small Projects",
-            "excerpt": "How to keep code simple and organized.",
-            "content": "This post explains practical clean architecture ideas for small and medium web apps.",
+            "title": "Background Jobs in Django with Celery",
+            "excerpt": "How to move slow work out of the request cycle in Python applications.",
+            "content": (
+                "This article shows how Django teams can use Celery and Redis for background jobs. "
+                "It covers asynchronous task execution, retry patterns, and keeping Python web apps responsive."
+            ),
             "status": Post.Status.PUBLISHED,
+            "published_at": now - timezone.timedelta(days=8),
+            "category_slug": "python-ecosystem",
+            "tags": ["Django", "Celery", "Redis", "Background Jobs"],
         },
         {
-            "title": "Why Good Naming Matters",
-            "excerpt": "Good naming makes code easier to read.",
-            "content": "This article covers naming in models, views, templates, and services.",
+            "title": "Azure App Service vs AWS Elastic Beanstalk for Small Teams",
+            "excerpt": "A simple comparison of two cloud hosting options for web projects.",
+            "content": (
+                "This post compares Azure App Service and AWS Elastic Beanstalk. "
+                "It focuses on deployment simplicity, operational effort, pricing considerations, "
+                "and where each cloud platform fits best."
+            ),
             "status": Post.Status.PUBLISHED,
+            "published_at": now - timezone.timedelta(days=7),
+            "category_slug": "cloud-azure-aws",
+            "tags": ["Azure", "AWS", "App Service", "Elastic Beanstalk", "Cloud Hosting"],
         },
         {
-            "title": "Testing Django Views",
-            "excerpt": "Start with the most important flows.",
-            "content": "This post shows a minimal approach to testing list pages, detail pages, and forms.",
+            "title": "GitHub Actions Pipeline for Django and Pytest",
+            "excerpt": "A clean CI/CD workflow for running tests and checks automatically.",
+            "content": (
+                "This article explains how to build a GitHub Actions pipeline for Django projects. "
+                "It covers automation, pytest execution, linting hooks, and practical CI/CD structure."
+            ),
+            "status": Post.Status.PUBLISHED,
+            "published_at": now - timezone.timedelta(days=5),
+            "category_slug": "devops-automation",
+            "tags": ["GitHub Actions", "CI/CD", "Pytest", "Automation"],
+        },
+        {
+            "title": "Dockerizing Django for Local Development and CI",
+            "excerpt": "A practical Docker setup for consistent development environments.",
+            "content": (
+                "This post explains how to containerize a Django application with Docker and Docker Compose. "
+                "It covers local development, repeatable environments, image structure, and CI-friendly builds."
+            ),
+            "status": Post.Status.PUBLISHED,
+            "published_at": now - timezone.timedelta(days=4),
+            "category_slug": "containers-and-kubernetes",
+            "tags": ["Docker", "Docker Compose", "Django", "Containers"],
+        },
+        {
+            "title": "Getting Started with Terraform for Azure Resource Groups",
+            "excerpt": "A first Infrastructure as Code workflow for Azure teams.",
+            "content": (
+                "This article introduces Terraform for Azure resource groups. "
+                "It explains Infrastructure as Code basics, reusable configuration, and safer environment provisioning."
+            ),
+            "status": Post.Status.PUBLISHED,
+            "published_at": now - timezone.timedelta(days=3),
+            "category_slug": "infrastructure-as-code",
+            "tags": ["Terraform", "Azure", "Infrastructure as Code", "Resource Groups"],
+        },
+        {
+            "title": "Vertical Slice Architecture in Real Projects",
+            "excerpt": "Why feature-based structure often works better than technical layers.",
+            "content": (
+                "This post explores vertical slice architecture, modular thinking, and practical patterns "
+                "for real business systems. It compares slice-based organization with classic layered designs."
+            ),
+            "status": Post.Status.PUBLISHED,
+            "published_at": now - timezone.timedelta(days=2),
+            "category_slug": "architecture-and-patterns",
+            "tags": ["Architecture", "Vertical Slice", "Modular Monolith", "Patterns"],
+        },
+        {
+            "title": "Kubernetes Readiness and Liveness Probes Explained",
+            "excerpt": "What probes do and how they help stable container orchestration.",
+            "content": (
+                "This draft explains Kubernetes readiness probes and liveness probes. "
+                "It covers containers, pod health checks, restart behavior, and troubleshooting basics."
+            ),
             "status": Post.Status.DRAFT,
-        },
-        {
-            "title": "Simple Blog Layout Ideas",
-            "excerpt": "A clean layout for a technical blog.",
-            "content": "This article describes a practical layout with base template, nav, content area, and footer.",
-            "status": Post.Status.PUBLISHED,
-        },
-        {
-            "title": "Working with Slugs in Django",
-            "excerpt": "How and why to use slugs.",
-            "content": "This post explains slug generation, uniqueness, and routing.",
-            "status": Post.Status.PUBLISHED,
-        },
-        {
-            "title": "Database Design Basics",
-            "excerpt": "Small practical rules for tables and relations.",
-            "content": "This article discusses foreign keys, many-to-many tables, and consistent schema naming.",
-            "status": Post.Status.PUBLISHED,
-        },
-        {
-            "title": "Building a Posts List Page",
-            "excerpt": "How to show posts in a clean way.",
-            "content": "This post covers list views, template loops, and simple styling.",
-            "status": Post.Status.DRAFT,
+            "published_at": None,
+            "category_slug": "containers-and-kubernetes",
+            "tags": ["Kubernetes", "Readiness Probe", "Liveness Probe", "Containers"],
         },
     ]
 
@@ -211,54 +246,56 @@ def _seed_dev_posts(users, tags, stdout, style):
     for index, item in enumerate(posts_data):
         slug = slugify(item["title"])
         author = users[index % len(users)]
+        category = categories[item["category_slug"]]
 
         post, created = Post.objects.get_or_create(
             slug=slug,
             defaults={
                 "title": item["title"],
                 "author": author,
+                "category": category,
                 "content": item["content"],
                 "excerpt": item["excerpt"],
                 "status": item["status"],
-                "published_at": timezone.now() if item["status"] == Post.Status.PUBLISHED else None,
+                "published_at": item["published_at"],
             },
         )
 
+        changed = False
+
+        if post.title != item["title"]:
+            post.title = item["title"]
+            changed = True
+        if post.author != author:
+            post.author = author
+            changed = True
+        if post.category != category:
+            post.category = category
+            changed = True
+        if post.content != item["content"]:
+            post.content = item["content"]
+            changed = True
+        if post.excerpt != item["excerpt"]:
+            post.excerpt = item["excerpt"]
+            changed = True
+        if post.status != item["status"]:
+            post.status = item["status"]
+            changed = True
+        if post.published_at != item["published_at"]:
+            post.published_at = item["published_at"]
+            changed = True
+
+        if created or changed:
+            post.save()
+
+        desired_tags = _get_or_create_tags(item["tags"])
+        post.tags.set(desired_tags)
+
         if created:
-            selected_tags = random.sample(tags, k=random.randint(2, 4))
-            post.tags.set(selected_tags)
             stdout.write(style.SUCCESS(f"Created dev post: {post.title}"))
+        elif changed:
+            stdout.write(f"Updated dev post: {post.title}")
         else:
-            changed = False
-
-            if post.title != item["title"]:
-                post.title = item["title"]
-                changed = True
-            if post.author != author:
-                post.author = author
-                changed = True
-            if post.content != item["content"]:
-                post.content = item["content"]
-                changed = True
-            if post.excerpt != item["excerpt"]:
-                post.excerpt = item["excerpt"]
-                changed = True
-            if post.status != item["status"]:
-                post.status = item["status"]
-                changed = True
-
-            desired_published_at = timezone.now() if item["status"] == Post.Status.PUBLISHED else None
-            if (post.published_at is None) != (desired_published_at is None):
-                post.published_at = desired_published_at
-                changed = True
-
-            if changed:
-                post.save()
-
-            if post.tags.count() == 0:
-                selected_tags = random.sample(tags, k=random.randint(2, 4))
-                post.tags.set(selected_tags)
-
             stdout.write(f"Dev post already exists: {post.title}")
 
         posts.append(post)

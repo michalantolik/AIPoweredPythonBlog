@@ -25,3 +25,7 @@ if SECURE_HSTS_SECONDS > 0:
         **APP_CSP_DIRECTIVES,
         "upgrade-insecure-requests": "",
     }
+
+SEED_SUPERUSER_USERNAME = "mik"
+SEED_SUPERUSER_EMAIL = "mik@mik.com"
+SEED_SUPERUSER_PASSWORD = os.getenv("SEED_SUPERUSER_PASSWORD", "")
