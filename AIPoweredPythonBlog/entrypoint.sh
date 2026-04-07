@@ -19,9 +19,10 @@ while ! nc -z "${DJANGO_DB_HOST:-}" "${DJANGO_DB_PORT:-5432}"; do
   sleep 2
 done
 
-echo "PostgreSQL is up - running migrations and collectstatic..."
+echo "PostgreSQL is up - running migrations, seed, and collectstatic..."
 
 python manage.py migrate --noinput
+python manage.py seed_blog --mode prod
 python manage.py collectstatic --noinput
 
 echo "Starting Gunicorn..."

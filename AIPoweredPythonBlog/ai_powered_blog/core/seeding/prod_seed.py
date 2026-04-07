@@ -3,8 +3,7 @@ import os
 from django.conf import settings
 from django.core.management.base import CommandError
 
-from core.seeding.category_seed_data import seed_categories
-from posts.models import Category
+from core.seeding.dev_seed import run_dev_seed
 from users.models import User
 
 
@@ -12,10 +11,10 @@ def run_prod_seed(stdout, style):
     stdout.write("Seeding production superuser...")
     _seed_prod_superuser(stdout, style)
 
-    stdout.write("Seeding categories...")
-    seed_categories(Category, stdout, style)
+    stdout.write("Seeding production database with the same content as dev...")
+    run_dev_seed(stdout, style)
 
-    stdout.write("Production seed mode skips demo users, demo posts, demo tags, and demo comments.")
+    stdout.write(style.SUCCESS("Production seed completed with dev-equivalent content."))
 
 
 def _seed_prod_superuser(stdout, style):
