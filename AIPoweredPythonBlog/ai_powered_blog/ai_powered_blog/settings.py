@@ -1,8 +1,0 @@
-import os
-
-environment = os.getenv("DJANGO_ENV", "dev").lower()
-
-if environment == "prod":
-    from .settings_prod import *  # noqa: F401,F403
-else:
-    from .settings_dev import *  # noqa: F401,F403

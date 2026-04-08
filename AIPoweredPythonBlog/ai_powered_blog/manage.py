@@ -12,7 +12,10 @@ def main():
     if env_file.exists():
         load_dotenv(env_file)
 
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "ai_powered_blog.settings")
+    os.environ.setdefault(
+        "DJANGO_SETTINGS_MODULE",
+        "ai_powered_blog.settings.dev",
+    )
 
     from django.core.management import execute_from_command_line
     execute_from_command_line(sys.argv)

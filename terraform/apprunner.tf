@@ -26,7 +26,7 @@ resource "aws_apprunner_service" "app" {
         port = tostring(var.app_runner_port)
 
         runtime_environment_variables = {
-          DJANGO_ENV                  = "prod"
+          DJANGO_ENV                  = "ai_powered_blog.settings.prod"
           DJANGO_DEBUG                = "0"
           DJANGO_ALLOWED_HOSTS        = var.django_allowed_hosts
           DJANGO_CSRF_TRUSTED_ORIGINS = var.django_csrf_trusted_origins

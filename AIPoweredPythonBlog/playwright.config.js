@@ -2,7 +2,7 @@ const { defineConfig, devices } = require('@playwright/test');
 
 const PORT = process.env.PLAYWRIGHT_BASE_PORT || '8000';
 const BASE_URL = process.env.PLAYWRIGHT_BASE_URL || `http://127.0.0.1:${PORT}`;
-const DJANGO_ENV = process.env.DJANGO_ENV || 'dev';
+const DJANGO_SETTINGS_MODULE = process.env.DJANGO_SETTINGS_MODULE || 'ai_powered_blog.settings.dev';
 const DJANGO_SQLITE_NAME = process.env.DJANGO_SQLITE_NAME || 'playwright.sqlite3';
 const INTRO_OVERLAY_ENABLED = process.env.INTRO_OVERLAY_ENABLED || '0';
 const SHOW_SIDEBAR_ON_HOME_STARTUP = process.env.SHOW_SIDEBAR_ON_HOME_STARTUP || '1';
@@ -47,7 +47,7 @@ module.exports = defineConfig({
     timeout: 120_000,
     env: {
       ...process.env,
-      DJANGO_ENV,
+      DJANGO_SETTINGS_MODULE,
       DJANGO_SQLITE_NAME,
       INTRO_OVERLAY_ENABLED,
       SHOW_SIDEBAR_ON_HOME_STARTUP,
