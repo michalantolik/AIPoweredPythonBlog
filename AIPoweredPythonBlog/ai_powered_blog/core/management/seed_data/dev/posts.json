@@ -1,0 +1,57 @@
+[
+  {
+    "slug": "dev-seed-post-1",
+    "title": "DEV Seed Post (1)",
+    "excerpt": "This post exists only in DEV seed (1).",
+    "content": "DEV seeded content (1).",
+    "category_slug": "backend",
+    "author_username": "mik",
+    "status": "published",
+    "published_at": "2026-01-01T10:45:00+01:00",
+    "tag_slugs": ["python", "django"]
+  },
+  {
+    "slug": "dev-seed-post-2",
+    "title": "DEV Seed Post (2)",
+    "excerpt": "This post exists only in DEV seed (2).",
+    "content": "DEV seeded content (2).",
+    "category_slug": "backend",
+    "author_username": "mik",
+    "status": "published",
+    "published_at": "2026-01-02T10:45:00+01:00",
+    "tag_slugs": ["python", "django"]
+  },
+  {
+    "slug": "dev-seed-post-3",
+    "title": "DEV Seed Post (3)",
+    "excerpt": "This post exists only in DEV seed (3).",
+    "content": "DEV seeded content (3).",
+    "category_slug": "backend",
+    "author_username": "mik",
+    "status": "published",
+    "published_at": "2026-01-03T10:45:00+01:00",
+    "tag_slugs": ["python", "django"]
+  },
+  {
+    "slug": "dev-seed-post-4",
+    "title": "DEV Seed Post (4)",
+    "excerpt": "This post exists only in DEV seed (4).",
+    "content": "DEV seeded content (4).",
+    "category_slug": "backend",
+    "author_username": "mik",
+    "status": "published",
+    "published_at": "2026-01-04T10:45:00+01:00",
+    "tag_slugs": ["python", "django"]
+  },
+  {
+    "slug": "dev-seed-post-5",
+    "title": "DEV Seed Post (5)",
+    "excerpt": "This post exists only in DEV seed (5).",
+    "content": "DEV seeded content (5).",
+    "category_slug": "backend",
+    "author_username": "mik",
+    "status": "published",
+    "published_at": "2026-01-05T10:45:00+01:00",
+    "tag_slugs": ["python", "django"]
+  }
+]

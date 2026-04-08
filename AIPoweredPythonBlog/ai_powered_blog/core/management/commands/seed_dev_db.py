@@ -1,4 +1,6 @@
+import json
 import os
+from pathlib import Path
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -6,6 +8,7 @@ from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 from django.utils import timezone
+from django.utils.dateparse import parse_datetime
 
 from posts.models import Category, Post
 from tags.models import Tag
@@ -51,81 +54,117 @@ class Command(BaseCommand):
     def _seed_dev_data(self):
         with transaction.atomic():
             user_model = get_user_model()
+            seed_data = self._load_seed_data()
 
-            python_tag, _ = Tag.objects.update_or_create(
-                slug="python",
-                defaults={"name": "python"},
-            )
+            tags_by_slug = {}
+            for item in seed_data["tags"]:
+                tag, _ = Tag.objects.update_or_create(
+                    slug=item["slug"],
+                    defaults={"name": item["name"]},
+                )
+                tags_by_slug[tag.slug] = tag
 
-            django_tag, _ = Tag.objects.update_or_create(
-                slug="django",
-                defaults={"name": "django"},
-            )
+            categories_by_slug = {}
+            for item in seed_data["categories"]:
+                category, _ = Category.objects.update_or_create(
+                    slug=item["slug"],
+                    defaults={
+                        "name": item["name"],
+                        "sort_order": item["sort_order"],
+                    },
+                )
+                categories_by_slug[category.slug] = category
 
-            backend_category, _ = Category.objects.update_or_create(
-                slug="backend",
-                defaults={
-                    "name": "Backend",
-                    "sort_order": 1,
-                },
-            )
+            users_by_username = {}
+            for item in seed_data["users"]:
+                password = item["password"]
+                user_defaults = {k: v for k, v in item.items() if k not in {"username", "password"}}
+                user, _ = user_model.objects.update_or_create(
+                    username=item["username"],
+                    defaults=user_defaults,
+                )
+                user.set_password(password)
+                user.save()
+                users_by_username[user.username] = user
 
-            author, _ = user_model.objects.update_or_create(
-                username="devadmin",
-                defaults={
-                    "email": "devadmin@example.com",
-                    "is_staff": True,
-                    "is_superuser": True,
-                    "is_active": True,
-                },
-            )
-            author.set_password("devpassword123")
-            author.save()
+            for item in seed_data["posts"]:
+                category = self._get_required_reference(
+                    mapping=categories_by_slug,
+                    key=item["category_slug"],
+                    entity_name="category",
+                    post_slug=item["slug"],
+                )
+                author = self._get_required_reference(
+                    mapping=users_by_username,
+                    key=item["author_username"],
+                    entity_name="author",
+                    post_slug=item["slug"],
+                )
+                published_at = self._parse_published_at(item.get("published_at"))
+                status = item.get("status", Post.Status.DRAFT)
 
-            posts_to_seed = [
-                {
-                    "slug": "dev-seed-post-1",
-                    "title": "DEV Seed Post (1)",
-                    "excerpt": "This post exists only in DEV seed (1).",
-                    "content": "DEV seeded content (1).",
-                },
-                {
-                    "slug": "dev-seed-post-2",
-                    "title": "DEV Seed Post (2)",
-                    "excerpt": "This post exists only in DEV seed (2).",
-                    "content": "DEV seeded content (2).",
-                },
-                {
-                    "slug": "dev-seed-post-3",
-                    "title": "DEV Seed Post (3)",
-                    "excerpt": "This post exists only in DEV seed (3).",
-                    "content": "DEV seeded content (3).",
-                },
-                {
-                    "slug": "dev-seed-post-4",
-                    "title": "DEV Seed Post (4)",
-                    "excerpt": "This post exists only in DEV seed (4).",
-                    "content": "DEV seeded content (4).",
-                },
-                {
-                    "slug": "dev-seed-post-5",
-                    "title": "DEV Seed Post (5)",
-                    "excerpt": "This post exists only in DEV seed (5).",
-                    "content": "DEV seeded content (5).",
-                },
-            ]
-
-            for item in posts_to_seed:
                 post, _ = Post.objects.update_or_create(
                     slug=item["slug"],
                     defaults={
                         "title": item["title"],
-                        "excerpt": item["excerpt"],
+                        "excerpt": item.get("excerpt", ""),
                         "content": item["content"],
-                        "category": backend_category,
+                        "category": category,
                         "author": author,
-                        "published_at": timezone.now(),
-                        "status": Post.Status.PUBLISHED,
+                        "published_at": published_at,
+                        "status": status,
                     },
                 )
-                post.tags.set([python_tag, django_tag])
+
+                tag_slugs = item.get("tag_slugs", [])
+                tags = [
+                    self._get_required_reference(
+                        mapping=tags_by_slug,
+                        key=tag_slug,
+                        entity_name="tag",
+                        post_slug=item["slug"],
+                    )
+                    for tag_slug in tag_slugs
+                ]
+                post.tags.set(tags)
+
+    def _load_seed_data(self):
+        seed_data_dir = Path(__file__).resolve().parent.parent / "seed_data" / "dev"
+
+        return {
+            "tags": self._read_json(seed_data_dir / "tags.json"),
+            "categories": self._read_json(seed_data_dir / "categories.json"),
+            "users": self._read_json(seed_data_dir / "users.json"),
+            "posts": self._read_json(seed_data_dir / "posts.json"),
+        }
+
+    def _read_json(self, file_path: Path):
+        if not file_path.exists():
+            raise CommandError(f"Seed data file not found: {file_path}")
+
+        with file_path.open("r", encoding="utf-8") as file:
+            return json.load(file)
+
+    def _parse_published_at(self, value):
+        if value in (None, ""):
+            return None
+
+        if value == "now":
+            return timezone.now()
+
+        parsed = parse_datetime(value)
+        if parsed is None:
+            raise CommandError(f"Invalid published_at value in DEV seed data: {value}")
+
+        if timezone.is_naive(parsed):
+            parsed = timezone.make_aware(parsed, timezone.get_current_timezone())
+
+        return parsed
+
+    def _get_required_reference(self, mapping, key, entity_name, post_slug):
+        try:
+            return mapping[key]
+        except KeyError as exc:
+            raise CommandError(
+                f"Post '{post_slug}' references missing {entity_name} '{key}' in DEV seed data."
+            ) from exc

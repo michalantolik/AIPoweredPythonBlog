@@ -1,0 +1,10 @@
+[
+  {
+    "username": "mik",
+    "email": "mik@mik.com",
+    "password": "mik",
+    "is_staff": true,
+    "is_superuser": true,
+    "is_active": true
+  }
+]
