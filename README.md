@@ -1,4 +1,4 @@
-## ⚙️ Django Settings Flow
+## ⚙️ Application Settings Flow
 
 ```mermaid
 graph TD
