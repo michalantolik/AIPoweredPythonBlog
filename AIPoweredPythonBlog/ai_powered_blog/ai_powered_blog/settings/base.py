@@ -158,7 +158,7 @@ STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-INTRO_OVERLAY_ENABLED = get_bool_env("INTRO_OVERLAY_ENABLED", True)
+INTRO_OVERLAY_ENABLED = False  # get_bool_env("INTRO_OVERLAY_ENABLED", True)
 INTRO_OVERLAY_DURATION_MS = get_int_env("INTRO_OVERLAY_DURATION_MS", 3600)
 INTRO_OVERLAY_IMAGE = get_env(
     "INTRO_OVERLAY_IMAGE",
@@ -227,3 +227,5 @@ APP_PERMISSIONS_POLICY = {
     "payment": (),
     "usb": (),
 }
+
+SEED_MODULE = "core.seeding.base"
