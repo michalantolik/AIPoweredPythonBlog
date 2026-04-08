@@ -41,7 +41,7 @@ graph TD
     style ES fill:#f8f9fa,stroke:#ddd
 ```
 
-### Variables defined only in `settings.base`
+### Settings defined only in `settings.base`
 
 | Variable | "Base" Value | Description |
 |---|---|---|
@@ -85,7 +85,7 @@ graph TD
 | `APP_PERMISSIONS_POLICY_ENABLED` | `get_bool_env(...)` | Enable permissions policy |
 | `APP_PERMISSIONS_POLICY` | `{...}` | Browser feature restrictions |
 
-### Variables overridden in `settings.dev` or `settings.prod`
+### Settings overridden in `settings.dev` or `settings.prod`
 
 | Variable | Base | Dev | Prod | Description |
 |---|---|---|---|---|
