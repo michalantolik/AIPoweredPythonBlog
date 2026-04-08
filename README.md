@@ -1,4 +1,6 @@
-## ⚙️ Application Settings Flow
+## ⚙️ Application Settings
+
+### Settings Flow
 
 - `settings.base.py` contains the shared default settings
 - `settings.dev.py` imports everything from `base.py` and overrides only a few settings for local development
@@ -39,7 +41,7 @@ graph TD
     style ES fill:#f8f9fa,stroke:#ddd
 ```
 
-### Setting Values
+### Settings Values
 
 | Variable | Values (base / dev / prod) | Description |
 |---|---|---|
