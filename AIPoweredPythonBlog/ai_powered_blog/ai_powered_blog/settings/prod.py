@@ -25,5 +25,3 @@ if SECURE_HSTS_SECONDS > 0:
         **APP_CSP_DIRECTIVES,
         "upgrade-insecure-requests": "",
     }
-
-SEED_MODULE = "core.seeding.prod"

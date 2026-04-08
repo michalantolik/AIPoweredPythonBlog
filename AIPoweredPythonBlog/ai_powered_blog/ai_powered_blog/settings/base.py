@@ -227,5 +227,3 @@ APP_PERMISSIONS_POLICY = {
     "payment": (),
     "usb": (),
 }
-
-SEED_MODULE = "core.seeding.base"
