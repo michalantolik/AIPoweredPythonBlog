@@ -1,7 +1,37 @@
 [
   {
-    "slug": "backend",
-    "name": "Backend",
+    "slug": "dotnet-ecosystem",
+    "name": ".NET Ecosystem",
     "sort_order": 1
+  },
+  {
+    "slug": "python-ecosystem",
+    "name": "Python Ecosystem",
+    "sort_order": 2
+  },
+  {
+    "slug": "cloud-aws-azure",
+    "name": "Cloud (Azure & AWS)",
+    "sort_order": 3
+  },
+  {
+    "slug": "devops-automation",
+    "name": "DevOps & Automation",
+    "sort_order": 4
+  },
+  {
+    "slug": "containers-kubernetes",
+    "name": "Containers & Kubernetes",
+    "sort_order": 5
+  },
+  {
+    "slug": "infrastructure-as-code",
+    "name": "Infrastructure as Code",
+    "sort_order": 6
+  },
+  {
+    "slug": "architecture-patterns",
+    "name": "Architecture & Patterns",
+    "sort_order": 7
   }
 ]

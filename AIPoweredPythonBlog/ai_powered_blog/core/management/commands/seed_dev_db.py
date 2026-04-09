@@ -15,11 +15,11 @@ from tags.models import Tag
 
 
 class Command(BaseCommand):
-    help = "Reset DEV database (delete DB, migrate, seed DEV data)."
+    help = "Reset DEV database (delete DB, migrate, seed DEV data)"
 
     def handle(self, *args, **options):
         if not settings.DEBUG:
-            raise CommandError("reseed_dev_db can only run when DEBUG=True.")
+            raise CommandError("seed_dev_db can only run when DEBUG=True")
 
         db_settings = settings.DATABASES["default"]
         engine = db_settings["ENGINE"]

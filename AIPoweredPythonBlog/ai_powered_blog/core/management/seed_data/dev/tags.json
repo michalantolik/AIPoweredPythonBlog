@@ -1,10 +1,18 @@
 [
-  {
-    "slug": "python",
-    "name": "python"
-  },
-  {
-    "slug": "django",
-    "name": "django"
-  }
+  { "slug": "dotnet", "name": ".NET" },
+  { "slug": "aspnet-core", "name": "ASP.NET Core" },
+  { "slug": "entity-framework", "name": "Entity Framework" },
+  { "slug": "python", "name": "Python" },
+  { "slug": "django", "name": "Django" },
+  { "slug": "fastapi", "name": "FastAPI" },
+  { "slug": "aws", "name": "AWS" },
+  { "slug": "azure", "name": "Azure" },
+  { "slug": "devops", "name": "DevOps" },
+  { "slug": "automation", "name": "Automation" },
+  { "slug": "docker", "name": "Docker" },
+  { "slug": "kubernetes", "name": "Kubernetes" },
+  { "slug": "terraform", "name": "Terraform" },
+  { "slug": "iac", "name": "IaC" },
+  { "slug": "architecture", "name": "Architecture" },
+  { "slug": "patterns", "name": "Patterns" }
 ]
