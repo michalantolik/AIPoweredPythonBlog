@@ -107,7 +107,7 @@ DB_PORT=5432
 
 ## 🔄 Switching Logic
 
-```
+```python
 if DB_ENGINE == "sqlite":
     # use SQLite
 else:
