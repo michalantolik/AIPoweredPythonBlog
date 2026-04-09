@@ -3,8 +3,9 @@
     "slug": "wagtail-streamfield-quickstart",
     "title": "Wagtail StreamField Quickstart for Technical Posts",
     "excerpt": "A DEV Wagtail article showing how structured content blocks can replace a plain text body.",
-    "topic": "Wagtail CMS",
     "author_username": "mik",
+    "category_slug": "python-ecosystem",
+    "tag_slugs": ["python", "django"],
     "live": true,
     "published_at": "2026-01-01T09:00:00+01:00",
     "body": [
@@ -43,8 +44,9 @@
     "slug": "django-management-commands-for-local-dev",
     "title": "Designing Django Management Commands for Local DEV Reset",
     "excerpt": "A DEV Wagtail article that mirrors the reset-and-seed pattern used by the existing SQLite command.",
-    "topic": "Django",
     "author_username": "mik",
+    "category_slug": "python-ecosystem",
+    "tag_slugs": ["python", "django"],
     "live": true,
     "published_at": "2026-01-02T09:00:00+01:00",
     "body": [
@@ -64,7 +66,7 @@
         "value": {
           "caption": "Sequence used by the Wagtail seeder",
           "language": "python",
-          "code": "call_command(\"migrate\")\\ncall_command(\"bootstrap_wagtail_blog\")\\n# create/update users\\n# create/update BlogPostPage pages under /articles/\\n# publish revisions",
+          "code": "call_command(\"migrate\")\ncall_command(\"bootstrap_wagtail_blog\")\n# create/update categories and tags\n# create/update users\n# create/update BlogPostPage pages under /articles/\n# publish revisions",
           "show_line_numbers": true,
           "width": "content"
         }
@@ -83,8 +85,9 @@
     "slug": "mermaid-diagrams-in-wagtail-posts",
     "title": "Using Mermaid Diagrams Inside Wagtail Blog Posts",
     "excerpt": "A DEV Wagtail article showing that the seeded body can include Mermaid blocks as first-class content.",
-    "topic": "Architecture",
     "author_username": "mik",
+    "category_slug": "architecture-patterns",
+    "tag_slugs": ["architecture", "patterns"],
     "live": true,
     "published_at": "2026-01-03T09:00:00+01:00",
     "body": [

@@ -8,10 +8,12 @@ from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 from django.utils import timezone
-from django.utils.dateparse import parse_date, parse_datetime
+from django.utils.dateparse import parse_datetime
 from wagtail.models import Site
 
 from cms.models import BlogIndexPage, BlogPostPage
+from posts.models import Category
+from tags.models import Tag
 
 
 class Command(BaseCommand):
@@ -56,6 +58,25 @@ class Command(BaseCommand):
             user_model = get_user_model()
             seed_data = self._load_seed_data()
 
+            tags_by_slug = {}
+            for item in seed_data["tags"]:
+                tag, _ = Tag.objects.update_or_create(
+                    slug=item["slug"],
+                    defaults={"name": item["name"]},
+                )
+                tags_by_slug[tag.slug] = tag
+
+            categories_by_slug = {}
+            for item in seed_data["categories"]:
+                category, _ = Category.objects.update_or_create(
+                    slug=item["slug"],
+                    defaults={
+                        "name": item["name"],
+                        "sort_order": item["sort_order"],
+                    },
+                )
+                categories_by_slug[category.slug] = category
+
             users_by_username = {}
             for item in seed_data["users"]:
                 password = item["password"]
@@ -83,12 +104,23 @@ class Command(BaseCommand):
                     entity_name="author",
                     post_slug=item["slug"],
                 )
+                category = self._get_required_reference(
+                    mapping=categories_by_slug,
+                    key=item["category_slug"],
+                    entity_name="category",
+                    post_slug=item["slug"],
+                )
+                tags = [
+                    self._get_required_reference(
+                        mapping=tags_by_slug,
+                        key=tag_slug,
+                        entity_name="tag",
+                        post_slug=item["slug"],
+                    )
+                    for tag_slug in item.get("tag_slugs", [])
+                ]
 
                 published_at = self._parse_published_at(item.get("published_at"))
-                published_on = self._parse_published_on(
-                    item.get("published_on"),
-                    fallback_datetime=published_at,
-                )
                 body_value = self._build_streamfield_value(
                     raw_value=item.get("body", []),
                     post_slug=item["slug"],
@@ -101,9 +133,9 @@ class Command(BaseCommand):
                         title=item["title"],
                         slug=item["slug"],
                         excerpt=item.get("excerpt", ""),
-                        topic=item.get("topic", ""),
                         body=body_value,
-                        published_on=published_on,
+                        author=author,
+                        category=category,
                         owner=author,
                         show_in_menus=item.get("show_in_menus", False),
                     )
@@ -111,14 +143,16 @@ class Command(BaseCommand):
                 else:
                     page.title = item["title"]
                     page.excerpt = item.get("excerpt", "")
-                    page.topic = item.get("topic", "")
                     page.body = body_value
-                    page.published_on = published_on
+                    page.author = author
+                    page.category = category
                     page.owner = author
                     page.show_in_menus = item.get("show_in_menus", False)
                     page.save()
 
-                revision = page.save_revision()
+                page.tags.set(tags)
+
+                revision = page.save_revision(user=author)
 
                 if item.get("live", True):
                     revision.publish()
@@ -137,6 +171,8 @@ class Command(BaseCommand):
         seed_data_dir = Path(__file__).resolve().parent.parent / "seed_data" / "dev"
 
         return {
+            "tags": self._read_json(seed_data_dir / "tags.json"),
+            "categories": self._read_json(seed_data_dir / "categories.json"),
             "users": self._read_json(seed_data_dir / "users.json"),
             "wagtail_posts": self._read_json(seed_data_dir / "wagtail_posts.json"),
         }
@@ -191,24 +227,6 @@ class Command(BaseCommand):
             parsed = timezone.make_aware(parsed, timezone.get_current_timezone())
 
         return parsed
-
-    def _parse_published_on(self, value, fallback_datetime=None):
-        if value not in (None, ""):
-            parsed_date = parse_date(value)
-
-            if parsed_date is not None:
-                return parsed_date
-
-            parsed_datetime = parse_datetime(value)
-            if parsed_datetime is not None:
-                return parsed_datetime.date()
-
-            raise CommandError(f"Invalid published_on value in DEV Wagtail seed data: {value}")
-
-        if fallback_datetime is not None:
-            return fallback_datetime.date()
-
-        return timezone.localdate()
 
     def _backfill_publish_timestamps(self, page, published_at):
         fields_to_update = []

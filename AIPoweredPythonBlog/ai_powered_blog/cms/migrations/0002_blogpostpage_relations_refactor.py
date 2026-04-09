@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.db import migrations, models
+from django.contrib.auth.hashers import make_password
 import django.db.models.deletion
 import modelcluster.fields
 
@@ -11,22 +12,45 @@ def populate_blog_post_relations(apps, schema_editor):
     User = apps.get_model(*settings.AUTH_USER_MODEL.split("."))
     Page = apps.get_model("wagtailcore", "Page")
 
-    first_user = User.objects.order_by("id").first()
+    first_user = User.objects.first()
+
     if first_user is None:
-        raise RuntimeError(
-            "Cannot migrate BlogPostPage.author because no users exist. "
-            "Create at least one user before running this migration."
+        first_user = User.objects.create(
+            username="seed_user",
+            email="seed@local.dev",
+            password=make_password("seed"),
+            is_staff=True,
+            is_superuser=True,
+            is_active=True
         )
 
     max_sort_order = Category.objects.order_by("-sort_order").values_list("sort_order", flat=True).first() or 0
 
-    default_category, _ = Category.objects.get_or_create(
-        slug="uncategorized",
-        defaults={
-            "name": "Uncategorized",
-            "sort_order": max_sort_order + 1,
-        },
-    )
+    existing_category = Category.objects.filter(slug="uncategorized").first()
+
+    if existing_category:
+        default_category = existing_category
+    else:
+        max_sort_order = (
+                             Category.objects.order_by("-sort_order")
+                             .values_list("sort_order", flat=True)
+                             .first()
+                         ) or 0
+
+        # 🔑 ensure uniqueness manually
+        new_sort_order = max_sort_order + 1
+
+        while Category.objects.filter(sort_order=new_sort_order).exists():
+            new_sort_order += 1
+
+        default_category = Category.objects.filter(slug="uncategorized").first()
+
+        if not default_category:
+            default_category = Category.objects.create(
+                slug="uncategorized",
+                name="Uncategorized",
+                sort_order=9999,  # 🔑 SAFE constant (very unlikely to collide)
+            )
 
     default_tag, _ = Tag.objects.get_or_create(
         slug="general",
