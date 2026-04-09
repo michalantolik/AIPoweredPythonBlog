@@ -1,4 +1,4 @@
-# 🚀 Execution modes
+## 🚀 Execution modes
 
 This application supports multiple execution modes:
 
@@ -11,7 +11,7 @@ This application supports multiple execution modes:
 <br>
 
 
-# 🌍 Environments overview
+## 🌍 Environments overview
 
 | Environment | Purpose               | Where it runs                      | Typical usage      |
 | ----------- | --------------------- | ---------------------------------- | ------------------ |
@@ -21,7 +21,7 @@ This application supports multiple execution modes:
 <br>
 
 
-# 🔗 Environments mapping
+## 🔗 Environments mapping
 
 | Mode              | DEV           | PROD                    |
 | ----------------- | ------------  | ----------------------- |
@@ -34,7 +34,7 @@ This application supports multiple execution modes:
 <br>
 
 
-# 🧠 Core principle
+## 🧠 Core principle
 
 - **DEV = fast iteration**
 - **PROD = containerized, reproducible, cloud-ready**
@@ -42,7 +42,7 @@ This application supports multiple execution modes:
 <br>
 
 
-# 🖥️ 1. Local Standard
+## 🖥️ 1. Local Standard
 
 ✅ **DEV ONLY**
 
@@ -65,10 +65,10 @@ python manage.py migrate
 <br>
 
 
-# 🐳 2. Local Docker
+## 🐳 2. Local Docker
 
-✅ **DEV (recommended)**
-⚠️ **Can simulate PROD**
+### ✅ DEV (recommended)
+### ⚠️ Can simulate PROD
 
 ```bash
 docker-compose up --build
@@ -86,7 +86,7 @@ docker-compose up --build
 <br>
 
 
-# 📦 3. Docker Image (Build Once)
+## 📦 3. Docker Image (Build Once)
 
 This is the **bridge between DEV and PROD**
 
@@ -96,9 +96,9 @@ docker build -t ai-blog .
 
 <br>
 
-# ☁️ 4. Push to Amazon ECR
+## ☁️ 4. Push to Amazon ECR
 
-✅ **REQUIRED FOR PROD**
+### ✅ REQUIRED FOR PROD
 
 GitHub Action:
 ```bash
@@ -115,3 +115,26 @@ docker push <ECR_URL>
 
 📌 Output:
 - Versioned container image in AWS
+
+<br>
+
+
+## 🚀 5. AWS App Runner (PROD)
+
+### ✅ PRIMARY PRODUCTION MODE
+
+Uses:
+```bash
+.github/workflows/deploy-app-runner.yml
+terraform/apprunner.tf
+```
+
+Flow:
+- Push image to ECR
+- App Runner pulls image
+- App runs as managed service
+
+📌 Pros:
+- No infra management
+- Auto scaling
+- HTTPS out of the box
