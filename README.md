@@ -1,7 +1,25 @@
-## ⚙️ Application Settings
+# 🚀 Execution modes
+
+This application supports multiple execution modes:
+
+- Local (standard)
+- Local (docker)
+- AWS (ECR + App Runner)
+- Kubernetes (k8s manifests)
+
+# 🌍 Environments overview
+
+| Environment | Purpose               | Where it runs                      | Typical usage      |
+| ----------- | --------------------- | ---------------------------------- | ------------------ |
+| **DEV**     | Development & testing | Local / Docker / K8s (dev cluster) | Developer workflow |
+| **PROD**    | Production            | AWS (App Runner / K8s)             | Live system        |
 
 
-### Settings Flow
+
+# ⚙️ Application settings
+
+
+## Settings Flow
 
 - `settings.base.py` contains the shared default settings
 - `settings.dev.py` imports everything from `base.py` and overrides only a few settings for local development
@@ -43,7 +61,7 @@ graph TD
 ```
 
 
-### Settings defined only in `settings.base`
+## Settings defined only in `settings.base`
 
 | Variable | "Base" Value | Description |
 |---|---|---|
@@ -88,7 +106,7 @@ graph TD
 | `APP_PERMISSIONS_POLICY` | `{...}` | Browser feature restrictions |
 
 
-### Settings overridden in `settings.dev` or `settings.prod`
+## Settings overridden in `settings.dev` or `settings.prod`
 
 | Variable | Base | Dev | Prod | Description |
 |---|---|---|---|---|
