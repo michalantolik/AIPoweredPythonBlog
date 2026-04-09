@@ -1,9 +1,13 @@
+from django.conf import settings
 from django.db import models
-from django.utils import timezone
+from modelcluster.fields import ParentalManyToManyField
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel
 from wagtail.fields import StreamField
 from wagtail.models import Page
 from wagtail.search import index
+
+from posts.models import Category
+from tags.models import Tag
 
 from .blocks import (
     CalloutBlock,
@@ -43,28 +47,44 @@ class BlogIndexPage(Page):
 
 class BlogPostPage(Page):
     excerpt = models.TextField(blank=True)
-    topic = models.CharField(max_length=80, blank=True)
-    cover_image = models.ForeignKey(
-        "wagtailimages.Image",
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-        related_name="+",
+
+    author = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.PROTECT,
+        related_name="blog_posts",
     )
+
+    category = models.ForeignKey(
+        Category,
+        on_delete=models.PROTECT,
+        related_name="blog_posts",
+    )
+
+    tags = ParentalManyToManyField(
+        Tag,
+        related_name="blog_posts",
+        blank=False,
+    )
+
     body = StreamField(
         [
             ("section_heading", SectionHeadingBlock()),
-            ("rich_text", RichSectionBlock(features=[
-                "bold",
-                "italic",
-                "link",
-                "ol",
-                "ul",
-                "h2",
-                "h3",
-                "blockquote",
-                "code",
-            ])),
+            (
+                "rich_text",
+                RichSectionBlock(
+                    features=[
+                        "bold",
+                        "italic",
+                        "link",
+                        "ol",
+                        "ul",
+                        "h2",
+                        "h3",
+                        "blockquote",
+                        "code",
+                    ]
+                ),
+            ),
             ("callout", CalloutBlock()),
             ("code", CodeBlock()),
             ("mermaid", MermaidBlock()),
@@ -73,21 +93,41 @@ class BlogPostPage(Page):
         use_json_field=True,
         blank=True,
     )
-    published_on = models.DateField(default=timezone.now)
 
     search_fields = Page.search_fields + [
         index.SearchField("excerpt"),
-        index.SearchField("topic"),
         index.SearchField("body"),
+        index.RelatedFields(
+            "author",
+            [
+                index.SearchField("username"),
+                index.SearchField("first_name"),
+                index.SearchField("last_name"),
+            ],
+        ),
+        index.RelatedFields(
+            "category",
+            [
+                index.SearchField("name"),
+                index.SearchField("slug"),
+            ],
+        ),
+        index.RelatedFields(
+            "tags",
+            [
+                index.SearchField("name"),
+                index.SearchField("slug"),
+            ],
+        ),
     ]
 
     content_panels = Page.content_panels + [
         MultiFieldPanel(
             [
                 FieldPanel("excerpt"),
-                FieldPanel("topic"),
-                FieldPanel("cover_image"),
-                FieldPanel("published_on"),
+                FieldPanel("author"),
+                FieldPanel("category"),
+                FieldPanel("tags"),
             ],
             heading="Post settings",
         ),

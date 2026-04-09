@@ -1,0 +1,120 @@
+[
+  {
+    "slug": "wagtail-streamfield-quickstart",
+    "title": "Wagtail StreamField Quickstart for Technical Posts",
+    "excerpt": "A DEV Wagtail article showing how structured content blocks can replace a plain text body.",
+    "topic": "Wagtail CMS",
+    "author_username": "mik",
+    "live": true,
+    "published_at": "2026-01-01T09:00:00+01:00",
+    "body": [
+      {
+        "type": "section_heading",
+        "value": {
+          "eyebrow": "Getting started",
+          "title": "Why StreamField fits a technical blog"
+        }
+      },
+      {
+        "type": "rich_text",
+        "value": "<p>StreamField gives you structured authoring instead of a single giant text area. That is especially useful for technical writing where headings, code samples, diagrams, and callouts are part of the normal flow.</p><p>In this project, <b>BlogPostPage.body</b> already supports section headings, rich text, code blocks, Mermaid diagrams, and figures, so the seed data should mirror that model directly.</p>"
+      },
+      {
+        "type": "callout",
+        "value": {
+          "title": "Implementation note",
+          "text": "The Wagtail seeder should create BlogPostPage children under the /articles/ index page instead of inserting rows into the classic posts.Post table.",
+          "tone": "info"
+        }
+      },
+      {
+        "type": "code",
+        "value": {
+          "caption": "Typical DEV command",
+          "language": "bash",
+          "code": "python manage.py seed_dev_wagtail_db",
+          "show_line_numbers": false,
+          "width": "content"
+        }
+      }
+    ]
+  },
+  {
+    "slug": "django-management-commands-for-local-dev",
+    "title": "Designing Django Management Commands for Local DEV Reset",
+    "excerpt": "A DEV Wagtail article that mirrors the reset-and-seed pattern used by the existing SQLite command.",
+    "topic": "Django",
+    "author_username": "mik",
+    "live": true,
+    "published_at": "2026-01-02T09:00:00+01:00",
+    "body": [
+      {
+        "type": "section_heading",
+        "value": {
+          "eyebrow": "Pattern",
+          "title": "Follow the existing reset flow"
+        }
+      },
+      {
+        "type": "rich_text",
+        "value": "<p>The existing <b>seed_dev_db.py</b> command does four important things: it verifies <b>DEBUG=True</b>, confirms SQLite is used, deletes the database file, and runs migrations before seeding. A Wagtail-specific variant should keep that same pattern so local developer workflows stay predictable.</p>"
+      },
+      {
+        "type": "code",
+        "value": {
+          "caption": "Sequence used by the Wagtail seeder",
+          "language": "python",
+          "code": "call_command(\"migrate\")\\ncall_command(\"bootstrap_wagtail_blog\")\\n# create/update users\\n# create/update BlogPostPage pages under /articles/\\n# publish revisions",
+          "show_line_numbers": true,
+          "width": "content"
+        }
+      },
+      {
+        "type": "callout",
+        "value": {
+          "title": "Important difference",
+          "text": "Classic blog posts are ordinary Django model rows. Wagtail posts are pages in the page tree, so they must be added as children of the blog index page and published through revisions.",
+          "tone": "warning"
+        }
+      }
+    ]
+  },
+  {
+    "slug": "mermaid-diagrams-in-wagtail-posts",
+    "title": "Using Mermaid Diagrams Inside Wagtail Blog Posts",
+    "excerpt": "A DEV Wagtail article showing that the seeded body can include Mermaid blocks as first-class content.",
+    "topic": "Architecture",
+    "author_username": "mik",
+    "live": true,
+    "published_at": "2026-01-03T09:00:00+01:00",
+    "body": [
+      {
+        "type": "section_heading",
+        "value": {
+          "eyebrow": "Visualization",
+          "title": "Seed realistic technical content"
+        }
+      },
+      {
+        "type": "rich_text",
+        "value": "<p>The repo already includes a Mermaid block and a matching template, so the Wagtail DEV seed should include at least one example article that uses it. That makes the local CMS more representative and helps validate styling and rendering early.</p>"
+      },
+      {
+        "type": "mermaid",
+        "value": {
+          "caption": "Wagtail seeding flow",
+          "diagram": "flowchart TD\\n    A[seed_dev_wagtail_db] --> B[Delete SQLite DB]\\n    B --> C[Run migrations]\\n    C --> D[Create users]\\n    D --> E[bootstrap_wagtail_blog]\\n    E --> F[Create BlogPostPage pages]\\n    F --> G[Publish revisions]",
+          "width": "wide"
+        }
+      },
+      {
+        "type": "callout",
+        "value": {
+          "title": "Good DEV signal",
+          "text": "If this page renders correctly, your StreamField JSON, templates, and front-end assets are all working together.",
+          "tone": "success"
+        }
+      }
+    ]
+  }
+]

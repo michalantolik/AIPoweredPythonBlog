@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load static wagtailcore_tags wagtailimages_tags %}
+{% load static wagtailcore_tags %}
 
 {% block title %}{{ page.title }} | AI Powered Python Blog{% endblock %}
 
@@ -16,30 +16,35 @@
             <div class="content-area-box content-area-box--article">
                 <article class="detail-card article-detail-card">
                     <div class="chip-row detail-chip-row">
-                        {% if page.topic %}
-                            <span class="mini-chip">{{ page.topic }}</span>
+                        {% if page.category %}
+                            <span class="mini-chip">{{ page.category.name }}</span>
                         {% endif %}
+
+                        {% for tag in page.tags.all %}
+                            <span class="mini-chip muted">{{ tag.name }}</span>
+                        {% empty %}
+                        {% endfor %}
+
                         <span class="mini-chip muted">Wagtail article</span>
                     </div>
 
                     <h1 class="detail-title">{{ page.title }}</h1>
 
                     <div class="detail-meta">
-                        <span>{{ page.published_on|date:"F j, Y" }}</span>
-                        {% if page.owner %}
+                        <span>{{ page.first_published_at|date:"F j, Y" }}</span>
+
+                        {% if page.author %}
                             <span>•</span>
-                            <span>{{ page.owner.get_username }}</span>
+                            {% if page.author.get_full_name %}
+                                <span>{{ page.author.get_full_name }}</span>
+                            {% else %}
+                                <span>{{ page.author.get_username }}</span>
+                            {% endif %}
                         {% endif %}
                     </div>
 
                     {% if page.excerpt %}
                         <p class="detail-excerpt">{{ page.excerpt }}</p>
-                    {% endif %}
-
-                    {% if page.cover_image %}
-                        <figure class="article-cover article-width-wide article-align-center">
-                            {% image page.cover_image width-1600 class="article-cover__image" %}
-                        </figure>
                     {% endif %}
 
                     <div class="article-stream">
