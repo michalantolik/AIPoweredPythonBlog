@@ -1,12 +1,12 @@
-# Documentation
+## CLI Commands
 
-## Start application
+### Start application
 
 ```powershell
 python manage.py runserver
 ```
 
-## Create & apply migrations
+### Create & apply migrations
 
 ```powershell
 python manage.py makemigrations
@@ -14,7 +14,7 @@ python manage.py makemigrations
 python manage.py migrate
 ```
 
-## Run unit & integration tests
+### Run unit & integration tests
 
 ```powershell
 
@@ -29,7 +29,7 @@ python manage.py test posts.tests.test_models
 ```
 
 
-## Run playwright tests
+### Run playwright tests
 
 ```powershell
 pytest tests/playwright
