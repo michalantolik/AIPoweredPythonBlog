@@ -142,7 +142,7 @@ terraform/apprunner.tf
 <br>
 
 
-# ☸️ 6. Kubernetes Deployment
+## ☸️ 6. Kubernetes Deployment
 
 ### ✅ ADVANCED (DEV or PROD)
 
@@ -164,3 +164,92 @@ kubectl apply -f k8s/
 - Full control
 - Microservices architecture
 - Enterprise setups
+
+<br>
+
+
+## ⚙️ 7. CI/CD (GitHub Actions)
+
+### Pipelines:
+
+| Workflow                | Purpose                   |
+| ----------------------- | ------------------------- |
+| `ci.yml`                | Tests / validation        |
+| `ecr.yml`               | Build & push Docker image |
+| `deploy-app-runner.yml` | Deploy to AWS             |
+
+<br>
+
+
+## 🔄 Full Deployment Flow (PROD)
+
+```bash
+Code → GitHub → CI → Build Docker → Push to ECR → Deploy → App Runner
+```
+
+<br>
+
+
+## 🧩 Environment Variables
+
+| File          | Used in           |
+| ------------- | ----------------- |
+| `.env`        | Local (no Docker) |
+| `.env.docker` | Docker            |
+| AWS Secrets   | App Runner / PROD |
+| K8s Secrets   | Kubernetes        |
+
+<br>
+
+
+## ⚠️ Key Differences: DEV vs PROD
+
+| Aspect    | DEV                    | PROD                      |
+| --------- | ---------------------- | ------------------------- |
+| Debug     | ON                     | OFF                       |
+| DB        | Standard / Docker      | Managed (RDS / container) |
+| Secrets   | `.env` / `.env.docker` | AWS / K8s secrets         |
+| Scaling   | None                   | Auto                      |
+| Stability | Low                    | High                      |
+
+<br>
+
+
+## 🧭 Recommended Workflow
+
+### Daily Development
+```bash
+Local → Docker → Commit → Push
+```
+
+### Production Deployment
+```bash
+Push → CI → ECR → App Runner
+```
+
+<br>
+
+
+## 🧱 Architecture Summary
+
+[LOCAL DEV]
+  └── Python / Docker
+
+[BUILD]
+  └── Docker Image
+
+[REGISTRY]
+  └── Amazon ECR
+
+[DEPLOY]
+  ├── App Runner (default)
+  └── Kubernetes (advanced)
+
+<br>
+
+
+## ✅ TL;DR
+- Use **local Python** for quick dev
+- Use **Docker** for consistency
+- Use **ECR + App Runner** for production
+- Use **Kubernetes** only if needed
