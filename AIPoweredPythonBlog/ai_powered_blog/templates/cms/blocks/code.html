@@ -1,0 +1,20 @@
+{% load code_highlight %}
+<section class="article-code article-width-{{ value.width }}">
+    <div class="article-code__frame" data-copy-frame="true">
+        <div class="article-code__toolbar">
+            <div class="article-code__meta">
+                {% if value.caption %}
+                    <span class="article-code__caption">{{ value.caption }}</span>
+                {% endif %}
+                <span class="article-code__lang">{{ value.language }}</span>
+            </div>
+            <button type="button" class="article-copy-button" data-copy-code="true">
+                Copy
+            </button>
+        </div>
+
+        <div class="article-code__body" data-copy-source="true">
+            {% render_highlighted_code value.code value.language value.show_line_numbers %}
+        </div>
+    </div>
+</section>

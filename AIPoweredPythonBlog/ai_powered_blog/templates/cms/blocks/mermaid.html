@@ -1,0 +1,8 @@
+<section class="article-mermaid article-width-{{ value.width }}">
+    {% if value.caption %}
+        <div class="article-block-caption">{{ value.caption }}</div>
+    {% endif %}
+    <div class="article-mermaid__frame">
+        <div class="mermaid">{{ value.diagram }}</div>
+    </div>
+</section>

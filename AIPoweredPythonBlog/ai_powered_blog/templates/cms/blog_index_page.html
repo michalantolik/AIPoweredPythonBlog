@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ page.title }} | AI Powered Python Blog{% endblock %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'css/wagtail_blog.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="shell">
+    <section class="hero-panel article-hero-panel">
+        <div class="hero-top">
+            <div class="hero-left">
+                <div class="hero-badge">
+                    <span class="hero-badge-dot"></span>
+                    Wagtail Technical Publishing
+                </div>
+
+                <h1 class="hero-title">
+                    {{ page.title }}
+                    <span>consistent long-form engineering writing</span>
+                </h1>
+
+                {% if page.intro %}
+                    <p class="hero-description">{{ page.intro }}</p>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+
+    <section class="content-shell">
+        <div class="content-main content-main--full">
+            <div class="content-area-box">
+                <div class="section-header">
+                    <div>
+                        <div class="section-label">WAGTAIL BLOG</div>
+                        <h2 class="section-title-dark">Latest articles</h2>
+                        <p class="section-text-dark">
+                            Published technical posts created in the structured Wagtail editor.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="post-list-stack">
+                    {% for post in posts %}
+                        <article class="post-preview-card">
+                            <div class="post-meta-row">
+                                <div class="chip-row">
+                                    {% if post.topic %}
+                                        <span class="mini-chip">{{ post.topic }}</span>
+                                    {% endif %}
+                                    <span class="mini-chip muted">Wagtail</span>
+                                </div>
+
+                                <div class="meta-inline">
+                                    <span>{{ post.published_on|date:"M j, Y" }}</span>
+                                </div>
+                            </div>
+
+                            <h2 class="post-preview-title">
+                                <a href="{{ post.url }}">{{ post.title }}</a>
+                            </h2>
+
+                            {% if post.excerpt %}
+                                <p class="post-preview-text">{{ post.excerpt }}</p>
+                            {% endif %}
+
+                            <div class="post-preview-footer">
+                                <a class="open-article-link" href="{{ post.url }}">Open full article</a>
+                                <a class="read-post-btn" href="{{ post.url }}">Read post →</a>
+                            </div>
+                        </article>
+                    {% empty %}
+                        <div class="empty-box">
+                            No Wagtail articles published yet.
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %}

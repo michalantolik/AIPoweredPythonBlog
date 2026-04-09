@@ -57,7 +57,23 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django.contrib.sites",
+    "django.contrib.redirects",
+    "taggit",
+    "modelcluster",
+    "wagtail.contrib.forms",
+    "wagtail.contrib.redirects",
+    "wagtail.embeds",
+    "wagtail.sites",
+    "wagtail.users",
+    "wagtail.snippets",
+    "wagtail.documents",
+    "wagtail.images",
+    "wagtail.search",
+    "wagtail.admin",
+    "wagtail",
     "api",
+    "cms",
     "comments",
     "core",
     "posts",
@@ -78,6 +94,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "wagtail.contrib.redirects.middleware.RedirectMiddleware",
 ]
 
 ROOT_URLCONF = "ai_powered_blog.urls"
@@ -156,9 +173,17 @@ STATICFILES_DIRS = [BASE_DIR / "static"]
 STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
+
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-INTRO_OVERLAY_ENABLED = False  # get_bool_env("INTRO_OVERLAY_ENABLED", True)
+SITE_ID = 1
+WAGTAIL_SITE_NAME = "AI Powered Python Blog"
+WAGTAILADMIN_BASE_URL = get_env("WAGTAILADMIN_BASE_URL", "http://127.0.0.1:8000")
+WAGTAILIMAGES_MAX_UPLOAD_SIZE = 10 * 1024 * 1024
+
+INTRO_OVERLAY_ENABLED = False
 INTRO_OVERLAY_DURATION_MS = get_int_env("INTRO_OVERLAY_DURATION_MS", 3600)
 INTRO_OVERLAY_IMAGE = get_env(
     "INTRO_OVERLAY_IMAGE",
@@ -176,7 +201,7 @@ LIVE_POST_FILTER_ENABLED = get_bool_env(
 )
 
 SECURE_CONTENT_TYPE_NOSNIFF = True
-X_FRAME_OPTIONS = "DENY"
+X_FRAME_OPTIONS = "SAMEORIGIN"
 
 SESSION_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SAMESITE = get_env("DJANGO_SESSION_COOKIE_SAMESITE", "Lax")
@@ -198,7 +223,7 @@ APP_CSP_ENABLED = get_bool_env("DJANGO_APP_CSP_ENABLED", True)
 
 APP_CSP_DIRECTIVES = {
     "default-src": ("'self'",),
-    "script-src": ("'self'",),
+    "script-src": ("'self'", "https://cdn.jsdelivr.net"),
     "style-src": ("'self'",),
     "img-src": ("'self'", "data:", "https:"),
     "font-src": ("'self'", "data:"),
@@ -209,7 +234,7 @@ APP_CSP_DIRECTIVES = {
     "form-action": ("'self'",),
 }
 
-APP_CSP_EXCLUDE_PATH_PREFIXES = ("/admin/",)
+APP_CSP_EXCLUDE_PATH_PREFIXES = ("/admin/", "/cms/")
 
 APP_PERMISSIONS_POLICY_ENABLED = get_bool_env(
     "DJANGO_PERMISSIONS_POLICY_ENABLED",

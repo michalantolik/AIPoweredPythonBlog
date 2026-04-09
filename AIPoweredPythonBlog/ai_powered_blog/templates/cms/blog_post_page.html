@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% load static wagtailcore_tags wagtailimages_tags %}
+
+{% block title %}{{ page.title }} | AI Powered Python Blog{% endblock %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'css/wagtail_blog.css' %}">
+    <script type="module" src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs"></script>
+    <script src="{% static 'js/wagtail_blog.js' %}" defer></script>
+{% endblock %}
+
+{% block content %}
+<div class="shell">
+    <section class="content-shell">
+        <div class="content-main content-main--full">
+            <div class="content-area-box">
+                <article class="detail-card article-detail-card">
+                    <div class="chip-row detail-chip-row">
+                        {% if page.topic %}
+                            <span class="mini-chip">{{ page.topic }}</span>
+                        {% endif %}
+                        <span class="mini-chip muted">Wagtail article</span>
+                    </div>
+
+                    <h1 class="detail-title">{{ page.title }}</h1>
+
+                    <div class="detail-meta">
+                        <span>{{ page.published_on|date:"F j, Y" }}</span>
+                        {% if page.owner %}
+                            <span>•</span>
+                            <span>{{ page.owner.get_username }}</span>
+                        {% endif %}
+                    </div>
+
+                    {% if page.excerpt %}
+                        <p class="detail-excerpt">{{ page.excerpt }}</p>
+                    {% endif %}
+
+                    {% if page.cover_image %}
+                        <figure class="article-cover article-width-wide article-align-center">
+                            {% image page.cover_image width-1600 class="article-cover__image" %}
+                        </figure>
+                    {% endif %}
+
+                    <div class="article-stream">
+                        {{ page.body }}
+                    </div>
+                </article>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %}

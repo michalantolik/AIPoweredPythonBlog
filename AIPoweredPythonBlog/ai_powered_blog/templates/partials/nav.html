@@ -13,6 +13,10 @@
                 Home
             </a>
 
+            <a href="/articles/" class="{% if request.path|slice:':10' == '/articles/' %}active{% endif %}">
+                Articles
+            </a>
+
             {% for tag in categories|slice:":4" %}
                 <a
                     href="{% url 'posts:list' %}?category={{ tag.slug }}"
