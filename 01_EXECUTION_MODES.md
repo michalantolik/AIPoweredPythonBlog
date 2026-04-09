@@ -2,10 +2,11 @@
 
 This application supports multiple execution modes:
 
-- Local (standard)
-- Local (docker)
-- AWS (ECR + App Runner)
-- Kubernetes (k8s manifests)
+- Local Standard
+- Local Docker
+- Local Kubernetes
+- Cloud AWS (ECR + App Runner)
+- Cloud AWS Kubernetes
 
 # 🌍 Environments overview
 
