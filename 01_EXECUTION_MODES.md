@@ -21,7 +21,7 @@ This application supports multiple execution modes:
 <br>
 
 
-# 🔗 Environment mapping
+# 🔗 Environments mapping
 
 | Mode              | DEV           | PROD                    |
 | ----------------- | ------------  | ----------------------- |
@@ -36,15 +36,15 @@ This application supports multiple execution modes:
 
 # 🧠 Core principle
 
-- DEV = fast iteration
-- PROD = containerized, reproducible, cloud-ready
+- **DEV = fast iteration**
+- **PROD = containerized, reproducible, cloud-ready**
 
 <br>
 
 
 # 🖥️ 1. Local Standard
 
-✅ DEV ONLY
+✅ **DEV ONLY**
 
 Runs Django directly.
 
@@ -58,7 +58,26 @@ python manage.py migrate
 ```
 
 📌 Notes:
-
 - Fastest feedback loop
 - Uses `.env`
 - No container isolation
+
+<br>
+
+# 🐳 2. Local Docker
+
+✅ **DEV (recommended)**
+⚠️ **Can simulate PROD**
+
+```bash
+docker-compose up --build
+```
+
+📌 Uses:
+- `Dockerfile`
+- `docker-compose.yml`
+- `.env.docker`
+
+📌 Benefits:
+- Same runtime as production
+- Includes DB (Postgres)
