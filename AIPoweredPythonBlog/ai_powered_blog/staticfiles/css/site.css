@@ -600,7 +600,7 @@ a {
 .post-preview-footer {
     margin-top: 28px;
     display: flex;
-    align-items: center;
+    align-items: right;
     justify-content: space-between;
     gap: 18px;
 }
@@ -754,7 +754,7 @@ a {
     .section-header,
     .post-preview-footer {
         flex-direction: column;
-        align-items: flex-start;
+        align-items: flex-end;
     }
 
     .search-placeholder {
