@@ -129,7 +129,7 @@ Uses:
 terraform/apprunner.tf
 ```
 
-Flow:
+📌 Flow:
 - Push image to ECR
 - App Runner pulls image
 - App runs as managed service
@@ -138,3 +138,29 @@ Flow:
 - No infra management
 - Auto scaling
 - HTTPS out of the box
+
+<br>
+
+
+# ☸️ 6. Kubernetes Deployment
+
+### ✅ ADVANCED (DEV or PROD)
+
+Configs:
+```bash
+k8s/
+  django.yaml
+  postgres.yaml
+  configmap.yaml
+  secret.yaml
+```
+
+Deploy:
+```bash
+kubectl apply -f k8s/
+```
+
+📌 Use cases:
+- Full control
+- Microservices architecture
+- Enterprise setups
