@@ -3,7 +3,7 @@
     "slug": "aspnet-core-api-versioning-with-clean-endpoints",
     "title": "ASP.NET Core API Versioning Without Route Chaos",
     "excerpt": "DEV Wagtail seed article for asp.net core api versioning without route chaos in the dotnet-ecosystem category.",
-    "author_username": "mik",
+    "author_username": "Michał Antolik",
     "category_slug": "dotnet-ecosystem",
     "tag_slugs": [
       "dotnet",
@@ -47,7 +47,7 @@
     "slug": "entity-framework-query-shaping-for-read-heavy-screens",
     "title": "Entity Framework Query Shaping for Read-Heavy Screens",
     "excerpt": "DEV Wagtail seed article for entity framework query shaping for read-heavy screens in the dotnet-ecosystem category.",
-    "author_username": "mik",
+    "author_username": "Michał Antolik",
     "category_slug": "dotnet-ecosystem",
     "tag_slugs": [
       "dotnet",
@@ -91,7 +91,7 @@
     "slug": "background-workers-in-dotnet-with-hosted-services",
     "title": "Background Workers in .NET with Hosted Services",
     "excerpt": "DEV Wagtail seed article for background workers in .net with hosted services in the dotnet-ecosystem category.",
-    "author_username": "mik",
+    "author_username": "Michał Antolik",
     "category_slug": "dotnet-ecosystem",
     "tag_slugs": [
       "aspnet-core",

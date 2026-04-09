@@ -3,7 +3,7 @@
     "slug": "django-settings-structure-for-growing-projects",
     "title": "Django Settings Structure for Growing Projects",
     "excerpt": "DEV Wagtail seed article for django settings structure for growing projects in the python-ecosystem category.",
-    "author_username": "mik",
+    "author_username": "Michał Antolik",
     "category_slug": "python-ecosystem",
     "tag_slugs": [
       "python",
@@ -47,7 +47,7 @@
     "slug": "fastapi-background-jobs-for-io-heavy-workflows",
     "title": "FastAPI Background Jobs for IO-Heavy Workflows",
     "excerpt": "DEV Wagtail seed article for fastapi background jobs for io-heavy workflows in the python-ecosystem category.",
-    "author_username": "mik",
+    "author_username": "Michał Antolik",
     "category_slug": "python-ecosystem",
     "tag_slugs": [
       "python",
@@ -91,7 +91,7 @@
     "slug": "python-cli-tools-with-typer-and-clear-boundaries",
     "title": "Python CLI Tools with Typer and Clear Boundaries",
     "excerpt": "DEV Wagtail seed article for python cli tools with typer and clear boundaries in the python-ecosystem category.",
-    "author_username": "mik",
+    "author_username": "Michał Antolik",
     "category_slug": "python-ecosystem",
     "tag_slugs": [
       "django",

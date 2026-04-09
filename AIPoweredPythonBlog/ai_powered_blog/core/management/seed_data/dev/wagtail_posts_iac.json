@@ -3,7 +3,7 @@
     "slug": "terraform-module-boundaries-that-age-well",
     "title": "Terraform Module Boundaries That Age Well",
     "excerpt": "DEV Wagtail seed article for terraform module boundaries that age well in the infrastructure-as-code category.",
-    "author_username": "mik",
+    "author_username": "Michał Antolik",
     "category_slug": "infrastructure-as-code",
     "tag_slugs": [
       "terraform",
@@ -47,7 +47,7 @@
     "slug": "environment-configuration-with-tfvars-and-locals",
     "title": "Environment Configuration with tfvars and locals",
     "excerpt": "DEV Wagtail seed article for environment configuration with tfvars and locals in the infrastructure-as-code category.",
-    "author_username": "mik",
+    "author_username": "Michał Antolik",
     "category_slug": "infrastructure-as-code",
     "tag_slugs": [
       "terraform",
@@ -91,7 +91,7 @@
     "slug": "safe-infrastructure-changes-with-plan-review",
     "title": "Safe Infrastructure Changes with Plan Review Discipline",
     "excerpt": "DEV Wagtail seed article for safe infrastructure changes with plan review discipline in the infrastructure-as-code category.",
-    "author_username": "mik",
+    "author_username": "Michał Antolik",
     "category_slug": "infrastructure-as-code",
     "tag_slugs": [
       "terraform",

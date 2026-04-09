@@ -3,7 +3,7 @@
     "slug": "app-service-vs-app-runner-for-small-platform-teams",
     "title": "Azure App Service vs AWS App Runner for Small Platform Teams",
     "excerpt": "DEV Wagtail seed article for azure app service vs aws app runner for small platform teams in the cloud-aws-azure category.",
-    "author_username": "mik",
+    "author_username": "Michał Antolik",
     "category_slug": "cloud-aws-azure",
     "tag_slugs": [
       "aws",
@@ -47,7 +47,7 @@
     "slug": "managed-secrets-patterns-for-web-apps",
     "title": "Managed Secrets Patterns for Web Applications",
     "excerpt": "DEV Wagtail seed article for managed secrets patterns for web applications in the cloud-aws-azure category.",
-    "author_username": "mik",
+    "author_username": "Michał Antolik",
     "category_slug": "cloud-aws-azure",
     "tag_slugs": [
       "aws",
@@ -91,7 +91,7 @@
     "slug": "designing-observability-baselines-in-cloud-environments",
     "title": "Designing Observability Baselines in Cloud Environments",
     "excerpt": "DEV Wagtail seed article for designing observability baselines in cloud environments in the cloud-aws-azure category.",
-    "author_username": "mik",
+    "author_username": "Michał Antolik",
     "category_slug": "cloud-aws-azure",
     "tag_slugs": [
       "aws",

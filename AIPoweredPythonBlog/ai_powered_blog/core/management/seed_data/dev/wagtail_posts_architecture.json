@@ -3,7 +3,7 @@
     "slug": "modular-monolith-boundaries-for-product-teams",
     "title": "Modular Monolith Boundaries for Product Teams",
     "excerpt": "DEV Wagtail seed article for modular monolith boundaries for product teams in the architecture-patterns category.",
-    "author_username": "mik",
+    "author_username": "Michał Antolik",
     "category_slug": "architecture-patterns",
     "tag_slugs": [
       "architecture",
@@ -47,7 +47,7 @@
     "slug": "event-driven-workflows-without-unnecessary-complexity",
     "title": "Event-Driven Workflows Without Unnecessary Complexity",
     "excerpt": "DEV Wagtail seed article for event-driven workflows without unnecessary complexity in the architecture-patterns category.",
-    "author_username": "mik",
+    "author_username": "Michał Antolik",
     "category_slug": "architecture-patterns",
     "tag_slugs": [
       "architecture",
@@ -91,7 +91,7 @@
     "slug": "choosing-sync-vs-async-in-internal-systems",
     "title": "Choosing Sync vs Async in Internal Systems",
     "excerpt": "DEV Wagtail seed article for choosing sync vs async in internal systems in the architecture-patterns category.",
-    "author_username": "mik",
+    "author_username": "Michał Antolik",
     "category_slug": "architecture-patterns",
     "tag_slugs": [
       "architecture",

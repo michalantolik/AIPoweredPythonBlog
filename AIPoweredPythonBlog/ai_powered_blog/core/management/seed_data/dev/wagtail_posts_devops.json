@@ -3,7 +3,7 @@
     "slug": "release-pipelines-that-favor-repeatability",
     "title": "Release Pipelines That Favor Repeatability Over Heroics",
     "excerpt": "DEV Wagtail seed article for release pipelines that favor repeatability over heroics in the devops-automation category.",
-    "author_username": "mik",
+    "author_username": "Michał Antolik",
     "category_slug": "devops-automation",
     "tag_slugs": [
       "devops",
@@ -47,7 +47,7 @@
     "slug": "shift-left-validation-for-config-and-app-startup",
     "title": "Shift-Left Validation for Config and App Startup",
     "excerpt": "DEV Wagtail seed article for shift-left validation for config and app startup in the devops-automation category.",
-    "author_username": "mik",
+    "author_username": "Michał Antolik",
     "category_slug": "devops-automation",
     "tag_slugs": [
       "devops",
@@ -91,7 +91,7 @@
     "slug": "build-automation-checklists-for-multi-env-projects",
     "title": "Build Automation Checklists for Multi-Environment Projects",
     "excerpt": "DEV Wagtail seed article for build automation checklists for multi-environment projects in the devops-automation category.",
-    "author_username": "mik",
+    "author_username": "Michał Antolik",
     "category_slug": "devops-automation",
     "tag_slugs": [
       "devops",

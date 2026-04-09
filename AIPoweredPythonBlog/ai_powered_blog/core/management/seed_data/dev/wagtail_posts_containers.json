@@ -3,7 +3,7 @@
     "slug": "docker-image-layering-for-faster-feedback",
     "title": "Docker Image Layering for Faster Feedback",
     "excerpt": "DEV Wagtail seed article for docker image layering for faster feedback in the containers-kubernetes category.",
-    "author_username": "mik",
+    "author_username": "Michał Antolik",
     "category_slug": "containers-kubernetes",
     "tag_slugs": [
       "docker",
@@ -47,7 +47,7 @@
     "slug": "kubernetes-probes-that-reflect-real-readiness",
     "title": "Kubernetes Probes That Reflect Real Readiness",
     "excerpt": "DEV Wagtail seed article for kubernetes probes that reflect real readiness in the containers-kubernetes category.",
-    "author_username": "mik",
+    "author_username": "Michał Antolik",
     "category_slug": "containers-kubernetes",
     "tag_slugs": [
       "docker",
@@ -91,7 +91,7 @@
     "slug": "container-debugging-with-logs-shells-and-events",
     "title": "Container Debugging with Logs, Shells, and Events",
     "excerpt": "DEV Wagtail seed article for container debugging with logs, shells, and events in the containers-kubernetes category.",
-    "author_username": "mik",
+    "author_username": "Michał Antolik",
     "category_slug": "containers-kubernetes",
     "tag_slugs": [
       "docker",
