@@ -1,0 +1,132 @@
+[
+  {
+    "slug": "terraform-module-boundaries-that-age-well",
+    "title": "Terraform Module Boundaries That Age Well",
+    "excerpt": "DEV Wagtail seed article for terraform module boundaries that age well in the infrastructure-as-code category.",
+    "author_username": "mik",
+    "category_slug": "infrastructure-as-code",
+    "tag_slugs": [
+      "terraform",
+      "iac"
+    ],
+    "live": true,
+    "published_at": "2026-01-16T09:00:00+01:00",
+    "body": [
+      {
+        "type": "section_heading",
+        "value": {
+          "eyebrow": "Foundations",
+          "title": "Terraform Module Boundaries That Age Well"
+        }
+      },
+      {
+        "type": "rich_text",
+        "value": "<p>This seeded article belongs to the <b>infrastructure-as-code</b> category and is meant to populate the Wagtail DEV blog with realistic technical content. It follows the same StreamField structure as the existing sample data, so the seeder can call <b>to_python(...)</b> and validate the payload before saving the page.</p><p>The goal is not only to test page creation, but also to exercise sidebar category filtering, tag chips, publish timestamps, and rich article rendering under <b>/articles/</b>. Keeping three posts per category makes the local dataset feel balanced and makes sorting by <b>sort_order</b> easy to verify.</p>"
+      },
+      {
+        "type": "code",
+        "value": {
+          "caption": "Seeder-oriented example",
+          "language": "hcl",
+          "code": "resource \"aws_apprunner_service\" \"blog\" {\n  service_name = \"tech-blog\"\n}",
+          "show_line_numbers": true,
+          "width": "content"
+        }
+      },
+      {
+        "type": "callout",
+        "value": {
+          "title": "Why this helps locally",
+          "text": "A seeded technical post like this proves that category filters, tag relationships, and body block rendering all work together.",
+          "tone": "info"
+        }
+      }
+    ]
+  },
+  {
+    "slug": "environment-configuration-with-tfvars-and-locals",
+    "title": "Environment Configuration with tfvars and locals",
+    "excerpt": "DEV Wagtail seed article for environment configuration with tfvars and locals in the infrastructure-as-code category.",
+    "author_username": "mik",
+    "category_slug": "infrastructure-as-code",
+    "tag_slugs": [
+      "terraform",
+      "iac"
+    ],
+    "live": true,
+    "published_at": "2026-01-17T09:00:00+01:00",
+    "body": [
+      {
+        "type": "section_heading",
+        "value": {
+          "eyebrow": "Practical design",
+          "title": "Environment Configuration with tfvars and locals"
+        }
+      },
+      {
+        "type": "rich_text",
+        "value": "<p>This seeded article belongs to the <b>infrastructure-as-code</b> category and is meant to populate the Wagtail DEV blog with realistic technical content. It follows the same StreamField structure as the existing sample data, so the seeder can call <b>to_python(...)</b> and validate the payload before saving the page.</p><p>The goal is not only to test page creation, but also to exercise sidebar category filtering, tag chips, publish timestamps, and rich article rendering under <b>/articles/</b>. Keeping three posts per category makes the local dataset feel balanced and makes sorting by <b>sort_order</b> easy to verify.</p>"
+      },
+      {
+        "type": "callout",
+        "value": {
+          "title": "Operational reminder",
+          "text": "Keep the JSON shape stable. Each post should provide slug, title, excerpt, author, category, tags, publish status, publish time, and a StreamField body array.",
+          "tone": "warning"
+        }
+      },
+      {
+        "type": "code",
+        "value": {
+          "caption": "Representative snippet",
+          "language": "hcl",
+          "code": "locals {\n  env = \"dev\"\n  app = \"tech-blog\"\n}",
+          "show_line_numbers": true,
+          "width": "content"
+        }
+      }
+    ]
+  },
+  {
+    "slug": "safe-infrastructure-changes-with-plan-review",
+    "title": "Safe Infrastructure Changes with Plan Review Discipline",
+    "excerpt": "DEV Wagtail seed article for safe infrastructure changes with plan review discipline in the infrastructure-as-code category.",
+    "author_username": "mik",
+    "category_slug": "infrastructure-as-code",
+    "tag_slugs": [
+      "terraform",
+      "iac"
+    ],
+    "live": true,
+    "published_at": "2026-01-18T09:00:00+01:00",
+    "body": [
+      {
+        "type": "section_heading",
+        "value": {
+          "eyebrow": "Operational view",
+          "title": "Safe Infrastructure Changes with Plan Review Discipline"
+        }
+      },
+      {
+        "type": "rich_text",
+        "value": "<p>This seeded article belongs to the <b>infrastructure-as-code</b> category and is meant to populate the Wagtail DEV blog with realistic technical content. It follows the same StreamField structure as the existing sample data, so the seeder can call <b>to_python(...)</b> and validate the payload before saving the page.</p><p>The goal is not only to test page creation, but also to exercise sidebar category filtering, tag chips, publish timestamps, and rich article rendering under <b>/articles/</b>. Keeping three posts per category makes the local dataset feel balanced and makes sorting by <b>sort_order</b> easy to verify.</p>"
+      },
+      {
+        "type": "mermaid",
+        "value": {
+          "caption": "Simple flow",
+          "diagram": "flowchart TD\n    A[Seed JSON] --> B[Read file]\n    B --> C[Validate StreamField blocks]\n    C --> D[Create or update BlogPostPage]\n    D --> E[Publish revision]",
+          "width": "wide"
+        }
+      },
+      {
+        "type": "callout",
+        "value": {
+          "title": "Design takeaway",
+          "text": "The most useful DEV content is content that looks real enough to validate templates, but simple enough to maintain as source-controlled seed data.",
+          "tone": "success"
+        }
+      }
+    ]
+  }
+]

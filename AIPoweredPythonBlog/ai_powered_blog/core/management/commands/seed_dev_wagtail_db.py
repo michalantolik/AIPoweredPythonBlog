@@ -170,11 +170,25 @@ class Command(BaseCommand):
     def _load_seed_data(self):
         seed_data_dir = Path(__file__).resolve().parent.parent / "seed_data" / "dev"
 
+        wagtail_post_files = [
+            "wagtail_posts_dotnet.json",
+            "wagtail_posts_python.json",
+            "wagtail_posts_cloud.json",
+            "wagtail_posts_devops.json",
+            "wagtail_posts_containers.json",
+            "wagtail_posts_iac.json",
+            "wagtail_posts_architecture.json",
+        ]
+
+        wagtail_posts = []
+        for file_name in wagtail_post_files:
+            wagtail_posts.extend(self._read_json(seed_data_dir / file_name))
+
         return {
             "tags": self._read_json(seed_data_dir / "tags.json"),
             "categories": self._read_json(seed_data_dir / "categories.json"),
             "users": self._read_json(seed_data_dir / "users.json"),
-            "wagtail_posts": self._read_json(seed_data_dir / "wagtail_posts.json"),
+            "wagtail_posts": wagtail_posts,
         }
 
     def _read_json(self, file_path: Path):

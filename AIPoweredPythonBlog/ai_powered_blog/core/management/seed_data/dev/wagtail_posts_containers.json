@@ -1,0 +1,132 @@
+[
+  {
+    "slug": "docker-image-layering-for-faster-feedback",
+    "title": "Docker Image Layering for Faster Feedback",
+    "excerpt": "DEV Wagtail seed article for docker image layering for faster feedback in the containers-kubernetes category.",
+    "author_username": "mik",
+    "category_slug": "containers-kubernetes",
+    "tag_slugs": [
+      "docker",
+      "kubernetes"
+    ],
+    "live": true,
+    "published_at": "2026-01-13T09:00:00+01:00",
+    "body": [
+      {
+        "type": "section_heading",
+        "value": {
+          "eyebrow": "Foundations",
+          "title": "Docker Image Layering for Faster Feedback"
+        }
+      },
+      {
+        "type": "rich_text",
+        "value": "<p>This seeded article belongs to the <b>containers-kubernetes</b> category and is meant to populate the Wagtail DEV blog with realistic technical content. It follows the same StreamField structure as the existing sample data, so the seeder can call <b>to_python(...)</b> and validate the payload before saving the page.</p><p>The goal is not only to test page creation, but also to exercise sidebar category filtering, tag chips, publish timestamps, and rich article rendering under <b>/articles/</b>. Keeping three posts per category makes the local dataset feel balanced and makes sorting by <b>sort_order</b> easy to verify.</p>"
+      },
+      {
+        "type": "code",
+        "value": {
+          "caption": "Seeder-oriented example",
+          "language": "dockerfile",
+          "code": "FROM python:3.12-slim\nWORKDIR /app\nCOPY requirements.txt .\nRUN pip install -r requirements.txt",
+          "show_line_numbers": true,
+          "width": "content"
+        }
+      },
+      {
+        "type": "callout",
+        "value": {
+          "title": "Why this helps locally",
+          "text": "A seeded technical post like this proves that category filters, tag relationships, and body block rendering all work together.",
+          "tone": "info"
+        }
+      }
+    ]
+  },
+  {
+    "slug": "kubernetes-probes-that-reflect-real-readiness",
+    "title": "Kubernetes Probes That Reflect Real Readiness",
+    "excerpt": "DEV Wagtail seed article for kubernetes probes that reflect real readiness in the containers-kubernetes category.",
+    "author_username": "mik",
+    "category_slug": "containers-kubernetes",
+    "tag_slugs": [
+      "docker",
+      "kubernetes"
+    ],
+    "live": true,
+    "published_at": "2026-01-14T09:00:00+01:00",
+    "body": [
+      {
+        "type": "section_heading",
+        "value": {
+          "eyebrow": "Practical design",
+          "title": "Kubernetes Probes That Reflect Real Readiness"
+        }
+      },
+      {
+        "type": "rich_text",
+        "value": "<p>This seeded article belongs to the <b>containers-kubernetes</b> category and is meant to populate the Wagtail DEV blog with realistic technical content. It follows the same StreamField structure as the existing sample data, so the seeder can call <b>to_python(...)</b> and validate the payload before saving the page.</p><p>The goal is not only to test page creation, but also to exercise sidebar category filtering, tag chips, publish timestamps, and rich article rendering under <b>/articles/</b>. Keeping three posts per category makes the local dataset feel balanced and makes sorting by <b>sort_order</b> easy to verify.</p>"
+      },
+      {
+        "type": "callout",
+        "value": {
+          "title": "Operational reminder",
+          "text": "Keep the JSON shape stable. Each post should provide slug, title, excerpt, author, category, tags, publish status, publish time, and a StreamField body array.",
+          "tone": "warning"
+        }
+      },
+      {
+        "type": "code",
+        "value": {
+          "caption": "Representative snippet",
+          "language": "yaml",
+          "code": "livenessProbe:\n  httpGet:\n    path: /health/live\n    port: 8000",
+          "show_line_numbers": true,
+          "width": "content"
+        }
+      }
+    ]
+  },
+  {
+    "slug": "container-debugging-with-logs-shells-and-events",
+    "title": "Container Debugging with Logs, Shells, and Events",
+    "excerpt": "DEV Wagtail seed article for container debugging with logs, shells, and events in the containers-kubernetes category.",
+    "author_username": "mik",
+    "category_slug": "containers-kubernetes",
+    "tag_slugs": [
+      "docker",
+      "kubernetes"
+    ],
+    "live": true,
+    "published_at": "2026-01-15T09:00:00+01:00",
+    "body": [
+      {
+        "type": "section_heading",
+        "value": {
+          "eyebrow": "Operational view",
+          "title": "Container Debugging with Logs, Shells, and Events"
+        }
+      },
+      {
+        "type": "rich_text",
+        "value": "<p>This seeded article belongs to the <b>containers-kubernetes</b> category and is meant to populate the Wagtail DEV blog with realistic technical content. It follows the same StreamField structure as the existing sample data, so the seeder can call <b>to_python(...)</b> and validate the payload before saving the page.</p><p>The goal is not only to test page creation, but also to exercise sidebar category filtering, tag chips, publish timestamps, and rich article rendering under <b>/articles/</b>. Keeping three posts per category makes the local dataset feel balanced and makes sorting by <b>sort_order</b> easy to verify.</p>"
+      },
+      {
+        "type": "mermaid",
+        "value": {
+          "caption": "Simple flow",
+          "diagram": "flowchart TD\n    A[Seed JSON] --> B[Read file]\n    B --> C[Validate StreamField blocks]\n    C --> D[Create or update BlogPostPage]\n    D --> E[Publish revision]",
+          "width": "wide"
+        }
+      },
+      {
+        "type": "callout",
+        "value": {
+          "title": "Design takeaway",
+          "text": "The most useful DEV content is content that looks real enough to validate templates, but simple enough to maintain as source-controlled seed data.",
+          "tone": "success"
+        }
+      }
+    ]
+  }
+]

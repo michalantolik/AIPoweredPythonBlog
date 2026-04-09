@@ -1,0 +1,132 @@
+[
+  {
+    "slug": "app-service-vs-app-runner-for-small-platform-teams",
+    "title": "Azure App Service vs AWS App Runner for Small Platform Teams",
+    "excerpt": "DEV Wagtail seed article for azure app service vs aws app runner for small platform teams in the cloud-aws-azure category.",
+    "author_username": "mik",
+    "category_slug": "cloud-aws-azure",
+    "tag_slugs": [
+      "aws",
+      "azure"
+    ],
+    "live": true,
+    "published_at": "2026-01-07T09:00:00+01:00",
+    "body": [
+      {
+        "type": "section_heading",
+        "value": {
+          "eyebrow": "Foundations",
+          "title": "Azure App Service vs AWS App Runner for Small Platform Teams"
+        }
+      },
+      {
+        "type": "rich_text",
+        "value": "<p>This seeded article belongs to the <b>cloud-aws-azure</b> category and is meant to populate the Wagtail DEV blog with realistic technical content. It follows the same StreamField structure as the existing sample data, so the seeder can call <b>to_python(...)</b> and validate the payload before saving the page.</p><p>The goal is not only to test page creation, but also to exercise sidebar category filtering, tag chips, publish timestamps, and rich article rendering under <b>/articles/</b>. Keeping three posts per category makes the local dataset feel balanced and makes sorting by <b>sort_order</b> easy to verify.</p>"
+      },
+      {
+        "type": "code",
+        "value": {
+          "caption": "Seeder-oriented example",
+          "language": "yaml",
+          "code": "resourceGroup: rg-tech-blog\nservice: managed-app-platform",
+          "show_line_numbers": true,
+          "width": "content"
+        }
+      },
+      {
+        "type": "callout",
+        "value": {
+          "title": "Why this helps locally",
+          "text": "A seeded technical post like this proves that category filters, tag relationships, and body block rendering all work together.",
+          "tone": "info"
+        }
+      }
+    ]
+  },
+  {
+    "slug": "managed-secrets-patterns-for-web-apps",
+    "title": "Managed Secrets Patterns for Web Applications",
+    "excerpt": "DEV Wagtail seed article for managed secrets patterns for web applications in the cloud-aws-azure category.",
+    "author_username": "mik",
+    "category_slug": "cloud-aws-azure",
+    "tag_slugs": [
+      "aws",
+      "azure"
+    ],
+    "live": true,
+    "published_at": "2026-01-08T09:00:00+01:00",
+    "body": [
+      {
+        "type": "section_heading",
+        "value": {
+          "eyebrow": "Practical design",
+          "title": "Managed Secrets Patterns for Web Applications"
+        }
+      },
+      {
+        "type": "rich_text",
+        "value": "<p>This seeded article belongs to the <b>cloud-aws-azure</b> category and is meant to populate the Wagtail DEV blog with realistic technical content. It follows the same StreamField structure as the existing sample data, so the seeder can call <b>to_python(...)</b> and validate the payload before saving the page.</p><p>The goal is not only to test page creation, but also to exercise sidebar category filtering, tag chips, publish timestamps, and rich article rendering under <b>/articles/</b>. Keeping three posts per category makes the local dataset feel balanced and makes sorting by <b>sort_order</b> easy to verify.</p>"
+      },
+      {
+        "type": "callout",
+        "value": {
+          "title": "Operational reminder",
+          "text": "Keep the JSON shape stable. Each post should provide slug, title, excerpt, author, category, tags, publish status, publish time, and a StreamField body array.",
+          "tone": "warning"
+        }
+      },
+      {
+        "type": "code",
+        "value": {
+          "caption": "Representative snippet",
+          "language": "text",
+          "code": "Use managed identity, secret store integration, and structured logs as the default baseline.",
+          "show_line_numbers": true,
+          "width": "content"
+        }
+      }
+    ]
+  },
+  {
+    "slug": "designing-observability-baselines-in-cloud-environments",
+    "title": "Designing Observability Baselines in Cloud Environments",
+    "excerpt": "DEV Wagtail seed article for designing observability baselines in cloud environments in the cloud-aws-azure category.",
+    "author_username": "mik",
+    "category_slug": "cloud-aws-azure",
+    "tag_slugs": [
+      "aws",
+      "azure"
+    ],
+    "live": true,
+    "published_at": "2026-01-09T09:00:00+01:00",
+    "body": [
+      {
+        "type": "section_heading",
+        "value": {
+          "eyebrow": "Operational view",
+          "title": "Designing Observability Baselines in Cloud Environments"
+        }
+      },
+      {
+        "type": "rich_text",
+        "value": "<p>This seeded article belongs to the <b>cloud-aws-azure</b> category and is meant to populate the Wagtail DEV blog with realistic technical content. It follows the same StreamField structure as the existing sample data, so the seeder can call <b>to_python(...)</b> and validate the payload before saving the page.</p><p>The goal is not only to test page creation, but also to exercise sidebar category filtering, tag chips, publish timestamps, and rich article rendering under <b>/articles/</b>. Keeping three posts per category makes the local dataset feel balanced and makes sorting by <b>sort_order</b> easy to verify.</p>"
+      },
+      {
+        "type": "mermaid",
+        "value": {
+          "caption": "Simple flow",
+          "diagram": "flowchart TD\n    A[Seed JSON] --> B[Read file]\n    B --> C[Validate StreamField blocks]\n    C --> D[Create or update BlogPostPage]\n    D --> E[Publish revision]",
+          "width": "wide"
+        }
+      },
+      {
+        "type": "callout",
+        "value": {
+          "title": "Design takeaway",
+          "text": "The most useful DEV content is content that looks real enough to validate templates, but simple enough to maintain as source-controlled seed data.",
+          "tone": "success"
+        }
+      }
+    ]
+  }
+]
