@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.db import models
+from django.db.models import Count, Q
 from modelcluster.fields import ParentalManyToManyField
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel
 from wagtail.fields import StreamField
@@ -23,22 +24,52 @@ class BlogIndexPage(Page):
     intro = models.TextField(blank=True)
 
     parent_page_types = ["wagtailcore.Page"]
+    subpage_types = ["cms.BlogPostPage"]
 
     content_panels = Page.content_panels + [
         FieldPanel("intro"),
     ]
 
-    subpage_types = ["cms.BlogPostPage"]
+    def get_posts_queryset(self):
+        return (
+            BlogPostPage.objects.child_of(self)
+            .live()
+            .public()
+            .select_related("author", "category")
+            .prefetch_related("tags")
+            .order_by("-first_published_at")
+        )
+
+    def get_sidebar_categories(self):
+        return (
+            Category.objects.annotate(
+                published_posts_count=Count(
+                    "blog_posts",
+                    filter=Q(blog_posts__live=True),
+                    distinct=True,
+                )
+            )
+            .filter(published_posts_count__gt=0)
+            .order_by("sort_order", "name")
+        )
 
     def get_context(self, request):
         context = super().get_context(request)
-        context["posts"] = (
-            self.get_children()
-            .live()
-            .public()
-            .specific()
-            .order_by("-first_published_at")
-        )
+
+        category_slug = request.GET.get("category", "").strip()
+        categories = self.get_sidebar_categories()
+        posts = self.get_posts_queryset()
+        selected_category = None
+
+        if category_slug:
+            selected_category = categories.filter(slug=category_slug).first()
+            if selected_category:
+                posts = posts.filter(category=selected_category)
+
+        context["posts"] = posts
+        context["categories"] = categories
+        context["selected_category"] = selected_category
+        context["sidebar_base_url"] = self.url
         return context
 
     class Meta:
