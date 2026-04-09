@@ -12,12 +12,42 @@
 {% block content %}
 <div class="shell">
     <section class="content-shell content-shell-single">
-        <div class="content-main content-main--full">
+        <div class="content-main content-main--full article-detail-main">
             <div class="content-area-box content-area-box--article">
+                <div class="article-detail-topbar">
+                    <div class="article-breadcrumbs" aria-label="Breadcrumb">
+                        <a class="article-breadcrumbs__back" href="{{ page.get_parent.url }}">
+                            <span aria-hidden="true">←</span>
+                            <span>All Posts</span>
+                        </a>
+
+                        {% if page.category %}
+                            <span class="article-breadcrumbs__separator" aria-hidden="true">›</span>
+                            <a
+                                class="article-breadcrumbs__link"
+                                href="{{ page.get_parent.url }}?category={{ page.category.slug }}"
+                            >
+                                {{ page.category.name }}
+                            </a>
+                        {% endif %}
+
+                        <span class="article-breadcrumbs__separator" aria-hidden="true">›</span>
+                        <span class="article-breadcrumbs__current" title="{{ page.title }}">
+                            {{ page.title }}
+                        </span>
+                    </div>
+
+                    <a class="read-post-btn article-detail-topbar__cta" href="{{ page.get_parent.url }}">
+                        Browse all posts
+                    </a>
+                </div>
+
                 <article class="detail-card article-detail-card">
                     <div class="chip-row detail-chip-row">
                         {% if page.category %}
-                            <span class="mini-chip">{{ page.category.name }}</span>
+                            <a class="mini-chip" href="{{ page.get_parent.url }}?category={{ page.category.slug }}">
+                                {{ page.category.name }}
+                            </a>
                         {% endif %}
 
                         {% for tag in page.tags.all %}
