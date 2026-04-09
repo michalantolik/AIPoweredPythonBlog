@@ -44,7 +44,7 @@ This application supports multiple execution modes:
 
 ## 🖥️ 1. Local Standard
 
-✅ **DEV ONLY**
+### ✅ DEV ONLY
 
 Runs Django directly.
 
