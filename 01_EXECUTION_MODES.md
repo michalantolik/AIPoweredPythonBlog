@@ -232,6 +232,7 @@ Push → CI → ECR → App Runner
 
 ## 🧱 Architecture Summary
 
+```
 [LOCAL DEV]
   └── Python / Docker
 
@@ -244,6 +245,7 @@ Push → CI → ECR → App Runner
 [DEPLOY]
   ├── App Runner (default)
   └── Kubernetes (advanced)
+```
 
 <br>
 
