@@ -64,6 +64,7 @@ python manage.py migrate
 
 <br>
 
+
 # 🐳 2. Local Docker
 
 ✅ **DEV (recommended)**
@@ -81,3 +82,36 @@ docker-compose up --build
 📌 Benefits:
 - Same runtime as production
 - Includes DB (Postgres)
+
+<br>
+
+
+# 📦 3. Docker Image (Build Once)
+
+This is the **bridge between DEV and PROD**
+
+```bash
+docker build -t ai-blog .
+```
+
+<br>
+
+# ☁️ 4. Push to Amazon ECR
+
+✅ **REQUIRED FOR PROD**
+
+GitHub Action:
+```bash
+.github/workflows/ecr.yml
+```
+
+Manual flow:
+```bash
+aws ecr get-login-password ...
+
+docker tag ai-blog:latest <ECR_URL>
+docker push <ECR_URL>
+```
+
+📌 Output:
+- Versioned container image in AWS
