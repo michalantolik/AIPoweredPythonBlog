@@ -92,6 +92,17 @@ class MermaidBlock(blocks.StructBlock):
         template = "cms/blocks/mermaid.html"
 
 
+class PlantUMLBlock(blocks.StructBlock):
+    caption = blocks.CharBlock(required=False, max_length=120)
+    source = blocks.TextBlock(required=True)
+    width = blocks.ChoiceBlock(choices=WIDTH_CHOICES, default="wide")
+
+    class Meta:
+        icon = "diagram"
+        label = "PlantUML diagram"
+        template = "cms/blocks/plantuml.html"
+
+
 class FigureBlock(blocks.StructBlock):
     image = ImageChooserBlock(required=True)
     caption = blocks.CharBlock(required=False, max_length=180)

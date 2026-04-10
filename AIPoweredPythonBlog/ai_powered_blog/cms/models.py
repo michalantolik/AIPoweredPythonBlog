@@ -15,6 +15,7 @@ from .blocks import (
     CodeBlock,
     FigureBlock,
     MermaidBlock,
+    PlantUMLBlock,
     RichSectionBlock,
     SectionHeadingBlock,
 )
@@ -119,6 +120,7 @@ class BlogPostPage(Page):
             ("callout", CalloutBlock()),
             ("code", CodeBlock()),
             ("mermaid", MermaidBlock()),
+            ("plantuml", PlantUMLBlock()),
             ("figure", FigureBlock()),
         ],
         use_json_field=True,

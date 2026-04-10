@@ -1,0 +1,14 @@
+{% load plantuml_tags %}
+<section class="article-plantuml article-width-{{ value.width }}">
+    <div class="article-plantuml__frame">
+        {% if value.caption %}
+            <div class="article-plantuml__toolbar">
+                <div class="article-plantuml__caption">{{ value.caption }}</div>
+            </div>
+        {% endif %}
+
+        <div class="article-plantuml__canvas">
+            {% render_plantuml value.source %}
+        </div>
+    </div>
+</section>
