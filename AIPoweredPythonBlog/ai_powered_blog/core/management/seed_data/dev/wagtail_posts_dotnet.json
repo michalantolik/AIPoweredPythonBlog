@@ -1,8 +1,8 @@
 [
   {
-    "slug": "aspnet-core-api-versioning-with-clean-endpoints",
-    "title": "ASP.NET Core API Versioning Without Route Chaos",
-    "excerpt": "DEV Wagtail seed article for asp.net core api versioning without route chaos in the dotnet-ecosystem category.",
+    "slug": "aspnet-core-big-picture-what-it-is-and-why-it-exists",
+    "title": "ASP.NET Core Big Picture: What It Is and Why It Exists",
+    "excerpt": "A simple starting point: what ASP.NET Core is, why web application frameworks matter, and what kinds of apps you can build with it.",
     "author_username": "Michał Antolik",
     "category_slug": "dotnet-ecosystem",
     "tag_slugs": [
@@ -15,38 +15,40 @@
       {
         "type": "section_heading",
         "value": {
-          "eyebrow": "Foundations",
-          "title": "ASP.NET Core API Versioning Without Route Chaos"
+          "eyebrow": "Start here",
+          "title": "ASP.NET Core Big Picture: What It Is and Why It Exists"
         }
       },
       {
         "type": "rich_text",
-        "value": "<p>This seeded article belongs to the <b>dotnet-ecosystem</b> category and is meant to populate the Wagtail DEV blog with realistic technical content. It follows the same StreamField structure as the existing sample data, so the seeder can call <b>to_python(...)</b> and validate the payload before saving the page.</p><p>The goal is not only to test page creation, but also to exercise sidebar category filtering, tag chips, publish timestamps, and rich article rendering under <b>/articles/</b>. Keeping three posts per category makes the local dataset feel balanced and makes sorting by <b>sort_order</b> easy to verify.</p>"
-      },
-      {
-        "type": "code",
-        "value": {
-          "caption": "Seeder-oriented example",
-          "language": "csharp",
-          "code": "builder.Services.AddApiVersioning();\napp.MapGroup(\"/api/v1\");",
-          "show_line_numbers": true,
-          "width": "content"
-        }
+        "value": "<p>ASP.NET Core is Microsoft's web application framework for .NET. In plain words, it gives you the tools and structure to build web apps without having to invent everything yourself.</p><p>A static website mostly serves fixed HTML and CSS files. A web application does more. It reads data, applies rules, handles forms, and reacts to user actions. That is where a framework helps. It gives you a proven way to organize code, handle requests, and build features faster.</p><p>The big reason ASP.NET Core exists is simple: modern web apps need more than just pages. They need front ends, APIs, real-time features, routing, validation, security, and maintainable code. ASP.NET Core brings those building blocks together in one platform.</p><p>It is also a strong fit for .NET developers because it runs on top of .NET, uses C#, is open source, works on Windows and Linux, and is known for strong performance.</p><p>From a high level, ASP.NET Core supports three front-end styles: <b>MVC</b>, <b>Razor Pages</b>, and <b>Blazor</b>. For back ends, it supports <b>Web API</b> and <b>gRPC</b>. For real-time communication, it includes <b>SignalR</b>.</p><p>That means you are not learning five separate worlds. You are learning one platform with different ways to solve different kinds of problems.</p>"
       },
       {
         "type": "callout",
         "value": {
-          "title": "Why this helps locally",
-          "text": "A seeded technical post like this proves that category filters, tag relationships, and body block rendering all work together.",
-          "tone": "info"
+          "title": "Main idea",
+          "text": "ASP.NET Core is not just for making pages. It is a full web platform for building server-rendered apps, client-rendered apps, APIs, and real-time features.",
+          "tone": "success"
         }
+      },
+      {
+        "type": "mermaid",
+        "value": {
+          "caption": "The big picture",
+          "diagram": "flowchart TD\n    A[ASP.NET Core] --> B[Server-rendered UI]\n    A --> C[Client-rendered UI]\n    A --> D[Back-end APIs]\n    A --> E[Real-time features]\n    B --> B1[MVC]\n    B --> B2[Razor Pages]\n    C --> C1[Blazor]\n    D --> D1[Web API]\n    D --> D2[gRPC]\n    E --> E1[SignalR]",
+          "width": "wide"
+        }
+      },
+      {
+        "type": "rich_text",
+        "value": "<p>If you are choosing a web framework in the .NET world, ASP.NET Core is the default serious option. Other platforms have their own frameworks, but if your team already knows .NET, this one gives you the shortest path to productive web development.</p><p>The goal of this course section was not to teach every feature in depth. It was to answer the first important question clearly: <i>what is ASP.NET Core, and why would I use it?</i></p>"
       }
     ]
   },
   {
-    "slug": "entity-framework-query-shaping-for-read-heavy-screens",
-    "title": "Entity Framework Query Shaping for Read-Heavy Screens",
-    "excerpt": "DEV Wagtail seed article for entity framework query shaping for read-heavy screens in the dotnet-ecosystem category.",
+    "slug": "how-an-aspnet-core-app-starts-kestrel-di-middleware-and-razor",
+    "title": "How an ASP.NET Core App Starts: Kestrel, DI, Middleware, and Razor",
+    "excerpt": "A clear look at what happens when an ASP.NET Core app starts and which shared building blocks all app styles use.",
     "author_username": "Michał Antolik",
     "category_slug": "dotnet-ecosystem",
     "tag_slugs": [
@@ -59,43 +61,47 @@
       {
         "type": "section_heading",
         "value": {
-          "eyebrow": "Practical design",
-          "title": "Entity Framework Query Shaping for Read-Heavy Screens"
+          "eyebrow": "Foundation",
+          "title": "How an ASP.NET Core App Starts"
         }
       },
       {
         "type": "rich_text",
-        "value": "<p>This seeded article belongs to the <b>dotnet-ecosystem</b> category and is meant to populate the Wagtail DEV blog with realistic technical content. It follows the same StreamField structure as the existing sample data, so the seeder can call <b>to_python(...)</b> and validate the payload before saving the page.</p><p>The goal is not only to test page creation, but also to exercise sidebar category filtering, tag chips, publish timestamps, and rich article rendering under <b>/articles/</b>. Keeping three posts per category makes the local dataset feel balanced and makes sorting by <b>sort_order</b> easy to verify.</p>"
-      },
-      {
-        "type": "callout",
-        "value": {
-          "title": "Operational reminder",
-          "text": "Keep the JSON shape stable. Each post should provide slug, title, excerpt, author, category, tags, publish status, publish time, and a StreamField body array.",
-          "tone": "warning"
-        }
+        "value": "<p>Every ASP.NET Core application starts as a normal .NET program. Execution begins in <code>Program.cs</code>. That file creates a builder, builds an app, configures services and middleware, and finally runs the application.</p><p>When the app runs, it starts listening for HTTP requests. In development, this is usually done by <b>Kestrel</b>, the built-in web server. That is why you can press Run and open a browser right away without first setting up IIS or NGINX.</p><p>In production, Kestrel is often placed behind another web server or reverse proxy such as IIS or NGINX. Kestrel still runs the app, but the front server handles concerns like central management, hosting multiple apps, or infrastructure-specific features.</p><p>Another core piece is <b>dependency injection</b>. ASP.NET Core has a built-in DI container. You register services up front, and then the framework gives those services to controllers, pages, components, and other classes when needed.</p><p>Then comes the <b>middleware pipeline</b>. Middleware are steps that handle requests one after another. Routing, static files, authentication, authorization, and exception handling all live here. If middleware is missing, that feature simply does not exist in the app.</p><p>And finally, for UI rendering, ASP.NET Core uses <b>Razor</b>. Razor is basically HTML with embedded C#. It lets you mix markup with simple server-side logic in a readable way.</p>"
       },
       {
         "type": "code",
         "value": {
-          "caption": "Representative snippet",
-          "language": "text",
-          "code": "Use managed identity, secret store integration, and structured logs as the default baseline.",
+          "caption": "Typical startup shape",
+          "language": "csharp",
+          "code": "var builder = WebApplication.CreateBuilder(args);\n\nbuilder.Services.AddRazorPages();\n\nvar app = builder.Build();\n\napp.UseStaticFiles();\napp.UseRouting();\napp.UseAuthorization();\napp.MapRazorPages();\n\napp.Run();",
           "show_line_numbers": true,
           "width": "content"
         }
+      },
+      {
+        "type": "callout",
+        "value": {
+          "title": "Why this matters",
+          "text": "MVC, Razor Pages, Blazor Server, Web API, and other ASP.NET Core styles all sit on the same foundation: hosting, dependency injection, middleware, and routing. Learn these once and they keep paying off.",
+          "tone": "info"
+        }
+      },
+      {
+        "type": "rich_text",
+        "value": "<p>One small but important detail: static files such as CSS, JavaScript, and images are normally served from <code>wwwroot</code>. Files outside that folder are not exposed automatically.</p><p>The order of middleware also matters. Requests move through the pipeline in sequence, so you must place middleware in a sensible order. Routing must happen before endpoint execution. Authorization must happen before protected endpoints run.</p><p>Once you understand startup, DI, middleware, and Razor, the rest of ASP.NET Core becomes much easier to understand.</p>"
       }
     ]
   },
   {
-    "slug": "background-workers-in-dotnet-with-hosted-services",
-    "title": "Background Workers in .NET with Hosted Services",
-    "excerpt": "DEV Wagtail seed article for background workers in .net with hosted services in the dotnet-ecosystem category.",
+    "slug": "razor-pages-explained-simple-page-focused-aspnet-core",
+    "title": "Razor Pages Explained: The Simple Page-Focused Way to Build ASP.NET Core UI",
+    "excerpt": "A practical explanation of Razor Pages, routing by page, forms, model binding, validation, and when this style feels natural.",
     "author_username": "Michał Antolik",
     "category_slug": "dotnet-ecosystem",
     "tag_slugs": [
-      "aspnet-core",
-      "entity-framework"
+      "dotnet",
+      "aspnet-core"
     ],
     "live": true,
     "published_at": "2026-01-03T09:00:00+01:00",
@@ -103,29 +109,469 @@
       {
         "type": "section_heading",
         "value": {
-          "eyebrow": "Operational view",
-          "title": "Background Workers in .NET with Hosted Services"
+          "eyebrow": "Server-rendered UI",
+          "title": "Razor Pages Explained"
         }
       },
       {
         "type": "rich_text",
-        "value": "<p>This seeded article belongs to the <b>dotnet-ecosystem</b> category and is meant to populate the Wagtail DEV blog with realistic technical content. It follows the same StreamField structure as the existing sample data, so the seeder can call <b>to_python(...)</b> and validate the payload before saving the page.</p><p>The goal is not only to test page creation, but also to exercise sidebar category filtering, tag chips, publish timestamps, and rich article rendering under <b>/articles/</b>. Keeping three posts per category makes the local dataset feel balanced and makes sorting by <b>sort_order</b> easy to verify.</p>"
+        "value": "<p>Razor Pages is one of the easiest ways to build a server-rendered ASP.NET Core web app. The idea is simple: each page in your app has a Razor file for markup and a page model class for logic.</p><p>Routing is also easy. A URL maps naturally to a page. For example, a request to <code>/create</code> goes to <code>Create.cshtml</code>. A page named <code>Index</code> acts as the default page for a folder.</p><p>This page-first structure works well when your app naturally looks like a set of screens: list page, details page, create page, edit page, and so on.</p><p>Razor Pages also supports layouts, so common HTML like headers and footers can live in one shared file instead of being repeated in every page.</p>"
+      },
+      {
+        "type": "code",
+        "value": {
+          "caption": "A simple page model",
+          "language": "csharp",
+          "code": "public class IndexModel : PageModel\n{\n    private readonly IProductRepository _productRepository;\n\n    public IEnumerable<Product> Products { get; private set; } = [];\n\n    public IndexModel(IProductRepository productRepository)\n    {\n        _productRepository = productRepository;\n    }\n\n    public void OnGet()\n    {\n        Products = _productRepository.GetAll();\n    }\n}",
+          "show_line_numbers": true,
+          "width": "content"
+        }
+      },
+      {
+        "type": "rich_text",
+        "value": "<p>Posting forms is also straightforward. You can bind posted data to a property using <code>[BindProperty]</code>. Then in <code>OnPost</code>, ASP.NET Core fills that object automatically from the submitted form values.</p><p>Validation works well with <b>data annotations</b>. If your model says a field is required, ASP.NET Core can validate that and add errors to <code>ModelState</code>. If validation fails, you return the same page and show the errors. If it succeeds, you save the data and redirect.</p><p>Tag helpers make the markup cleaner. Attributes such as <code>asp-page</code>, <code>asp-for</code>, and <code>asp-validation-summary</code> help generate correct links, form fields, and validation output without hardcoding too much HTML by hand.</p>"
+      },
+      {
+        "type": "callout",
+        "value": {
+          "title": "When Razor Pages shines",
+          "text": "Choose Razor Pages when your UI is mostly page-based and you want simple routing, less ceremony, and code that is easy to follow screen by screen.",
+          "tone": "success"
+        }
+      }
+    ]
+  },
+  {
+    "slug": "aspnet-core-mvc-explained-with-clear-comparison-to-razor-pages",
+    "title": "ASP.NET Core MVC Explained, with a Clear Comparison to Razor Pages",
+    "excerpt": "How MVC works, what controller-action-view means in practice, and when MVC makes more sense than Razor Pages.",
+    "author_username": "Michał Antolik",
+    "category_slug": "dotnet-ecosystem",
+    "tag_slugs": [
+      "dotnet",
+      "aspnet-core"
+    ],
+    "live": true,
+    "published_at": "2026-01-04T09:00:00+01:00",
+    "body": [
+      {
+        "type": "section_heading",
+        "value": {
+          "eyebrow": "Server-rendered UI",
+          "title": "ASP.NET Core MVC Explained"
+        }
+      },
+      {
+        "type": "rich_text",
+        "value": "<p>MVC stands for <b>Model-View-Controller</b>. In ASP.NET Core MVC, requests are routed to controller actions. Those actions prepare data and return views. The views then render HTML for the browser.</p><p>Compared to Razor Pages, MVC separates concerns more clearly. Controllers handle request flow, models carry data, and views handle rendering. That can make larger apps easier to structure, especially when many screens share common logic or reusable views.</p><p>Routing is more flexible than in Razor Pages, but also a bit more complex. Instead of mapping directly to files, URLs map to controllers and actions. A route like <code>/product/index</code> usually means the <code>Index</code> action on <code>ProductController</code>.</p>"
+      },
+      {
+        "type": "code",
+        "value": {
+          "caption": "A typical MVC action",
+          "language": "csharp",
+          "code": "public class ProductController : Controller\n{\n    private readonly IProductRepository _productRepository;\n\n    public ProductController(IProductRepository productRepository)\n    {\n        _productRepository = productRepository;\n    }\n\n    public IActionResult Index()\n    {\n        var products = _productRepository.GetAll();\n        return View(products);\n    }\n}",
+          "show_line_numbers": true,
+          "width": "content"
+        }
+      },
+      {
+        "type": "rich_text",
+        "value": "<p>Posting data in MVC works much like Razor Pages. ASP.NET Core can bind form values directly to action parameters. Validation still uses the same data annotations and the same <code>ModelState</code> idea.</p><p>The real question is not whether MVC is better. The question is whether its separation helps your team. MVC is often a better fit when you want more reuse across pages, more explicit structure, or stronger separation between request handling and UI files.</p><p>Razor Pages is often easier for smaller page-based apps. MVC can feel better for apps with more shared UI patterns and more complex request flows.</p>"
       },
       {
         "type": "mermaid",
         "value": {
-          "caption": "Simple flow",
-          "diagram": "flowchart TD\n    A[Seed JSON] --> B[Read file]\n    B --> C[Validate StreamField blocks]\n    C --> D[Create or update BlogPostPage]\n    D --> E[Publish revision]",
+          "caption": "Razor Pages vs MVC",
+          "diagram": "flowchart LR\n    A[Browser request] --> B{Choose style}\n    B --> C[Razor Page]\n    B --> D[Controller action]\n    C --> E[PageModel + .cshtml]\n    D --> F[Controller + View + Model]",
           "width": "wide"
         }
       },
       {
         "type": "callout",
         "value": {
-          "title": "Design takeaway",
-          "text": "The most useful DEV content is content that looks real enough to validate templates, but simple enough to maintain as source-controlled seed data.",
+          "title": "Simple rule of thumb",
+          "text": "If you think in pages, Razor Pages often feels simpler. If you think in request flows, reusable views, and controller logic, MVC often feels more natural.",
+          "tone": "info"
+        }
+      }
+    ]
+  },
+  {
+    "slug": "blazor-basics-how-client-rendered-ui-works-in-aspnet-core",
+    "title": "Blazor Basics: How Client-rendered UI Works in ASP.NET Core",
+    "excerpt": "A plain-English introduction to Blazor, components, routing, data binding, and why Blazor feels different from MVC and Razor Pages.",
+    "author_username": "Michał Antolik",
+    "category_slug": "dotnet-ecosystem",
+    "tag_slugs": [
+      "dotnet",
+      "aspnet-core"
+    ],
+    "live": true,
+    "published_at": "2026-01-05T09:00:00+01:00",
+    "body": [
+      {
+        "type": "section_heading",
+        "value": {
+          "eyebrow": "Client-rendered UI",
+          "title": "Blazor Basics"
+        }
+      },
+      {
+        "type": "rich_text",
+        "value": "<p>Blazor is ASP.NET Core's component-based UI framework. Instead of building your front end with controllers and views, you build it with reusable components.</p><p>A component can be a full page, like a product list, or a small reusable piece, like a newsletter signup or logo. This makes UI reuse much easier because the markup and logic live together.</p><p>Blazor apps feel different from server-rendered apps because navigation and UI updates can happen inside the browser without asking the server for a full new HTML page every time. That is why Blazor is used for single-page application experiences.</p><p>Components are written in Razor, but instead of <code>.cshtml</code>, Blazor uses <code>.razor</code> files. They contain markup, C# code, parameters, event handlers, and data binding.</p>"
+      },
+      {
+        "type": "code",
+        "value": {
+          "caption": "A simple Blazor page",
+          "language": "csharp",
+          "code": "@page \"/\"\n@inject ProductApiService ProductApiService\n\n<ul>\n@foreach (var product in Products)\n{\n    <li>@product.Name - @product.Price</li>\n}\n</ul>\n\n@code {\n    private IEnumerable<Product> Products = [];\n\n    protected override async Task OnInitializedAsync()\n    {\n        Products = await ProductApiService.GetAll();\n    }\n}",
+          "show_line_numbers": true,
+          "width": "content"
+        }
+      },
+      {
+        "type": "rich_text",
+        "value": "<p>Blazor supports one-way and two-way data binding. If a property changes, the UI can update automatically. If the user types into a bound input, the property changes too.</p><p>Validation also feels familiar because Blazor can use the same data annotations you already know from the rest of ASP.NET Core. Components such as <code>EditForm</code>, <code>InputText</code>, and <code>ValidationSummary</code> make that easy.</p><p>This means Blazor gives you a more interactive UI model without forcing you to leave C# and .NET behind.</p>"
+      },
+      {
+        "type": "callout",
+        "value": {
+          "title": "Why developers like Blazor",
+          "text": "Blazor lets .NET developers build rich browser experiences with C#, Razor, components, and familiar validation patterns instead of switching fully to a JavaScript-first stack.",
           "tone": "success"
         }
+      }
+    ]
+  },
+  {
+    "slug": "blazor-webassembly-vs-server-vs-full-stack-web-app",
+    "title": "Blazor WebAssembly vs Blazor Server vs Full-Stack Blazor Web App",
+    "excerpt": "A practical comparison of the Blazor hosting models and when each one makes sense.",
+    "author_username": "Michał Antolik",
+    "category_slug": "dotnet-ecosystem",
+    "tag_slugs": [
+      "dotnet",
+      "aspnet-core"
+    ],
+    "live": true,
+    "published_at": "2026-01-06T09:00:00+01:00",
+    "body": [
+      {
+        "type": "section_heading",
+        "value": {
+          "eyebrow": "Client-rendered options",
+          "title": "Blazor Hosting Models"
+        }
+      },
+      {
+        "type": "rich_text",
+        "value": "<p>Blazor has more than one hosting model, and this is where many people get confused. The UI programming model is very similar across them, but where the work happens is different.</p><p><b>Blazor WebAssembly</b> runs .NET code in the browser by using a .NET runtime compiled to WebAssembly. The browser downloads the app and then handles much of the UI work locally.</p><p><b>Blazor Server</b> keeps the app running on the server. The browser gets UI updates over a live SignalR connection. The result still feels like a single-page app, but the rendering work happens on the server.</p><p>In .NET 8 and newer, there is also the <b>Blazor Web App</b> model. It lets you mix static rendering, server interactivity, and WebAssembly interactivity in one solution. That gives you more control over where each component should run.</p>"
+      },
+      {
+        "type": "mermaid",
+        "value": {
+          "caption": "Three Blazor options",
+          "diagram": "flowchart TD\n    A[Blazor] --> B[WebAssembly]\n    A --> C[Server]\n    A --> D[Blazor Web App]\n    B --> B1[Runs in browser]\n    C --> C1[Runs on server over SignalR]\n    D --> D1[Mix static + server + WebAssembly]",
+          "width": "wide"
+        }
+      },
+      {
+        "type": "rich_text",
+        "value": "<p>WebAssembly is great when you want client-side execution, better offline potential, and lower server-side UI workload after the app loads. The tradeoff is bigger initial download and some limitations compared to full server-side .NET.</p><p>Blazor Server starts faster and can use the full .NET stack on the server, but it needs a stable live connection and can become more expensive to scale because the server stays deeply involved in every connected session.</p><p>The new mixed model in .NET 8 is powerful because not every component needs the same treatment. Some components are static and do not need interactivity. Others need forms, events, and richer browser behavior. You can choose per component instead of choosing one model for the whole app.</p>"
+      },
+      {
+        "type": "callout",
+        "value": {
+          "title": "Practical advice",
+          "text": "Write components in a way that keeps them portable when possible. That makes it easier to move between WebAssembly, Server, and mixed rendering later.",
+          "tone": "warning"
+        }
+      }
+    ]
+  },
+  {
+    "slug": "aspnet-core-web-api-rest-basics-explained-clearly",
+    "title": "ASP.NET Core Web API: REST Basics Explained Clearly",
+    "excerpt": "A simple guide to REST, controllers, endpoints, status codes, JSON, and why Web API is such a common choice.",
+    "author_username": "Michał Antolik",
+    "category_slug": "dotnet-ecosystem",
+    "tag_slugs": [
+      "dotnet",
+      "aspnet-core"
+    ],
+    "live": true,
+    "published_at": "2026-01-07T09:00:00+01:00",
+    "body": [
+      {
+        "type": "section_heading",
+        "value": {
+          "eyebrow": "Back-end APIs",
+          "title": "ASP.NET Core Web API"
+        }
+      },
+      {
+        "type": "rich_text",
+        "value": "<p>When a front end needs data, business rules, or persistence, a back-end API is often the right tool. In ASP.NET Core, the standard way to build that is <b>Web API</b>.</p><p>Web API usually follows REST ideas. Data is exposed through URLs, and HTTP methods describe what should happen. <code>GET</code> reads data, <code>POST</code> creates data, and <code>PUT</code> updates data.</p><p>Responses also communicate status through HTTP codes. <code>200 OK</code> means success, <code>404 Not Found</code> means the item is missing, <code>400 Bad Request</code> means the caller sent invalid data, and <code>201 Created</code> means a new resource was created.</p><p>By default, ASP.NET Core Web API uses JSON for serialization. That is one reason it is so widely used: many clients across many platforms can work with JSON easily.</p>"
+      },
+      {
+        "type": "code",
+        "value": {
+          "caption": "A simple Web API controller",
+          "language": "csharp",
+          "code": "[ApiController]\n[Route(\"[controller]\")]\npublic class ProductController : ControllerBase\n{\n    [HttpGet]\n    public ActionResult<IEnumerable<Product>> GetAll()\n    {\n        return Ok(_productRepository.GetAll());\n    }\n\n    [HttpGet(\"{id:int}\")]\n    public ActionResult<Product> GetOne(int id)\n    {\n        var product = _productRepository.GetById(id);\n        return product is null ? NotFound() : Ok(product);\n    }\n}",
+          "show_line_numbers": true,
+          "width": "content"
+        }
+      },
+      {
+        "type": "rich_text",
+        "value": "<p>The <code>[ApiController]</code> attribute adds helpful API behavior, including better model validation behavior and API-focused conventions. Attribute routing makes endpoints easy to read because the route lives close to the action.</p><p>ASP.NET Core also works well with <b>Swagger/OpenAPI</b>. That gives you live API documentation and a quick way to send test requests in the browser.</p><p>If your front end is Blazor WebAssembly, a mobile app, another service, or even a third-party consumer, Web API is often the first back-end technology to consider.</p>"
+      },
+      {
+        "type": "callout",
+        "value": {
+          "title": "Best fit",
+          "text": "Web API is a strong default for public APIs and general-purpose internal APIs because JSON and HTTP are widely understood and easy to consume.",
+          "tone": "success"
+        }
+      }
+    ]
+  },
+  {
+    "slug": "minimal-apis-and-consuming-apis-from-blazor",
+    "title": "Minimal APIs and Consuming APIs from Blazor",
+    "excerpt": "How minimal APIs differ from controller-based APIs and how a Blazor app can call an ASP.NET Core API cleanly.",
+    "author_username": "Michał Antolik",
+    "category_slug": "dotnet-ecosystem",
+    "tag_slugs": [
+      "dotnet",
+      "aspnet-core"
+    ],
+    "live": true,
+    "published_at": "2026-01-08T09:00:00+01:00",
+    "body": [
+      {
+        "type": "section_heading",
+        "value": {
+          "eyebrow": "Back-end APIs",
+          "title": "Minimal APIs and API Consumption"
+        }
+      },
+      {
+        "type": "rich_text",
+        "value": "<p>ASP.NET Core also supports <b>minimal APIs</b>. Instead of creating controller classes, you define endpoints directly in <code>Program.cs</code>. This can make small APIs feel faster to build and easier to scan.</p><p>The basic idea is very direct: map a route and provide the handler code. Dependency injection still works, route values still bind, and you can still return status codes and payloads.</p><p>The tradeoff is that some controller conveniences do not come for free. Validation behavior, organization, and larger-scale structure often need more manual thought.</p>"
+      },
+      {
+        "type": "code",
+        "value": {
+          "caption": "A minimal API endpoint",
+          "language": "csharp",
+          "code": "app.MapGet(\"/product\", (IProductRepository productRepository) =>\n{\n    var products = productRepository.GetAll();\n    return products.Any()\n        ? Results.Ok(products)\n        : Results.NoContent();\n});\n\napp.MapPost(\"/product\", (Product product, IProductRepository productRepository) =>\n{\n    productRepository.Add(product);\n    return Results.Created($\"/product/{product.Id}\", product);\n});",
+          "show_line_numbers": true,
+          "width": "content"
+        }
+      },
+      {
+        "type": "rich_text",
+        "value": "<p>On the client side, a Blazor app usually talks to the API through <code>HttpClient</code>. A small service class is a good place to keep that code. It helps keep pages and components clean.</p><p>That service can send requests, deserialize JSON, and centralize API details like base URLs and error handling. The UI then depends on your own service instead of depending directly on raw HTTP calls everywhere.</p><p>This keeps the front end easier to test and easier to change later.</p>"
+      },
+      {
+        "type": "callout",
+        "value": {
+          "title": "Simple design tip",
+          "text": "Whether you use controllers or minimal APIs, let your Blazor components call an app-level service instead of scattering raw HTTP request code all over the UI.",
+          "tone": "info"
+        }
+      }
+    ]
+  },
+  {
+    "slug": "grpc-in-aspnet-core-fast-contract-first-apis",
+    "title": "gRPC in ASP.NET Core: Fast, Contract-First APIs",
+    "excerpt": "What gRPC is, how protocol buffers work, and why gRPC is often a strong choice for internal service-to-service communication.",
+    "author_username": "Michał Antolik",
+    "category_slug": "dotnet-ecosystem",
+    "tag_slugs": [
+      "dotnet",
+      "aspnet-core"
+    ],
+    "live": true,
+    "published_at": "2026-01-09T09:00:00+01:00",
+    "body": [
+      {
+        "type": "section_heading",
+        "value": {
+          "eyebrow": "Back-end APIs",
+          "title": "gRPC in ASP.NET Core"
+        }
+      },
+      {
+        "type": "rich_text",
+        "value": "<p>gRPC is another way to build APIs in ASP.NET Core, but it works differently from REST. Instead of building around HTTP verbs like <code>GET</code> and <code>POST</code>, gRPC is based on <b>remote procedure calls</b>. In simple words, the client calls a remote method.</p><p>gRPC uses <b>protocol buffers</b> for serialization. That format is compact and binary, which makes it more efficient than JSON in many cases. It also uses a contract file, usually a <code>.proto</code> file, to define services, request types, and response types.</p><p>That contract-first approach is one of the biggest differences. Both server and client can generate code from the same contract. The server gets a base service to implement, and the client gets a strongly typed client class to call.</p>"
+      },
+      {
+        "type": "code",
+        "value": {
+          "caption": "A simple proto idea",
+          "language": "text",
+          "code": "service Products {\n  rpc GetAll (AllProductsRequest) returns (AllProductsResponse);\n  rpc CreateNew (CreateNewRequest) returns (CreateNewResponse);\n}",
+          "show_line_numbers": true,
+          "width": "content"
+        }
+      },
+      {
+        "type": "rich_text",
+        "value": "<p>This gives you a very nice developer experience inside one organization. The client does not need to build raw HTTP requests by hand. It calls methods on a generated class. The generated code handles the transport details.</p><p>The downside is tighter coupling. When the contract changes, clients usually need updates too. That is why gRPC often fits best for internal systems where you control both ends.</p><p>In ASP.NET Core, adding gRPC means registering gRPC services, implementing the generated base class, and mapping the service. On the client, you register the generated client type and call it like a normal dependency.</p>"
+      },
+      {
+        "type": "callout",
+        "value": {
+          "title": "When gRPC shines",
+          "text": "Use gRPC when performance matters, contracts are controlled, and communication is mainly internal between services or trusted applications.",
+          "tone": "success"
+        }
+      }
+    ]
+  },
+  {
+    "slug": "web-api-vs-grpc-how-to-choose-in-aspnet-core",
+    "title": "Web API vs gRPC: How to Choose in ASP.NET Core",
+    "excerpt": "A direct comparison of REST and gRPC without hype, so you can choose the right API style for the job.",
+    "author_username": "Michał Antolik",
+    "category_slug": "dotnet-ecosystem",
+    "tag_slugs": [
+      "dotnet",
+      "aspnet-core"
+    ],
+    "live": true,
+    "published_at": "2026-01-10T09:00:00+01:00",
+    "body": [
+      {
+        "type": "section_heading",
+        "value": {
+          "eyebrow": "Decision making",
+          "title": "Web API vs gRPC"
+        }
+      },
+      {
+        "type": "rich_text",
+        "value": "<p>The easiest way to compare Web API and gRPC is to think about what comes first.</p><p>With <b>Web API</b>, the data is front and center. You expose resources through URLs and use HTTP conventions to work with them. The messages are usually JSON, which is easy for humans to read and easy for many kinds of clients to consume.</p><p>With <b>gRPC</b>, the contract comes first. You define methods and message types in a proto file. The transport is more optimized, the payload is binary, and the client usually works through generated code instead of raw HTTP knowledge.</p><p>That makes Web API looser and more public-friendly, while gRPC is usually tighter and more internal-friendly.</p>"
+      },
+      {
+        "type": "mermaid",
+        "value": {
+          "caption": "Choosing between Web API and gRPC",
+          "diagram": "flowchart TD\n    A[Need an API] --> B{Who will consume it?}\n    B --> C[Many external or mixed clients]\n    B --> D[Internal controlled clients]\n    C --> E[Web API]\n    D --> F{Need high performance and strong contract?}\n    F --> G[gRPC]\n    F --> H[Web API can still work]",
+          "width": "wide"
+        }
+      },
+      {
+        "type": "rich_text",
+        "value": "<p>Choose <b>Web API</b> when broad compatibility, easy debugging, and public consumption matter. Choose <b>gRPC</b> when speed, efficient payloads, and strongly typed contracts matter more.</p><p>Also remember that this is not always an either-or decision. An ASP.NET Core application can expose REST endpoints and gRPC services side by side. That gives you a public-friendly surface for outside consumers and a high-performance surface for internal services.</p><p>That combination can be a very practical architecture.</p>"
+      },
+      {
+        "type": "callout",
+        "value": {
+          "title": "No drama choice",
+          "text": "Web API is the safer general default. gRPC is the sharper internal-performance tool. Use the one that matches the consumer and the constraints.",
+          "tone": "warning"
+        }
+      }
+    ]
+  },
+  {
+    "slug": "signalr-in-aspnet-core-for-simple-real-time-updates",
+    "title": "SignalR in ASP.NET Core for Simple Real-Time Updates",
+    "excerpt": "How SignalR works, what hubs do, and why SignalR is great for live UI updates but not usually your main business API.",
+    "author_username": "Michał Antolik",
+    "category_slug": "dotnet-ecosystem",
+    "tag_slugs": [
+      "dotnet",
+      "aspnet-core"
+    ],
+    "live": true,
+    "published_at": "2026-01-11T09:00:00+01:00",
+    "body": [
+      {
+        "type": "section_heading",
+        "value": {
+          "eyebrow": "Real-time features",
+          "title": "SignalR in ASP.NET Core"
+        }
+      },
+      {
+        "type": "rich_text",
+        "value": "<p>Most web requests start with the client asking the server for something. SignalR solves a different problem: what if the <b>server</b> needs to notify the <b>client</b> when something happens?</p><p>That is useful for chat, dashboards, notifications, collaborative features, live status updates, and scenarios where one user changes data and other users should see the update immediately.</p><p>SignalR gives you that by maintaining a two-way connection between client and server. Under the hood, it can use WebSockets and other supported techniques. The server side uses a <b>hub</b>, and both sides can call methods on each other.</p>"
+      },
+      {
+        "type": "code",
+        "value": {
+          "caption": "A simple hub method",
+          "language": "csharp",
+          "code": "public class ProductHub : Hub\n{\n    public async Task SendMessageToAll(string message)\n    {\n        await Clients.All.SendAsync(\"Message\", message);\n    }\n}",
+          "show_line_numbers": true,
+          "width": "content"
+        }
+      },
+      {
+        "type": "rich_text",
+        "value": "<p>A common pattern is this: a normal API request creates or updates data, and then the server uses SignalR to notify connected clients about the change. The clients update their UI immediately.</p><p>This is exactly where SignalR shines. It is excellent for live updates. It is usually <i>not</i> the best replacement for your main API surface because it depends on a persistent connection and does not give you the same contract-first clarity as Web API or gRPC.</p><p>So think of SignalR as an add-on real-time channel, not as the main way to model all server-side business operations.</p>"
+      },
+      {
+        "type": "callout",
+        "value": {
+          "title": "Best use of SignalR",
+          "text": "Use SignalR for non-critical live communication and UI refresh scenarios. Keep your core business operations in Web API or gRPC, then use SignalR to notify clients that something changed.",
+          "tone": "success"
+        }
+      }
+    ]
+  },
+  {
+    "slug": "aspnet-core-big-picture-what-to-learn-next",
+    "title": "ASP.NET Core Big Picture: What to Learn Next",
+    "excerpt": "A practical close to the course: how the pieces fit together and a sensible path for learning ASP.NET Core step by step.",
+    "author_username": "Michał Antolik",
+    "category_slug": "dotnet-ecosystem",
+    "tag_slugs": [
+      "dotnet",
+      "aspnet-core"
+    ],
+    "live": true,
+    "published_at": "2026-01-12T09:00:00+01:00",
+    "body": [
+      {
+        "type": "section_heading",
+        "value": {
+          "eyebrow": "Next steps",
+          "title": "ASP.NET Core Big Picture: What to Learn Next"
+        }
+      },
+      {
+        "type": "rich_text",
+        "value": "<p>By this point, the main picture should be clear. ASP.NET Core is one platform with several application styles. MVC and Razor Pages are for server-rendered UI. Blazor is for component-based interactive UI. Web API and gRPC are for back-end communication. SignalR adds real-time features.</p><p>Just as important, all of these share the same foundation: hosting, dependency injection, middleware, routing, validation, and .NET itself. That means learning one part well makes the next part easier.</p><p>If you are deciding what to learn next, start with the category that matches your real work. Need server-rendered business screens? Start with Razor Pages or MVC. Need a rich interactive .NET front end? Start with Blazor. Need back-end services? Start with Web API, then learn gRPC when strong internal contracts or performance matter.</p><p>After that, build something small. Use Swagger for Web API testing. Build a simple client for gRPC. Connect a front end to a back end. Then add SignalR after you already understand at least one front-end and one back-end path.</p>"
+      },
+      {
+        "type": "mermaid",
+        "value": {
+          "caption": "A practical learning path",
+          "diagram": "flowchart TD\n    A[Pick your real need] --> B{Category}\n    B --> C[Server-rendered UI]\n    B --> D[Client-rendered UI]\n    B --> E[Back-end APIs]\n    C --> C1[Razor Pages or MVC]\n    D --> D1[Blazor]\n    E --> E1[Web API first]\n    E1 --> E2[gRPC next if needed]\n    C1 --> F[Build a small app]\n    D1 --> F\n    E2 --> F\n    F --> G[Combine front end and back end]\n    G --> H[Add SignalR if real-time helps]",
+          "width": "wide"
+        }
+      },
+      {
+        "type": "callout",
+        "value": {
+          "title": "Final takeaway",
+          "text": "Do not try to master every ASP.NET Core technology at once. Pick the one closest to your real problem, learn it well, build something, and then expand.",
+          "tone": "info"
+        }
+      },
+      {
+        "type": "rich_text",
+        "value": "<p>That is the real value of the big picture. You do not leave with every detail memorized. You leave knowing what each tool is for, how the tools relate to each other, and which one you should study next.</p>"
       }
     ]
   }
