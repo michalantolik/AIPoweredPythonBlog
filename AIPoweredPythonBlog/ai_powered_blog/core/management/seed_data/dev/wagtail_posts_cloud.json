@@ -1,560 +1,232 @@
 [
   {
-    "slug": "what-is-aws-and-why-cloud-computing-matters",
-    "title": "What Is AWS and Why Cloud Computing Matters",
-    "excerpt": "A simple explanation of AWS, cloud computing, and the main problems the cloud helps solve: scalability, performance, and fault tolerance.",
+    "slug": "understanding-aws-and-its-global-infrastructure",
+    "title": "Understanding AWS and Its Global Infrastructure",
+    "excerpt": "A simple and practical guide to cloud computing, core AWS services, global infrastructure, and how companies organize AWS resources.",
     "author_username": "Michał Antolik",
     "category_slug": "cloud-aws-azure",
     "tag_slugs": [
       "aws"
     ],
     "live": true,
-    "published_at": "2026-01-07T09:00:00+01:00",
+    "published_at": "2026-04-10T09:00:00+01:00",
     "body": [
       {
         "type": "section_heading",
         "value": {
-          "eyebrow": "AWS basics",
-          "title": "What cloud computing is really trying to solve"
+          "eyebrow": "Start here",
+          "title": "What problem does the cloud solve?"
         }
       },
       {
         "type": "rich_text",
-        "value": "<p>Before learning AWS, it helps to understand what cloud computing is and why it became so important. A lot of people use the word <b>cloud</b>, but many still think of it as something vague or magical. It is not magic. It is a practical way to run applications, store data, and deliver services over the internet using infrastructure that is spread across many places.</p><p>Cloud computing became popular because traditional infrastructure created three big problems for modern applications: <b>scalability</b>, <b>performance</b>, and <b>fault tolerance</b>.</p>"
-      },
-      {
-        "type": "section_heading",
-        "value": {
-          "eyebrow": "Problem 1",
-          "title": "Scalability"
-        }
-      },
-      {
-        "type": "rich_text",
-        "value": "<p>Imagine you run an online flower shop. Most days, traffic is normal. But on Mother's Day, a huge number of people visit your site at the same time. In a traditional setup, you would need to buy and install extra servers to survive that traffic spike.</p><p>The problem is simple: after the busy period ends, those extra servers are still there, and you still have to maintain them. That means wasted money, wasted effort, and hardware that sits mostly unused.</p><p>Cloud computing solves this by letting you scale up when demand grows and scale down when demand drops. You use more resources only when you need them.</p>"
+        "value": "<p>Cloud computing exists because traditional infrastructure creates three common problems: <b>scaling</b>, <b>performance</b>, and <b>reliability</b>.</p><p>Imagine you run an online flower shop. On normal days, traffic is fine. But on days like Mother's Day, traffic jumps fast. In a traditional setup, you would need to buy and maintain extra servers just in case traffic spikes. Then after the spike is gone, those servers sit mostly unused.</p><p>That is expensive and inefficient.</p><p>Another problem appears when users are far away from your data center. If your application runs in one location but your users are spread across the world, requests take longer. That means more latency and a worse user experience.</p><p>And if everything depends on one data center, that data center becomes a single point of failure. A network issue, power problem, or natural disaster can take the whole application down.</p><p>The cloud solves these problems by giving you access to infrastructure that is distributed across many locations and available on demand.</p>"
       },
       {
         "type": "callout",
         "value": {
-          "title": "Simple idea",
-          "text": "In the cloud, you do not need to guess all your future capacity up front. You can adjust as demand changes.",
-          "tone": "info"
+          "title": "In one sentence",
+          "text": "The cloud is a global network of servers that lets you run applications, store data, and deliver services over the internet without owning the physical infrastructure yourself.",
+          "tone": "success"
         }
       },
       {
         "type": "section_heading",
         "value": {
-          "eyebrow": "Problem 2",
-          "title": "Performance"
+          "eyebrow": "Simple mental model",
+          "title": "Traditional infrastructure vs cloud"
         }
-      },
-      {
-        "type": "rich_text",
-        "value": "<p>If all your infrastructure sits in one data center, users who are far away may experience slow response times. Data has to travel long distances, and that adds latency.</p><p>For example, if your application runs in one country but your users are spread around the world, some users may get a much slower experience than others.</p><p>Cloud providers solve this by running infrastructure in many geographic locations. That lets you place services and data closer to your users.</p>"
-      },
-      {
-        "type": "section_heading",
-        "value": {
-          "eyebrow": "Problem 3",
-          "title": "Fault tolerance"
-        }
-      },
-      {
-        "type": "rich_text",
-        "value": "<p>If your application depends on one data center, that data center becomes a single point of failure. If it goes down because of a network issue, power problem, or natural disaster, your application can go down too.</p><p>Cloud providers reduce this risk by giving you access to many data centers and many locations. This makes it easier to design systems that keep working even when one part fails.</p>"
       },
       {
         "type": "mermaid",
         "value": {
-          "caption": "Traditional setup vs cloud setup",
-          "diagram": "flowchart LR\n    A[Single data center] --> B[Limited scale]\n    A --> C[Higher latency for distant users]\n    A --> D[Single point of failure]\n    E[Cloud infrastructure] --> F[Scale up and down]\n    E --> G[Serve users closer to them]\n    E --> H[Improve resilience]",
+          "caption": "Why cloud changed the game",
+          "diagram": "flowchart LR\n    A[Traditional IT] --> A1[Buy servers first]\n    A --> A2[Guess future capacity]\n    A --> A3[Maintain hardware]\n    A --> A4[Risk wasted cost]\n\n    B[Cloud] --> B1[Provision on demand]\n    B --> B2[Scale up and down]\n    B --> B3[Pay for usage]\n    B --> B4[Focus on the product]",
           "width": "wide"
         }
       },
       {
-        "type": "section_heading",
-        "value": {
-          "eyebrow": "Big shift",
-          "title": "From capital expense to operational expense"
-        }
-      },
-      {
         "type": "rich_text",
-        "value": "<p>Traditional infrastructure is usually a <b>capital expense</b>. You buy hardware first, often based on estimates. If you guess wrong, you either waste money or run out of capacity.</p><p>Cloud computing changes that model. It turns infrastructure into more of an <b>operational expense</b>. You pay as you go and use resources on demand.</p><p>This is one of the biggest reasons cloud platforms changed the industry. Small teams and even solo developers can build serious applications without first buying and running their own hardware.</p>"
-      },
-      {
-        "type": "callout",
-        "value": {
-          "title": "Main takeaway",
-          "text": "The cloud lets you focus more on the business problem and less on buying, maintaining, and replacing infrastructure.",
-          "tone": "success"
-        }
-      }
-    ]
-  },
-  {
-    "slug": "history-of-aws-and-the-services-that-built-it",
-    "title": "The History of AWS and the Services That Built It",
-    "excerpt": "How Amazon's internal scaling problems led to AWS, and why services like S3, EC2, RDS, and DynamoDB became so important.",
-    "author_username": "Michał Antolik",
-    "category_slug": "cloud-aws-azure",
-    "tag_slugs": [
-      "aws"
-    ],
-    "live": true,
-    "published_at": "2026-01-08T09:00:00+01:00",
-    "body": [
-      {
-        "type": "section_heading",
-        "value": {
-          "eyebrow": "Origins",
-          "title": "AWS started as an internal Amazon problem"
-        }
-      },
-      {
-        "type": "rich_text",
-        "value": "<p>The story of AWS starts with Amazon growing fast. In the early days, Amazon was no longer just selling books and DVDs. It was expanding into more products and also allowing third-party sellers to use the Amazon marketplace.</p><p>That growth created a lot of technical pressure. Amazon had to store huge amounts of product data and images, and it had to keep its systems working as traffic and complexity increased.</p><p>Instead of thinking about the company as one giant application, Amazon started thinking in terms of <b>services</b>. Different parts of the business could be built and developed independently. This was a big architectural shift, and it laid the groundwork for AWS.</p>"
+        "value": "<p>Traditional infrastructure is usually a <b>capital expense</b>. You buy hardware up front and hope your estimate is right.</p><p>Cloud infrastructure is much closer to an <b>operational expense</b>. You provision resources when you need them and pay for what you use.</p><p>That is why even a small team, or a single developer, can build serious systems without first building a data center.</p>"
       },
       {
         "type": "section_heading",
         "value": {
-          "eyebrow": "The opportunity",
-          "title": "Excess capacity became a business idea"
+          "eyebrow": "AWS basics",
+          "title": "What is AWS?"
         }
       },
       {
         "type": "rich_text",
-        "value": "<p>As Amazon grew, it also built more data centers. At some point, it realized something important: it had infrastructure capacity that could be used not only by Amazon itself, but also by outside customers.</p><p>That idea became the basis for AWS. If Amazon already knew how to run large-scale infrastructure, why not offer that infrastructure as a service?</p><p>By 2003, Amazon had already identified three key building blocks needed for a cloud platform: <b>compute</b>, <b>storage</b>, and <b>database services</b>.</p>"
+        "value": "<p><b>AWS</b> stands for <b>Amazon Web Services</b>. It is Amazon's cloud platform.</p><p>AWS gives you building blocks for running modern systems in the cloud. That includes compute, storage, networking, databases, security, analytics, AI, and many other services.</p><p>The big idea is simple: instead of building and managing everything yourself, you rent the infrastructure and services you need from AWS.</p>"
+      },
+      {
+        "type": "section_heading",
+        "value": {
+          "eyebrow": "Why AWS exists",
+          "title": "How Amazon's own growth led to AWS"
+        }
+      },
+      {
+        "type": "rich_text",
+        "value": "<p>AWS started because Amazon had hard internal technical problems.</p><p>As Amazon grew beyond books and DVDs and opened its marketplace to third-party sellers, it had to store huge amounts of product data and images and support much more traffic.</p><p>Amazon began moving away from thinking of the company as one giant application. Instead, it started defining internal <b>services</b> that could be built and operated independently.</p><p>At the same time, Amazon kept building more data centers and ended up with a lot of infrastructure capacity. Eventually it realized that this infrastructure could be offered not only to Amazon teams, but also to external customers.</p><p>That was the beginning of AWS.</p>"
       },
       {
         "type": "section_heading",
         "value": {
           "eyebrow": "Core services",
-          "title": "The early AWS services that still matter today"
+          "title": "The early AWS services you should know first"
         }
-      },
-      {
-        "type": "rich_text",
-        "value": "<p>In 2006, AWS launched services that are still major parts of the platform today.</p><p><b>Amazon S3</b> gave developers scalable object storage. This was perfect for storing things like product images, backups, files, and many other kinds of data. With S3, developers no longer had to worry so much about running out of storage capacity or manually building resilience for stored objects.</p><p><b>Amazon EC2</b> gave customers virtual servers in the cloud. Instead of buying hardware, you could launch compute resources on demand. This was a major change because you paid for what you used instead of buying servers first.</p><p>Then in 2009, AWS introduced <b>RDS</b>, the Relational Database Service. Before that, you could run a database on EC2, but then you had to manage more things yourself. RDS took a common task and turned it into a managed service, making database operations much simpler.</p>"
-      },
-      {
-        "type": "callout",
-        "value": {
-          "title": "Important pattern",
-          "text": "A big AWS theme is turning hard operational work into managed services. You usually pay a bit more for that service, but you save time and reduce operational effort.",
-          "tone": "info"
-        }
-      },
-      {
-        "type": "section_heading",
-        "value": {
-          "eyebrow": "Database evolution",
-          "title": "Why DynamoDB mattered"
-        }
-      },
-      {
-        "type": "rich_text",
-        "value": "<p>In 2012, AWS launched <b>DynamoDB</b>, a non-relational database designed for distributed applications that need strong performance at scale. This was especially useful for workloads that needed fast reads and writes across large systems.</p><p>DynamoDB became one of the best-known AWS database services because it matched cloud-native application patterns very well. It was built for scale, speed, and managed operation.</p>"
       },
       {
         "type": "code",
         "value": {
-          "caption": "A simple way to remember the early AWS foundation",
+          "caption": "The simplest way to remember the foundation",
           "language": "text",
-          "code": "S3  = object storage\nEC2 = virtual compute\nRDS = managed relational database\nDynamoDB = managed NoSQL database",
+          "code": "S3        = object storage\nEC2       = virtual servers / compute\nRDS       = managed relational database\nDynamoDB  = managed NoSQL database",
           "show_line_numbers": true,
           "width": "content"
         }
       },
       {
-        "type": "section_heading",
-        "value": {
-          "eyebrow": "Today",
-          "title": "AWS grew far beyond those first services"
-        }
-      },
-      {
         "type": "rich_text",
-        "value": "<p>Today AWS offers well over 200 services. But you do not need to know all of them to understand AWS well. In fact, many strong AWS solutions are still built on top of the same basic ideas: compute, storage, networking, databases, and managed services.</p><p>If you understand why S3, EC2, RDS, and DynamoDB were important, you already understand a lot about how AWS thinks.</p>"
-      }
-    ]
-  },
-  {
-    "slug": "how-companies-use-aws-in-the-real-world",
-    "title": "How Companies Use AWS in the Real World",
-    "excerpt": "A practical look at what companies actually do with AWS: data platforms, backups, object storage, IoT, AI, enterprise IT, and more.",
-    "author_username": "Michał Antolik",
-    "category_slug": "cloud-aws-azure",
-    "tag_slugs": [
-      "aws"
-    ],
-    "live": true,
-    "published_at": "2026-01-09T09:00:00+01:00",
-    "body": [
-      {
-        "type": "section_heading",
-        "value": {
-          "eyebrow": "Real usage",
-          "title": "AWS is much more than website hosting"
-        }
-      },
-      {
-        "type": "rich_text",
-        "value": "<p>Many people first hear about AWS in the context of hosting websites and applications. That is real, but it is only a small part of the full picture.</p><p>AWS is used in many different industries and for many different types of work. Some use cases are obvious. Others are much broader than most beginners expect.</p>"
-      },
-      {
-        "type": "section_heading",
-        "value": {
-          "eyebrow": "Data",
-          "title": "Big data storage and processing"
-        }
-      },
-      {
-        "type": "rich_text",
-        "value": "<p>One of the biggest uses of AWS is storing and processing large amounts of business data. Companies build data lakes and data warehouses in AWS so they can collect, transform, query, and analyze data.</p><p>That data is then used for reporting, business decisions, machine learning training, and application development. In simple terms, AWS gives companies a place to bring their data together and work with it at scale.</p>"
-      },
-      {
-        "type": "section_heading",
-        "value": {
-          "eyebrow": "Protection",
-          "title": "Backup and retention"
-        }
-      },
-      {
-        "type": "rich_text",
-        "value": "<p>Another common use is backup and long-term retention. Even if a company does not run its main systems fully in AWS, it may still use AWS to keep copies of important data.</p><p>This improves fault tolerance and disaster recovery. If something goes wrong in the main environment, backup data stored in AWS may help the company recover faster.</p>"
-      },
-      {
-        "type": "section_heading",
-        "value": {
-          "eyebrow": "Distribution",
-          "title": "Object storage and global file delivery"
-        }
-      },
-      {
-        "type": "rich_text",
-        "value": "<p>AWS is also heavily used for object storage. This is useful for documents, images, videos, backups, exported reports, and other file-based content.</p><p>Because AWS has a large global network, customers can also deliver files and content to users around the world more efficiently.</p>"
-      },
-      {
-        "type": "section_heading",
-        "value": {
-          "eyebrow": "Devices",
-          "title": "Internet of Things"
-        }
-      },
-      {
-        "type": "rich_text",
-        "value": "<p>AWS supports IoT workloads too. Companies can connect devices, collect live data, manage device fleets, and analyze streaming information coming from sensors or industrial equipment.</p><p>This is useful in factories, logistics, monitoring systems, smart devices, and automation scenarios.</p>"
-      },
-      {
-        "type": "section_heading",
-        "value": {
-          "eyebrow": "Enterprise",
-          "title": "Replacing traditional IT systems"
-        }
-      },
-      {
-        "type": "rich_text",
-        "value": "<p>AWS can also replace parts of traditional IT infrastructure. Companies may use AWS for authentication, remote work environments, internal systems, and shared services that used to live only in on-premises data centers.</p><p>So AWS is not just for startups. It is also used by large enterprises modernizing older systems.</p>"
-      },
-      {
-        "type": "section_heading",
-        "value": {
-          "eyebrow": "AI",
-          "title": "Machine learning and artificial intelligence"
-        }
-      },
-      {
-        "type": "rich_text",
-        "value": "<p>AWS offers many services for machine learning and AI. Customers can use prebuilt models, train new models, run experiments, and create environments where data scientists can access the data and tools they need.</p><p>This matters because AI work often needs a lot of compute power, storage, and managed tooling. AWS provides those building blocks.</p>"
+        "value": "<p>These services matter because they explain the basic AWS model.</p><p><b>S3</b> is object storage. It is used for files such as images, documents, backups, exports, logs, and static assets. It is designed to scale very well.</p><p><b>EC2</b> is compute. It lets you run virtual machines in the cloud instead of buying physical servers.</p><p><b>RDS</b> is a managed relational database service. You could run a database on EC2 yourself, but then you would manage more of the work. RDS reduces that operational effort.</p><p><b>DynamoDB</b> is a managed NoSQL database built for high scale and strong performance in distributed systems.</p>"
       },
       {
         "type": "callout",
         "value": {
-          "title": "Good mindset",
-          "text": "When you think about AWS, do not think only about servers. Think about platforms, data, devices, automation, AI, storage, and global delivery.",
-          "tone": "success"
-        }
-      },
-      {
-        "type": "section_heading",
-        "value": {
-          "eyebrow": "Breadth",
-          "title": "AWS also goes into many niche areas"
-        }
-      },
-      {
-        "type": "rich_text",
-        "value": "<p>The transcript also points out something important: AWS has an unusually broad service catalog. It includes services for things like quantum computing experiments, map services, satellite fleet support, game development, 3D rendering, and even no-code or low-code application building.</p><p>This wide service range is one reason AWS became such a major cloud platform. It can support many different business and technical needs under one ecosystem.</p><p>That does not mean every company uses all those services. It means AWS can support many different kinds of companies.</p>"
-      }
-    ]
-  },
-  {
-    "slug": "aws-global-infrastructure-explained-simply",
-    "title": "AWS Global Infrastructure Explained Simply",
-    "excerpt": "A beginner-friendly explanation of AWS regions, availability zones, local zones, and edge locations, and why they matter for latency and resilience.",
-    "author_username": "Michał Antolik",
-    "category_slug": "cloud-aws-azure",
-    "tag_slugs": [
-      "aws"
-    ],
-    "live": true,
-    "published_at": "2026-01-10T09:00:00+01:00",
-    "body": [
-      {
-        "type": "section_heading",
-        "value": {
-          "eyebrow": "Global design",
-          "title": "AWS infrastructure is built in layers"
-        }
-      },
-      {
-        "type": "rich_text",
-        "value": "<p>AWS serves customers around the world, so it needs infrastructure that is distributed, resilient, and close to users. AWS organizes this infrastructure in several layers. The key terms to know are <b>regions</b>, <b>availability zones</b>, <b>local zones</b>, and <b>edge locations</b>.</p><p>If you understand these four ideas, AWS architecture becomes much easier to follow.</p>"
-      },
-      {
-        "type": "section_heading",
-        "value": {
-          "eyebrow": "Top level",
-          "title": "Regions"
-        }
-      },
-      {
-        "type": "rich_text",
-        "value": "<p>A region is a large geographic area where AWS operates infrastructure. Regions are placed around the world near major population and business areas.</p><p>Each region is separate from other regions. This matters because resources in one region are not automatically the same as resources in another region. When you deploy to one region, you are choosing where your application and data will live.</p><p>Regions help companies place workloads closer to users, meet regulatory needs, and design for resilience.</p>"
-      },
-      {
-        "type": "section_heading",
-        "value": {
-          "eyebrow": "Inside a region",
-          "title": "Availability zones"
-        }
-      },
-      {
-        "type": "rich_text",
-        "value": "<p>Each AWS region contains multiple <b>availability zones</b>, often called <b>AZs</b>. An availability zone is one or more data centers with separate power, networking, and connectivity.</p><p>The main goal is redundancy. If one availability zone has a problem, another one in the same region may keep your application running.</p><p>This is why many AWS architectures deploy workloads across more than one AZ. It improves fault tolerance and high availability.</p>"
-      },
-      {
-        "type": "callout",
-        "value": {
-          "title": "Practical rule",
-          "text": "If your application is important, do not put everything in just one availability zone.",
-          "tone": "warning"
-        }
-      },
-      {
-        "type": "mermaid",
-        "value": {
-          "caption": "Simple view of a region with multiple availability zones",
-          "diagram": "flowchart TD\n    A[AWS Region] --> B[Availability Zone A]\n    A --> C[Availability Zone B]\n    A --> D[Availability Zone C]\n    B --> E[Application resources]\n    C --> F[Application resources]\n    D --> G[Application resources]",
-          "width": "wide"
-        }
-      },
-      {
-        "type": "section_heading",
-        "value": {
-          "eyebrow": "Closer to users",
-          "title": "Local zones"
-        }
-      },
-      {
-        "type": "rich_text",
-        "value": "<p>Local zones are smaller AWS locations that are physically closer to major metropolitan areas. They connect back to a parent region.</p><p>The reason to use a local zone is usually <b>lower latency</b>. If you need resources closer to end users, local zones can help.</p><p>There is usually a trade-off. Local zones are great for latency-sensitive workloads, but they may not offer the same level of fault tolerance and service breadth as a full region.</p><p>The transcript also mentions another important benefit: local zones may help with <b>data residency</b> needs when data must stay in a particular area.</p>"
-      },
-      {
-        "type": "section_heading",
-        "value": {
-          "eyebrow": "At the edge",
-          "title": "Edge locations"
-        }
-      },
-      {
-        "type": "rich_text",
-        "value": "<p>Edge locations are used mainly to cache and deliver content closer to end users. They are a major part of AWS content delivery behavior.</p><p>If users request the same files often, edge locations can help serve those files faster because the content is stored closer to where users are.</p><p>Edge locations also give users a faster entry point into the AWS network backbone, which can improve access speed to AWS-hosted resources.</p>"
-      },
-      {
-        "type": "section_heading",
-        "value": {
-          "eyebrow": "Why it matters",
-          "title": "How all of this helps real systems"
-        }
-      },
-      {
-        "type": "rich_text",
-        "value": "<p>AWS global infrastructure is not just a map. It is what helps companies achieve three things at the same time: better performance, better resilience, and better reach.</p><p>You can choose a region near your users, spread workloads across availability zones for high availability, use local zones when low latency matters most, and rely on edge locations to serve content faster.</p><p>That is a big part of what makes AWS useful for global applications.</p>"
-      }
-    ]
-  },
-  {
-    "slug": "how-companies-provision-resources-in-aws",
-    "title": "How Companies Provision Resources in AWS",
-    "excerpt": "A clear explanation of AWS accounts, users, permissions, regions, and organizations, and how companies structure access in the real world.",
-    "author_username": "Michał Antolik",
-    "category_slug": "cloud-aws-azure",
-    "tag_slugs": [
-      "aws"
-    ],
-    "live": true,
-    "published_at": "2026-01-11T09:00:00+01:00",
-    "body": [
-      {
-        "type": "section_heading",
-        "value": {
-          "eyebrow": "Provisioning basics",
-          "title": "AWS resources live inside AWS accounts"
-        }
-      },
-      {
-        "type": "rich_text",
-        "value": "<p>Once you understand AWS infrastructure, the next question is: how do companies actually create and organize resources?</p><p>The key starting point is the <b>AWS account</b>. AWS resources live inside accounts. An account can contain resources in one region or in many regions, depending on how the company uses AWS.</p><p>One very important thing to understand is that resources in one region are separate from resources in another region. Choosing a region matters.</p>"
-      },
-      {
-        "type": "section_heading",
-        "value": {
-          "eyebrow": "Access model",
-          "title": "An AWS account is not the same as one person"
-        }
-      },
-      {
-        "type": "rich_text",
-        "value": "<p>Beginners sometimes think an AWS account works like a social media account: one person, one account. In real companies, that is not how it works.</p><p>Many users can access the same AWS account. Those users may have different permissions depending on what role they have. Some can create resources. Some can only view them. Some can manage billing or security. Others cannot.</p><p>So an AWS account is really a container for resources, and access to that account is shared and controlled.</p>"
-      },
-      {
-        "type": "section_heading",
-        "value": {
-          "eyebrow": "Real-world structure",
-          "title": "Why companies often use multiple AWS accounts"
-        }
-      },
-      {
-        "type": "rich_text",
-        "value": "<p>While learners often start with one AWS account, real companies commonly use many AWS accounts. This helps them separate workloads by team, project, environment, or security level.</p><p>For example, a company might keep highly sensitive data in an account with very limited human access. Another account might be used for development or testing. Another might be for production systems.</p><p>This separation improves security, reduces risk, and makes operations easier to control.</p>"
-      },
-      {
-        "type": "callout",
-        "value": {
-          "title": "Good mental model",
-          "text": "Think of AWS accounts as security and operational boundaries, not just login containers.",
+          "title": "A pattern worth noticing",
+          "text": "A big AWS idea is managed services. You give AWS more responsibility for the operational work so your team can spend more time on the application itself.",
           "tone": "info"
         }
       },
       {
         "type": "section_heading",
         "value": {
-          "eyebrow": "Bigger structure",
-          "title": "AWS Organizations"
+          "eyebrow": "How companies use it",
+          "title": "AWS is much more than app hosting"
         }
       },
       {
         "type": "rich_text",
-        "value": "<p>When a company has many AWS accounts, it still needs a way to manage them together. That is where <b>AWS Organizations</b> comes in.</p><p>An organization groups multiple AWS accounts under one higher-level structure. This helps with things like consolidated billing and centralized management.</p><p>So the hierarchy is simple:</p><ul><li>A company may have one AWS Organization.</li><li>That organization may contain many AWS accounts.</li><li>Each account may contain many resources.</li><li>Those resources may be spread across regions and availability zones.</li></ul>"
+        "value": "<p>Many people first think about AWS as a place to host websites and APIs. That is true, but it is only one part of the picture.</p><p>Companies also use AWS for:</p><ul><li><b>data lakes and data warehouses</b> for storage, processing, and analytics</li><li><b>backup and retention</b> for recovery and resilience</li><li><b>global file delivery</b> for images, videos, and other assets</li><li><b>IoT systems</b> for device management and streaming data</li><li><b>enterprise IT services</b> such as authentication and virtual workspaces</li><li><b>machine learning and AI</b> for training, testing, and using models</li></ul><p>AWS also offers many more specialized services. The platform is broad, but the main idea is still the same: use cloud services instead of building every layer yourself.</p>"
+      },
+      {
+        "type": "section_heading",
+        "value": {
+          "eyebrow": "Global design",
+          "title": "How AWS global infrastructure is organized"
+        }
       },
       {
         "type": "mermaid",
         "value": {
-          "caption": "Simple hierarchy",
-          "diagram": "flowchart TD\n    A[AWS Organization] --> B[AWS Account 1]\n    A --> C[AWS Account 2]\n    B --> D[Resources in one or more regions]\n    C --> E[Resources in one or more regions]\n    F[Users] --> B\n    F --> C",
+          "caption": "The main infrastructure layers",
+          "diagram": "flowchart TD\n    A[Region] --> B[Availability Zone 1]\n    A --> C[Availability Zone 2]\n    A --> D[Availability Zone 3]\n    B --> B1[One or more data centers]\n    C --> C1[One or more data centers]\n    D --> D1[One or more data centers]\n    A --> E[Local Zones]\n    A --> F[Edge Locations]",
           "width": "wide"
         }
       },
       {
-        "type": "section_heading",
-        "value": {
-          "eyebrow": "Summary",
-          "title": "What to remember"
-        }
-      },
-      {
         "type": "rich_text",
-        "value": "<p>Here is the easiest way to remember it:</p><ul><li>You are a user.</li><li>Users access AWS accounts.</li><li>AWS accounts contain resources.</li><li>Resources can be created in different regions and zones.</li><li>Many accounts can be grouped in one AWS Organization.</li></ul><p>This structure is a big part of how companies stay organized and secure as their AWS usage grows.</p>"
-      }
-    ]
-  },
-  {
-    "slug": "why-aws-keeps-expanding-and-why-that-matters",
-    "title": "Why AWS Keeps Expanding and Why That Matters",
-    "excerpt": "AWS is always adding regions, zones, edge capabilities, and network improvements. Here is why that matters for performance, resilience, and cost.",
-    "author_username": "Michał Antolik",
-    "category_slug": "cloud-aws-azure",
-    "tag_slugs": [
-      "aws"
-    ],
-    "live": true,
-    "published_at": "2026-01-12T09:00:00+01:00",
-    "body": [
-      {
-        "type": "section_heading",
-        "value": {
-          "eyebrow": "Ongoing change",
-          "title": "AWS infrastructure does not stand still"
-        }
-      },
-      {
-        "type": "rich_text",
-        "value": "<p>One important point from the course is that AWS global infrastructure is always growing. New regions, availability zones, local zones, and edge locations continue to appear over time.</p><p>This matters because cloud infrastructure is not just something AWS built once. It is something AWS keeps improving to support more customers, more locations, and more demanding workloads.</p>"
+        "value": "<p>The highest-level AWS location is a <b>Region</b>. A region is a geographic area, such as North Virginia or Frankfurt.</p><p>Each region contains multiple <b>Availability Zones</b>, often called <b>AZs</b>. An availability zone is a separate location inside a region with its own power, networking, and data center capacity.</p><p>Each AZ contains at least one data center, and often more than one.</p><p>This matters because if you deploy your application across multiple AZs, a failure in one AZ does not have to take down the whole application.</p>"
       },
       {
         "type": "section_heading",
         "value": {
-          "eyebrow": "Geographic growth",
-          "title": "More regions and more zones"
+          "eyebrow": "High availability",
+          "title": "Why multiple availability zones matter"
+        }
+      },
+      {
+        "type": "mermaid",
+        "value": {
+          "caption": "A simple multi-AZ idea",
+          "diagram": "flowchart LR\n    U[Users] --> L[Load Balancer]\n    L --> A1[App in AZ-1]\n    L --> A2[App in AZ-2]\n    L --> A3[App in AZ-3]\n    A2 -. one AZ fails .-> X[Failure]\n    A1 --> DB[(Data layer)]\n    A3 --> DB",
+          "width": "wide"
         }
       },
       {
         "type": "rich_text",
-        "value": "<p>As AWS expands into new geographic areas, customers get more options for where to place workloads. This can improve user experience, support regulatory needs, and reduce latency for local users.</p><p>More availability zones also improve design choices inside a region. With more infrastructure options, customers can build stronger high-availability patterns.</p>"
+        "value": "<p>If your application runs in only one location, that location becomes a weak point.</p><p>If it runs across multiple AZs in one region, it becomes much easier to achieve <b>fault tolerance</b> and <b>high availability</b>. Even if one AZ has a problem, traffic can continue flowing to the others.</p><p>For developers, this is one of the most important infrastructure ideas to understand on AWS: do not think only about where to deploy, think about <b>how many isolated locations</b> you deploy across.</p>"
       },
       {
         "type": "section_heading",
         "value": {
-          "eyebrow": "Edge improvements",
-          "title": "AWS is pushing more capability closer to users"
+          "eyebrow": "Lower latency",
+          "title": "What are Local Zones and Edge Locations?"
         }
       },
       {
         "type": "rich_text",
-        "value": "<p>The transcript also highlights that AWS is adding more capability at the edge. That means AWS is not only storing cached content near users, but also increasing what can be done closer to where requests happen.</p><p>This helps reduce latency and improves how quickly some workloads can respond.</p>"
-      },
-      {
-        "type": "section_heading",
-        "value": {
-          "eyebrow": "Network backbone",
-          "title": "Why the AWS network matters"
-        }
-      },
-      {
-        "type": "rich_text",
-        "value": "<p>AWS also keeps improving its global network backbone. This includes better routing, stronger redundancy, and technologies such as undersea cables that improve large-scale global connectivity.</p><p>When that network improves, customers can benefit in several ways:</p><ul><li>better data transfer efficiency,</li><li>lower latency,</li><li>more redundancy,</li><li>better ability to scale under heavy demand.</li></ul><p>In simple words, the better AWS gets at moving data around the world, the better many cloud applications perform.</p>"
+        "value": "<p><b>Local Zones</b> are AWS locations placed close to major metropolitan areas. They are connected to a parent region and are useful when very low latency matters.</p><p>This can be helpful when users need responses fast and being physically closer improves performance. Local Zones can also help with some data residency requirements.</p><p><b>Edge Locations</b> are used mainly to cache and deliver content closer to users. They are a core part of content delivery. They also help users reach AWS resources faster through AWS's network backbone.</p>"
       },
       {
         "type": "callout",
         "value": {
-          "title": "Why customers care",
-          "text": "As AWS improves its infrastructure at scale, customers often get better performance without having to build that global network themselves.",
+          "title": "Easy way to remember it",
+          "text": "Region = main geographic area. Availability Zone = isolated location inside the region. Local Zone = closer to a city for lower latency. Edge Location = closer delivery and caching for end users.",
           "tone": "success"
         }
       },
       {
         "type": "section_heading",
         "value": {
-          "eyebrow": "Economics",
-          "title": "Why public cloud scale can help with cost"
+          "eyebrow": "Provisioning model",
+          "title": "How companies organize AWS resources"
+        }
+      },
+      {
+        "type": "mermaid",
+        "value": {
+          "caption": "User, account, organization",
+          "diagram": "flowchart TD\n    O[AWS Organization] --> A1[AWS Account: Production]\n    O --> A2[AWS Account: Development]\n    O --> A3[AWS Account: Security]\n    A1 --> U1[Users / Roles]\n    A2 --> U2[Users / Roles]\n    A3 --> U3[Restricted access]\n    A1 --> R1[Resources in one or more regions]\n    A2 --> R2[Resources in one or more regions]\n    A3 --> R3[Sensitive resources]",
+          "width": "wide"
         }
       },
       {
         "type": "rich_text",
-        "value": "<p>One of the biggest advantages of a major public cloud provider is scale. AWS invests heavily in data centers, networking, and global distribution. Because it operates at a massive scale, customers can benefit from those economies of scale too.</p><p>The course makes a simple but important point: over time, AWS aims to improve performance while reducing price-performance for customers. That means customers often get more value as the platform matures.</p><p>This is one reason many companies prefer using a cloud provider instead of building everything themselves.</p>"
+        "value": "<p>All AWS resources live inside an <b>AWS account</b>.</p><p>An AWS account is not just one human user. Many users can access one account, and each user can have different permissions based on roles and policies.</p><p>Inside an account, you can provision resources in one region or in many regions. Resources in one region are separate from resources in another region.</p><p>In real companies, it is common to use <b>multiple AWS accounts</b>, not just one. For example, a company might separate production, development, testing, and security workloads into different accounts.</p><p>These accounts are often grouped under <b>AWS Organizations</b>, which helps with billing and governance.</p>"
       },
       {
         "type": "section_heading",
         "value": {
-          "eyebrow": "Final takeaway",
-          "title": "The big idea to remember about AWS"
+          "eyebrow": "Why multiple accounts",
+          "title": "Security and operations are the main reasons"
         }
       },
       {
         "type": "rich_text",
-        "value": "<p>AWS is not only a collection of services. It is also a constantly evolving global system. The services matter, but the infrastructure behind them matters too.</p><p>If you remember the main ideas from this course, remember these:</p><ul><li>cloud computing solves scale, performance, and resilience problems,</li><li>AWS grew out of real internal Amazon needs,</li><li>AWS is used for much more than websites,</li><li>its global infrastructure is built in layers,</li><li>companies organize resources through accounts and organizations,</li><li>and AWS keeps improving over time.</li></ul><p>That is a strong foundation for learning the rest of AWS.</p>"
+        "value": "<p>Multiple accounts are useful because they create separation.</p><p>You may want one account with highly sensitive data and very limited human access. You may want another account for development where engineers can move faster with fewer risks.</p><p>This separation improves security, reduces accidental impact, and makes operations easier to control.</p><p>So the basic chain looks like this: <b>users work in accounts, accounts contain resources, and organizations group multiple accounts</b>.</p>"
+      },
+      {
+        "type": "section_heading",
+        "value": {
+          "eyebrow": "A practical summary",
+          "title": "What a software developer should really remember"
+        }
+      },
+      {
+        "type": "rich_text",
+        "value": "<p>You do not need to memorize every AWS service to understand AWS well.</p><p>The most useful foundation is this:</p><ol><li>The cloud solves scaling, latency, and failure problems better than a single traditional data center.</li><li>AWS gives you on-demand building blocks such as compute, storage, and databases.</li><li>Managed services are important because they reduce operational work.</li><li>Regions and Availability Zones are central to performance and reliability design.</li><li>Local Zones and Edge Locations help move content and compute closer to users.</li><li>Companies usually use multiple AWS accounts for security, billing, and operational control.</li></ol><p>If these ideas are clear, the rest of AWS becomes much easier to understand.</p>"
+      },
+      {
+        "type": "callout",
+        "value": {
+          "title": "Final takeaway",
+          "text": "AWS is not just a big collection of services. It is a way to build systems that scale, stay available, and reach users around the world without owning the hardware yourself.",
+          "tone": "success"
+        }
+      },
+      {
+        "type": "section_heading",
+        "value": {
+          "eyebrow": "One last point",
+          "title": "AWS keeps expanding and improving"
+        }
+      },
+      {
+        "type": "rich_text",
+        "value": "<p>AWS is not static. Its infrastructure keeps growing with more regions, more availability zones, more local zones, and more edge capacity.</p><p>As AWS improves its network backbone and expands its physical footprint, customers benefit from better performance, lower latency, more redundancy, and better price-performance over time.</p><p>That is one of the major advantages of public cloud at scale: the provider keeps investing in infrastructure, and customers benefit from that investment.</p>"
       }
     ]
   }
