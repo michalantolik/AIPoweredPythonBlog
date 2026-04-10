@@ -12,14 +12,26 @@ from django.core.cache import cache
 _PLANTUML_ALPHABET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_"
 
 
+PLANTUML_BACKGROUND_COLOR = "#E4EAF4"
+
+
 def normalize_plantuml_source(source: str) -> str:
     normalized = (source or "").strip()
 
     if not normalized:
         return ""
 
+    # Ensure @startuml / @enduml
     if "@startuml" not in normalized:
         normalized = f"@startuml\n{normalized}\n@enduml"
+
+    # Inject background color if not already set
+    if "skinparam backgroundColor" not in normalized:
+        normalized = normalized.replace(
+            "@startuml",
+            f"@startuml\nskinparam backgroundColor {PLANTUML_BACKGROUND_COLOR}",
+            1,
+        )
 
     return normalized
 
