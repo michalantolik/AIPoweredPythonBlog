@@ -8,7 +8,9 @@
         {% endif %}
 
         <div class="article-plantuml__canvas">
-            {% render_plantuml value.source %}
+            <div class="article-plantuml__svg-wrap">
+                {% render_plantuml value.source %}
+            </div>
         </div>
     </div>
 </section>

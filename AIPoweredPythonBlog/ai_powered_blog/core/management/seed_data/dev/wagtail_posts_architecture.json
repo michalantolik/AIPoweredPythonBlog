@@ -1,8 +1,8 @@
 [
   {
-    "slug": "modular-monolith-boundaries-for-product-teams",
-    "title": "Modular Monolith Boundaries for Product Teams",
-    "excerpt": "DEV Wagtail seed article for modular monolith boundaries for product teams in the architecture-patterns category.",
+    "slug": "dummy-architecture-showcase-clean",
+    "title": "Dummy Architecture Showcase Clean",
+    "excerpt": "A clean dummy Wagtail article for testing architecture blocks with compact diagrams and code snippets.",
     "author_username": "Michał Antolik",
     "category_slug": "architecture-patterns",
     "tag_slugs": [
@@ -10,122 +10,131 @@
       "patterns"
     ],
     "live": true,
-    "published_at": "2026-01-19T09:00:00+01:00",
+    "published_at": "2026-04-10T10:00:00+02:00",
     "body": [
       {
         "type": "section_heading",
         "value": {
-          "eyebrow": "Foundations",
-          "title": "Modular Monolith Boundaries for Product Teams"
+          "eyebrow": "Demo",
+          "title": "Compact architecture blocks"
         }
       },
       {
         "type": "rich_text",
-        "value": "<p>This seeded article belongs to the <b>architecture-patterns</b> category and is meant to populate the Wagtail DEV blog with realistic technical content. It follows the same StreamField structure as the existing sample data, so the seeder can call <b>to_python(...)</b> and validate the payload before saving the page.</p><p>The goal is not only to test page creation, but also to exercise sidebar category filtering, tag chips, publish timestamps, and rich article rendering under <b>/articles/</b>. Keeping three posts per category makes the local dataset feel balanced and makes sorting by <b>sort_order</b> easy to verify.</p>"
-      },
-      {
-        "type": "code",
-        "value": {
-          "caption": "Seeder-oriented example",
-          "language": "yaml",
-          "code": "resourceGroup: rg-tech-blog\nservice: managed-app-platform",
-          "show_line_numbers": true,
-          "width": "content"
-        }
+        "value": "<p>This dummy article is designed to render <b>cleanly</b> in your current Wagtail layout. The diagrams are intentionally compact so they do not explode the page width or become unreadable.</p><p>It includes Mermaid, PlantUML, code snippets, rich text, and callouts.</p>"
       },
       {
         "type": "callout",
         "value": {
-          "title": "Why this helps locally",
-          "text": "A seeded technical post like this proves that category filters, tag relationships, and body block rendering all work together.",
-          "tone": "info"
+          "title": "Why this version is better",
+          "text": "The previous version used large sequence and deployment diagrams with too much text. This version keeps node names short and uses simpler structures that fit the available width.",
+          "tone": "success"
         }
-      }
-    ]
-  },
-  {
-    "slug": "event-driven-workflows-without-unnecessary-complexity",
-    "title": "Event-Driven Workflows Without Unnecessary Complexity",
-    "excerpt": "DEV Wagtail seed article for event-driven workflows without unnecessary complexity in the architecture-patterns category.",
-    "author_username": "Michał Antolik",
-    "category_slug": "architecture-patterns",
-    "tag_slugs": [
-      "architecture",
-      "patterns"
-    ],
-    "live": true,
-    "published_at": "2026-01-20T09:00:00+01:00",
-    "body": [
+      },
+
       {
         "type": "section_heading",
         "value": {
-          "eyebrow": "Practical design",
-          "title": "Event-Driven Workflows Without Unnecessary Complexity"
+          "eyebrow": "Mermaid",
+          "title": "Mermaid diagrams"
         }
-      },
-      {
-        "type": "rich_text",
-        "value": "<p>This seeded article belongs to the <b>architecture-patterns</b> category and is meant to populate the Wagtail DEV blog with realistic technical content. It follows the same StreamField structure as the existing sample data, so the seeder can call <b>to_python(...)</b> and validate the payload before saving the page.</p><p>The goal is not only to test page creation, but also to exercise sidebar category filtering, tag chips, publish timestamps, and rich article rendering under <b>/articles/</b>. Keeping three posts per category makes the local dataset feel balanced and makes sorting by <b>sort_order</b> easy to verify.</p>"
-      },
-      {
-        "type": "callout",
-        "value": {
-          "title": "Operational reminder",
-          "text": "Keep the JSON shape stable. Each post should provide slug, title, excerpt, author, category, tags, publish status, publish time, and a StreamField body array.",
-          "tone": "warning"
-        }
-      },
-      {
-        "type": "code",
-        "value": {
-          "caption": "Representative snippet",
-          "language": "text",
-          "code": "Use managed identity, secret store integration, and structured logs as the default baseline.",
-          "show_line_numbers": true,
-          "width": "content"
-        }
-      }
-    ]
-  },
-  {
-    "slug": "choosing-sync-vs-async-in-internal-systems",
-    "title": "Choosing Sync vs Async in Internal Systems",
-    "excerpt": "DEV Wagtail seed article for choosing sync vs async in internal systems in the architecture-patterns category.",
-    "author_username": "Michał Antolik",
-    "category_slug": "architecture-patterns",
-    "tag_slugs": [
-      "architecture",
-      "patterns"
-    ],
-    "live": true,
-    "published_at": "2026-01-21T09:00:00+01:00",
-    "body": [
-      {
-        "type": "section_heading",
-        "value": {
-          "eyebrow": "Operational view",
-          "title": "Choosing Sync vs Async in Internal Systems"
-        }
-      },
-      {
-        "type": "rich_text",
-        "value": "<p>This seeded article belongs to the <b>architecture-patterns</b> category and is meant to populate the Wagtail DEV blog with realistic technical content. It follows the same StreamField structure as the existing sample data, so the seeder can call <b>to_python(...)</b> and validate the payload before saving the page.</p><p>The goal is not only to test page creation, but also to exercise sidebar category filtering, tag chips, publish timestamps, and rich article rendering under <b>/articles/</b>. Keeping three posts per category makes the local dataset feel balanced and makes sorting by <b>sort_order</b> easy to verify.</p>"
       },
       {
         "type": "mermaid",
         "value": {
-          "caption": "Simple flow",
-          "diagram": "flowchart TD\n    A[Seed JSON] --> B[Read file]\n    B --> C[Validate StreamField blocks]\n    C --> D[Create or update BlogPostPage]\n    D --> E[Publish revision]",
-          "width": "wide"
+          "caption": "Request flow",
+          "diagram": "flowchart TD\n    Browser --> Wagtail\n    Wagtail --> Page\n    Page --> HTML",
+          "width": "content"
         }
       },
       {
+        "type": "mermaid",
+        "value": {
+          "caption": "Publish flow",
+          "diagram": "flowchart LR\n    Draft --> Review\n    Review --> Publish\n    Publish --> Live",
+          "width": "content"
+        }
+      },
+      {
+        "type": "mermaid",
+        "value": {
+          "caption": "Simple model",
+          "diagram": "classDiagram\n    class BlogIndexPage\n    class BlogPostPage\n    class Category\n    BlogIndexPage --> BlogPostPage\n    BlogPostPage --> Category",
+          "width": "content"
+        }
+      },
+
+      {
+        "type": "section_heading",
+        "value": {
+          "eyebrow": "PlantUML",
+          "title": "PlantUML diagrams"
+        }
+      },
+      {
+        "type": "plantuml",
+        "value": {
+          "caption": "Simple components",
+          "source": "@startuml\nleft to right direction\nactor User\nrectangle Browser\nrectangle Wagtail\nrectangle Page\nUser --> Browser\nBrowser --> Wagtail\nWagtail --> Page\n@enduml",
+          "width": "content"
+        }
+      },
+      {
+        "type": "plantuml",
+        "value": {
+          "caption": "Seed flow",
+          "source": "@startuml\nleft to right direction\nrectangle Seeder\nrectangle JSON\nrectangle Wagtail\nrectangle DB\nSeeder --> JSON\nSeeder --> Wagtail\nWagtail --> DB\n@enduml",
+          "width": "content"
+        }
+      },
+      {
+        "type": "plantuml",
+        "value": {
+          "caption": "Article structure",
+          "source": "@startuml\nclass BlogPostPage\nclass Category\nclass Tag\nBlogPostPage --> Category\nBlogPostPage --> Tag\n@enduml",
+          "width": "content"
+        }
+      },
+
+      {
+        "type": "section_heading",
+        "value": {
+          "eyebrow": "Code",
+          "title": "Code snippets"
+        }
+      },
+      {
+        "type": "code",
+        "value": {
+          "caption": "Python example",
+          "language": "python",
+          "code": "def build_summary(page):\n    return {\n        \"title\": page.title,\n        \"slug\": page.slug,\n        \"category\": page.category.slug,\n    }",
+          "show_line_numbers": true,
+          "width": "content"
+        }
+      },
+      {
+        "type": "code",
+        "value": {
+          "caption": "JSON example",
+          "language": "json",
+          "code": "{\n  \"slug\": \"dummy-architecture-showcase-clean\",\n  \"title\": \"Dummy Architecture Showcase Clean\",\n  \"category_slug\": \"architecture-patterns\"\n}",
+          "show_line_numbers": true,
+          "width": "content"
+        }
+      },
+
+      {
         "type": "callout",
         "value": {
-          "title": "Design takeaway",
-          "text": "The most useful DEV content is content that looks real enough to validate templates, but simple enough to maintain as source-controlled seed data.",
-          "tone": "success"
+          "title": "Figure block",
+          "text": "I still did not include the figure block here because it usually requires an existing Wagtail image object reference, not just plain JSON text.",
+          "tone": "warning"
         }
+      },
+      {
+        "type": "rich_text",
+        "value": "<p>This version should render much more neatly in your current frontend.</p>"
       }
     ]
   }
