@@ -670,8 +670,9 @@ a {
 .post-preview-footer {
     margin-top: 28px;
     display: flex;
-    align-items: right;
-    justify-content: space-between;
+    width: 100%;
+    justify-content: flex-end;
+    align-items: center;
     gap: 18px;
 }
 
@@ -693,8 +694,7 @@ a {
     background: #061535;
     color: white;
     font-weight: 700;
-    font-size: 0.96rem;
-    min-width: 114px;
+    margin-left: auto;
 }
 
 .read-post-btn:hover {
