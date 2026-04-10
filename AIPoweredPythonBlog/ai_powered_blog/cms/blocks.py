@@ -94,11 +94,14 @@ class MermaidBlock(blocks.StructBlock):
 
 class PlantUMLBlock(blocks.StructBlock):
     caption = blocks.CharBlock(required=False, max_length=120)
-    source = blocks.TextBlock(required=True)
+    source = blocks.TextBlock(
+        required=True,
+        help_text="Paste PlantUML source. You may include or omit @startuml / @enduml.",
+    )
     width = blocks.ChoiceBlock(choices=WIDTH_CHOICES, default="wide")
 
     class Meta:
-        icon = "diagram"
+        icon = "snippet"
         label = "PlantUML diagram"
         template = "cms/blocks/plantuml.html"
 

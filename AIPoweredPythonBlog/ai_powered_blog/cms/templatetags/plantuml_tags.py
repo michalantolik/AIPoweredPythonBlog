@@ -1,11 +1,17 @@
 from django import template
-from django.utils.safestring import mark_safe
+from django.urls import reverse
 
-from cms.plantuml import render_plantuml_svg
+from cms.plantuml import normalize_plantuml_source, plantuml_encode
 
 register = template.Library()
 
 
 @register.simple_tag
-def render_plantuml(source: str):
-    return mark_safe(render_plantuml_svg(source))
+def plantuml_svg_url(source: str):
+    normalized = normalize_plantuml_source(source)
+
+    if not normalized:
+        return ""
+
+    diagram_id = plantuml_encode(normalized)
+    return reverse("cms:plantuml_svg", kwargs={"diagram_id": diagram_id})

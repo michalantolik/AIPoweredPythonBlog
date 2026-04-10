@@ -253,15 +253,16 @@ APP_PERMISSIONS_POLICY = {
     "usb": (),
 }
 
-
 PLANTUML_SERVER_URL = get_env(
     "PLANTUML_SERVER_URL",
     "https://www.plantuml.com/plantuml",
 )
+
 PLANTUML_RENDER_TIMEOUT_SECONDS = get_int_env(
     "PLANTUML_RENDER_TIMEOUT_SECONDS",
     10,
 )
+
 PLANTUML_CACHE_TIMEOUT_SECONDS = get_int_env(
     "PLANTUML_CACHE_TIMEOUT_SECONDS",
     3600,

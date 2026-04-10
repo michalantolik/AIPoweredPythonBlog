@@ -1,4 +1,6 @@
 {% load plantuml_tags %}
+{% plantuml_svg_url value.source as svg_url %}
+
 <section class="article-plantuml article-width-{{ value.width }}">
     <div class="article-plantuml__frame">
         {% if value.caption %}
@@ -8,9 +10,19 @@
         {% endif %}
 
         <div class="article-plantuml__canvas">
-            <div class="article-plantuml__svg-wrap">
-                {% render_plantuml value.source %}
-            </div>
+            {% if svg_url %}
+                <img
+                    class="article-plantuml__image"
+                    src="{{ svg_url }}"
+                    alt="{% if value.caption %}{{ value.caption }}{% else %}PlantUML diagram{% endif %}"
+                    loading="lazy"
+                    decoding="async"
+                >
+            {% else %}
+                <div class="article-plantuml__error">
+                    <strong>PlantUML diagram is empty.</strong>
+                </div>
+            {% endif %}
         </div>
     </div>
 </section>
