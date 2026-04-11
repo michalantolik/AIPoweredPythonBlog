@@ -173,6 +173,7 @@ class Command(BaseCommand):
         wagtail_post_files = [
             "wagtail_posts_dotnet.json",
             "wagtail_posts_python.json",
+            "wagtail_posts_apis.json",
             "wagtail_posts_cloud.json",
             "wagtail_posts_devops.json",
             "wagtail_posts_containers.json",

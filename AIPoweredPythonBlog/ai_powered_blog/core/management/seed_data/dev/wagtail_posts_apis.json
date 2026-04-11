@@ -1,0 +1,157 @@
+[
+  {
+    "slug": "rest-api-basics-resources-verbs-status-codes",
+    "title": "REST API Basics: Resources, HTTP Verbs, and Status Codes",
+    "excerpt": "A practical beginner-friendly guide to REST APIs: what resources are, how GET/POST/PUT/DELETE work, and which HTTP status codes matter most.",
+    "author_username": "Michał Antolik",
+    "category_slug": "apis-integration",
+    "tag_slugs": [
+      "api",
+      "rest-api",
+      "integration",
+      "http"
+    ],
+    "live": true,
+    "published_at": "2026-04-11T09:00:00+02:00",
+    "body": [
+      {
+        "type": "section_heading",
+        "value": {
+          "eyebrow": "Start here",
+          "title": "What a REST API actually is"
+        }
+      },
+      {
+        "type": "rich_text",
+        "value": "<p>A REST API is a way for systems to communicate over HTTP using clearly defined endpoints.</p><p>In practice, it lets one application ask another application for data or request that something be created, updated, or removed.</p><p>The most important idea is this: the API exposes <b>resources</b>, and clients interact with those resources using standard HTTP methods.</p>"
+      },
+      {
+        "type": "callout",
+        "value": {
+          "title": "Key idea",
+          "text": "Think of a REST API as a contract for working with business resources through HTTP.",
+          "tone": "success"
+        }
+      },
+      {
+        "type": "section_heading",
+        "value": {
+          "eyebrow": "Core concept",
+          "title": "Resources and endpoints"
+        }
+      },
+      {
+        "type": "rich_text",
+        "value": "<p>A resource is usually a business object such as a user, order, invoice, or product.</p><p>Endpoints should be named around those resources, not around actions.</p><ul><li><code>/api/users</code></li><li><code>/api/orders</code></li><li><code>/api/products</code></li></ul><p>This is more scalable and easier to understand than action-based naming.</p>"
+      },
+      {
+        "type": "code",
+        "value": {
+          "caption": "Examples of resource-oriented endpoints",
+          "language": "bash",
+          "code": "GET    /api/orders\nGET    /api/orders/42\nPOST   /api/orders\nPUT    /api/orders/42\nDELETE /api/orders/42",
+          "show_line_numbers": true,
+          "width": "content"
+        }
+      },
+      {
+        "type": "section_heading",
+        "value": {
+          "eyebrow": "HTTP methods",
+          "title": "What the main verbs mean"
+        }
+      },
+      {
+        "type": "rich_text",
+        "value": "<ul><li><b>GET</b> - read data</li><li><b>POST</b> - create new data</li><li><b>PUT</b> - replace existing data</li><li><b>PATCH</b> - partially update existing data</li><li><b>DELETE</b> - remove data</li></ul><p>Even when the back-end is complex, the external API should keep this behavior predictable.</p>"
+      },
+      {
+        "type": "mermaid",
+        "value": {
+          "caption": "Basic REST interaction",
+          "diagram": "flowchart LR\n    A[Client] -->|GET /api/orders| B[REST API]\n    B --> C[(Database)]\n    C --> B\n    B -->|200 OK + JSON| A",
+          "width": "wide"
+        }
+      },
+      {
+        "type": "section_heading",
+        "value": {
+          "eyebrow": "HTTP responses",
+          "title": "Status codes you should know"
+        }
+      },
+      {
+        "type": "rich_text",
+        "value": "<p>Status codes are part of the API contract. They tell the client what happened.</p><ul><li><b>200 OK</b> - request succeeded</li><li><b>201 Created</b> - new resource created</li><li><b>204 No Content</b> - success with no response body</li><li><b>400 Bad Request</b> - invalid input</li><li><b>401 Unauthorized</b> - authentication required</li><li><b>403 Forbidden</b> - authenticated but not allowed</li><li><b>404 Not Found</b> - resource does not exist</li><li><b>500 Internal Server Error</b> - unexpected server failure</li></ul>"
+      },
+      {
+        "type": "callout",
+        "value": {
+          "title": "Practical tip",
+          "text": "Use status codes consistently. Clients should not need to guess whether an operation succeeded.",
+          "tone": "info"
+        }
+      },
+      {
+        "type": "section_heading",
+        "value": {
+          "eyebrow": "Data format",
+          "title": "Why JSON is commonly used"
+        }
+      },
+      {
+        "type": "rich_text",
+        "value": "<p>Most REST APIs exchange data as JSON because it is lightweight, readable, and supported almost everywhere.</p><p>A typical response might return a collection, a single resource, metadata, or validation errors.</p>"
+      },
+      {
+        "type": "code",
+        "value": {
+          "caption": "Example JSON response",
+          "language": "json",
+          "code": "{\n  \"id\": 42,\n  \"customerName\": \"Anna Nowak\",\n  \"status\": \"Processing\",\n  \"total\": 199.99\n}",
+          "show_line_numbers": true,
+          "width": "content"
+        }
+      },
+      {
+        "type": "section_heading",
+        "value": {
+          "eyebrow": "Design",
+          "title": "Good endpoint naming"
+        }
+      },
+      {
+        "type": "rich_text",
+        "value": "<p>Good APIs use plural nouns, stable URLs, and clear resource hierarchy.</p><ul><li><code>/api/customers</code></li><li><code>/api/customers/15/orders</code></li></ul><p>Avoid names like <code>/getOrders</code> or <code>/createUser</code> because HTTP verbs already describe the action.</p>"
+      },
+      {
+        "type": "section_heading",
+        "value": {
+          "eyebrow": "Back-end example",
+          "title": "Simple controller example in ASP.NET Core"
+        }
+      },
+      {
+        "type": "code",
+        "value": {
+          "caption": "Minimal REST-style controller example",
+          "language": "csharp",
+          "code": "[ApiController]\n[Route(\"api/[controller]\")]\npublic class OrdersController : ControllerBase\n{\n    [HttpGet(\"{id:int}\")]\n    public IActionResult GetById(int id)\n    {\n        return Ok(new\n        {\n            Id = id,\n            CustomerName = \"Anna Nowak\",\n            Status = \"Processing\"\n        });\n    }\n\n    [HttpPost]\n    public IActionResult Create(CreateOrderRequest request)\n    {\n        return Created($\"/api/orders/101\", new { Id = 101 });\n    }\n}",
+          "show_line_numbers": true,
+          "width": "content"
+        }
+      },
+      {
+        "type": "section_heading",
+        "value": {
+          "eyebrow": "Summary",
+          "title": "What to remember"
+        }
+      },
+      {
+        "type": "rich_text",
+        "value": "<p>A good REST API is built around resources, uses HTTP methods consistently, returns meaningful status codes, and keeps naming predictable.</p><p>Once these basics are clear, topics like authentication, versioning, pagination, and API security become much easier to understand.</p>"
+      }
+    ]
+  }
+]
