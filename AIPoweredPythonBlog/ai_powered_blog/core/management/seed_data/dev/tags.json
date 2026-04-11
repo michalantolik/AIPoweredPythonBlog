@@ -18,5 +18,6 @@
   { "slug": "terraform", "name": "Terraform" },
   { "slug": "iac", "name": "IaC" },
   { "slug": "architecture", "name": "Architecture" },
-  { "slug": "patterns", "name": "Patterns" }
+  { "slug": "patterns", "name": "Patterns" },
+  { "slug": "backend", "name": "Backend" }
 ]
