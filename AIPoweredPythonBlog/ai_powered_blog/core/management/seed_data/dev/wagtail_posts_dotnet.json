@@ -22,110 +22,85 @@
       {
         "type": "rich_text",
         "value": "<p>ASP.NET Core is Microsoft's web framework for building web applications on .NET.</p><p>The easiest way to understand it is this: it provides ready-to-use building blocks so you don’t have to implement everything from scratch.</p><p>It is not just about generating HTML pages. It supports multiple application styles including front-end UI, APIs, and real-time communication.</p>"
-      }
-    ]
-  },
-
-  {
-    "slug": "aspnet-core-how-it-really-works",
-    "title": "ASP.NET Core: How It Really Works (Simple Explanation)",
-    "excerpt": "Understand what actually happens inside ASP.NET Core: request pipeline, middleware, Program.cs, and dependency injection.",
-    "author_username": "Michał Antolik",
-    "category_slug": "dotnet-ecosystem",
-    "tag_slugs": [
-      "dotnet",
-      "aspnet-core",
-      "backend"
-    ],
-    "live": true,
-    "published_at": "2026-04-11T12:00:00+02:00",
-    "body": [
-      {
-        "type": "section_heading",
-        "value": {
-          "eyebrow": "Start here",
-          "title": "Think in pipeline, not in controllers"
-        }
       },
       {
-        "type": "rich_text",
-        "value": "<p>ASP.NET Core is not about controllers or pages.</p><p>It is a pipeline.</p><p>A request goes through steps and becomes a response.</p>"
+        "type": "callout",
+        "value": {
+          "title": "Key idea",
+          "text": "ASP.NET Core is a single platform that supports multiple ways of building web applications.",
+          "tone": "success"
+        }
       },
       {
         "type": "mermaid",
         "value": {
-          "caption": "Simple mental model",
-          "diagram": "flowchart LR\nA[Browser] --> B[Kestrel]\nB --> C[Middleware]\nC --> D[Routing]\nD --> E[Controller/API]\nE --> F[Response]",
+          "caption": "ASP.NET Core overview",
+          "diagram": "flowchart TD\n    A[ASP.NET Core] --> B[Server-rendered UI]\n    A --> C[Client-rendered UI]\n    A --> D[Back-end APIs]\n    A --> E[Real-time features]\n    B --> B1[MVC]\n    B --> B2[Razor Pages]\n    C --> C1[Blazor]\n    D --> D1[Web API]\n    D --> D2[gRPC]\n    E --> E1[SignalR]",
           "width": "wide"
         }
       },
-
       {
         "type": "section_heading",
         "value": {
-          "eyebrow": "Core",
-          "title": "Program.cs controls everything"
+          "eyebrow": "Purpose",
+          "title": "Why ASP.NET Core exists"
         }
       },
       {
         "type": "rich_text",
-        "value": "<p>Every ASP.NET Core app starts in Program.cs.</p><p>Two responsibilities:</p><ul><li>Register services</li><li>Build request pipeline</li></ul>"
+        "value": "<p>A static website serves fixed content like HTML and CSS. A real application needs more: data access, business logic, validation, and interaction.</p><p>ASP.NET Core exists to provide a structured way to build such applications without reinventing core functionality like routing, dependency injection, or request handling.</p>"
+      },
+      {
+        "type": "section_heading",
+        "value": {
+          "eyebrow": "Strengths",
+          "title": "Why developers use ASP.NET Core"
+        }
+      },
+      {
+        "type": "rich_text",
+        "value": "<ul><li>Cross-platform (Windows, Linux)</li><li>Open source</li><li>High performance</li><li>Built on .NET and C#</li><li>Modular (features are opt-in)</li><li>Shared foundation across all application styles</li></ul>"
+      },
+      {
+        "type": "section_heading",
+        "value": {
+          "eyebrow": "Foundation",
+          "title": "How every ASP.NET Core app starts"
+        }
       },
       {
         "type": "code",
         "value": {
-          "caption": "Minimal app",
+          "caption": "Application startup",
           "language": "csharp",
-          "code": "var builder = WebApplication.CreateBuilder(args);\n\nbuilder.Services.AddControllers();\n\nvar app = builder.Build();\n\napp.UseRouting();\napp.MapControllers();\n\napp.Run();",
+          "code": "var builder = WebApplication.CreateBuilder(args);\n\nbuilder.Services.AddRazorPages();\n\nvar app = builder.Build();\n\napp.UseStaticFiles();\napp.UseRouting();\napp.UseAuthorization();\napp.MapRazorPages();\n\napp.Run();",
           "show_line_numbers": true,
           "width": "content"
         }
       },
-
+      {
+        "type": "rich_text",
+        "value": "<p>Core concepts:</p><ul><li><b>Dependency Injection</b> via builder.Services</li><li><b>Middleware pipeline</b> via app.Use*</li><li><b>Routing</b> via app.Map*</li></ul>"
+      },
       {
         "type": "section_heading",
         "value": {
-          "eyebrow": "Server",
-          "title": "Kestrel receives the request"
+          "eyebrow": "Hosting",
+          "title": "Kestrel and request pipeline"
         }
-      },
-      {
-        "type": "rich_text",
-        "value": "<p>Kestrel is the built-in web server.</p><p>It listens for HTTP requests.</p><p>Then it passes them into the pipeline.</p>"
-      },
-
-      {
-        "type": "section_heading",
-        "value": {
-          "eyebrow": "Important",
-          "title": "Middleware = processing steps"
-        }
-      },
-      {
-        "type": "rich_text",
-        "value": "<p>Middleware are functions executed one after another.</p><p>Each middleware can:</p><ul><li>Handle request</li><li>Modify request</li><li>Stop pipeline</li></ul>"
       },
       {
         "type": "mermaid",
         "value": {
-          "caption": "Middleware flow",
-          "diagram": "flowchart TD\nA[Request] --> B[Middleware 1]\nB --> C[Middleware 2]\nC --> D[Middleware 3]\nD --> E[Handler]\nE --> F[Response]",
+          "caption": "Request flow",
+          "diagram": "flowchart LR\n    A[Browser] --> B[Kestrel]\n    B --> C[Middleware]\n    C --> D[Routing]\n    D --> E[Handler]\n    E --> F[Response]",
           "width": "wide"
-        }
-      },
-
-      {
-        "type": "section_heading",
-        "value": {
-          "eyebrow": "Key behavior",
-          "title": "Pipeline can stop early"
         }
       },
       {
         "type": "rich_text",
-        "value": "<p>Example: static files.</p><p>If browser asks for image.jpg:</p><ul><li>StaticFiles middleware finds it</li><li>Returns response immediately</li><li>Controller is skipped</li></ul>"
+        "value": "<p>Kestrel is the built-in web server. In production, it is often placed behind IIS or NGINX.</p><p>Middleware defines how requests are processed. Order matters because each step runs sequentially.</p>"
       },
-
       {
         "type": "section_heading",
         "value": {
@@ -135,56 +110,262 @@
       },
       {
         "type": "rich_text",
-        "value": "<p>ASP.NET Core creates objects for you.</p><p>You register services once:</p>"
+        "value": "<p>ASP.NET Core uses built-in dependency injection.</p><ul><li><b>Singleton</b> - one instance for entire app</li><li><b>Scoped</b> - one per request</li><li><b>Transient</b> - new instance each time</li></ul>"
       },
-      {
-        "type": "code",
-        "value": {
-          "caption": "Register service",
-          "language": "csharp",
-          "code": "builder.Services.AddScoped<IService, Service>();",
-          "show_line_numbers": false,
-          "width": "content"
-        }
-      },
-      {
-        "type": "rich_text",
-        "value": "<p>Then use them anywhere:</p>"
-      },
-      {
-        "type": "code",
-        "value": {
-          "caption": "Use service",
-          "language": "csharp",
-          "code": "public class MyController\n{\n    private readonly IService _service;\n\n    public MyController(IService service)\n    {\n        _service = service;\n    }\n}",
-          "show_line_numbers": false,
-          "width": "content"
-        }
-      },
-
       {
         "type": "section_heading",
         "value": {
-          "eyebrow": "Important",
-          "title": "Service lifetimes"
+          "eyebrow": "UI",
+          "title": "Razor"
         }
       },
       {
         "type": "rich_text",
-        "value": "<ul><li><b>Singleton</b> – one instance</li><li><b>Scoped</b> – per request (most used)</li><li><b>Transient</b> – always new</li></ul>"
+        "value": "<p>Razor allows combining HTML and C# using the @ syntax. It is used in Razor Pages, MVC, and Blazor.</p>"
       },
-
+      {
+        "type": "section_heading",
+        "value": {
+          "eyebrow": "Server rendering",
+          "title": "MVC and Razor Pages"
+        }
+      },
+      {
+        "type": "mermaid",
+        "value": {
+          "caption": "Server-rendered flow",
+          "diagram": "sequenceDiagram\n    Browser->>Server: Request\n    Server->>Database: Load data\n    Server-->>Browser: HTML",
+          "width": "wide"
+        }
+      },
+      {
+        "type": "rich_text",
+        "value": "<p>Server-rendered applications generate HTML on the server and send it to the browser.</p><p><b>Razor Pages</b> is page-focused and simpler. <b>MVC</b> separates logic into controllers, models, and views.</p>"
+      },
+      {
+        "type": "section_heading",
+        "value": {
+          "eyebrow": "Client rendering",
+          "title": "Blazor"
+        }
+      },
+      {
+        "type": "mermaid",
+        "value": {
+          "caption": "Blazor models",
+          "diagram": "flowchart TD\n    A[Blazor] --> B[WebAssembly]\n    A --> C[Server]",
+          "width": "wide"
+        }
+      },
+      {
+        "type": "rich_text",
+        "value": "<p>Blazor allows building interactive UI using C#.</p><ul><li><b>WebAssembly</b> runs in browser</li><li><b>Server</b> runs on server via SignalR</li></ul>"
+      },
+      {
+        "type": "section_heading",
+        "value": {
+          "eyebrow": "Backend",
+          "title": "Web API (REST)"
+        }
+      },
+      {
+        "type": "rich_text",
+        "value": "<p>Web API is used to expose data via HTTP using JSON.</p><ul><li>GET - read</li><li>POST - create</li><li>PUT - update</li></ul>"
+      },
+      {
+        "type": "section_heading",
+        "value": {
+          "eyebrow": "Alternative",
+          "title": "gRPC"
+        }
+      },
+      {
+        "type": "rich_text",
+        "value": "<p>gRPC uses contracts and binary communication for high performance.</p><p>It is typically used for internal communication between services.</p>"
+      },
+      {
+        "type": "section_heading",
+        "value": {
+          "eyebrow": "Realtime",
+          "title": "SignalR"
+        }
+      },
+      {
+        "type": "rich_text",
+        "value": "<p>SignalR enables real-time communication between server and clients using persistent connections.</p><p>It is commonly used for live updates like dashboards or notifications.</p>"
+      },
       {
         "type": "section_heading",
         "value": {
           "eyebrow": "Summary",
-          "title": "How to think about ASP.NET Core"
+          "title": "What to remember"
         }
       },
       {
         "type": "rich_text",
-        "value": "<p>Do not think \"controller handles request\".</p><p>Think:</p><ul><li>Kestrel receives request</li><li>Middleware pipeline processes it</li><li>Routing selects handler</li><li>Code runs</li><li>Response returns</li></ul><p>This is the real model.</p>"
+        "value": "<p>ASP.NET Core is one platform with multiple approaches to solving different problems.</p><p>All application types share the same foundation: middleware, dependency injection, and routing.</p><p>Once the core concepts are understood, moving between different parts of ASP.NET Core becomes much easier.</p>"
       }
     ]
-  }
+  },
+  {
+      "slug": "aspnet-core-how-it-really-works",
+      "title": "ASP.NET Core: How It Really Works (Simple Explanation)",
+      "excerpt": "Understand what actually happens inside ASP.NET Core: request pipeline, middleware, Program.cs, and dependency injection.",
+      "author_username": "Michał Antolik",
+      "category_slug": "dotnet-ecosystem",
+      "tag_slugs": [
+        "dotnet",
+        "aspnet-core",
+        "backend"
+      ],
+      "live": true,
+      "published_at": "2026-04-11T12:00:00+02:00",
+      "body": [
+        {
+          "type": "section_heading",
+          "value": {
+            "eyebrow": "Start here",
+            "title": "Think in pipeline, not in controllers"
+          }
+        },
+        {
+          "type": "rich_text",
+          "value": "<p>ASP.NET Core is not about controllers or pages.</p><p>It is a pipeline.</p><p>A request goes through steps and becomes a response.</p>"
+        },
+        {
+          "type": "mermaid",
+          "value": {
+            "caption": "Simple mental model",
+            "diagram": "flowchart LR\nA[Browser] --> B[Kestrel]\nB --> C[Middleware]\nC --> D[Routing]\nD --> E[Controller/API]\nE --> F[Response]",
+            "width": "wide"
+          }
+        },
+
+        {
+          "type": "section_heading",
+          "value": {
+            "eyebrow": "Core",
+            "title": "Program.cs controls everything"
+          }
+        },
+        {
+          "type": "rich_text",
+          "value": "<p>Every ASP.NET Core app starts in Program.cs.</p><p>Two responsibilities:</p><ul><li>Register services</li><li>Build request pipeline</li></ul>"
+        },
+        {
+          "type": "code",
+          "value": {
+            "caption": "Minimal app",
+            "language": "csharp",
+            "code": "var builder = WebApplication.CreateBuilder(args);\n\nbuilder.Services.AddControllers();\n\nvar app = builder.Build();\n\napp.UseRouting();\napp.MapControllers();\n\napp.Run();",
+            "show_line_numbers": true,
+            "width": "content"
+          }
+        },
+
+        {
+          "type": "section_heading",
+          "value": {
+            "eyebrow": "Server",
+            "title": "Kestrel receives the request"
+          }
+        },
+        {
+          "type": "rich_text",
+          "value": "<p>Kestrel is the built-in web server.</p><p>It listens for HTTP requests.</p><p>Then it passes them into the pipeline.</p>"
+        },
+
+        {
+          "type": "section_heading",
+          "value": {
+            "eyebrow": "Important",
+            "title": "Middleware = processing steps"
+          }
+        },
+        {
+          "type": "rich_text",
+          "value": "<p>Middleware are functions executed one after another.</p><p>Each middleware can:</p><ul><li>Handle request</li><li>Modify request</li><li>Stop pipeline</li></ul>"
+        },
+        {
+          "type": "mermaid",
+          "value": {
+            "caption": "Middleware flow",
+            "diagram": "flowchart TD\nA[Request] --> B[Middleware 1]\nB --> C[Middleware 2]\nC --> D[Middleware 3]\nD --> E[Handler]\nE --> F[Response]",
+            "width": "wide"
+          }
+        },
+
+        {
+          "type": "section_heading",
+          "value": {
+            "eyebrow": "Key behavior",
+            "title": "Pipeline can stop early"
+          }
+        },
+        {
+          "type": "rich_text",
+          "value": "<p>Example: static files.</p><p>If browser asks for image.jpg:</p><ul><li>StaticFiles middleware finds it</li><li>Returns response immediately</li><li>Controller is skipped</li></ul>"
+        },
+
+        {
+          "type": "section_heading",
+          "value": {
+            "eyebrow": "Core feature",
+            "title": "Dependency Injection"
+          }
+        },
+        {
+          "type": "rich_text",
+          "value": "<p>ASP.NET Core creates objects for you.</p><p>You register services once:</p>"
+        },
+        {
+          "type": "code",
+          "value": {
+            "caption": "Register service",
+            "language": "csharp",
+            "code": "builder.Services.AddScoped<IService, Service>();",
+            "show_line_numbers": false,
+            "width": "content"
+          }
+        },
+        {
+          "type": "rich_text",
+          "value": "<p>Then use them anywhere:</p>"
+        },
+        {
+          "type": "code",
+          "value": {
+            "caption": "Use service",
+            "language": "csharp",
+            "code": "public class MyController\n{\n    private readonly IService _service;\n\n    public MyController(IService service)\n    {\n        _service = service;\n    }\n}",
+            "show_line_numbers": false,
+            "width": "content"
+          }
+        },
+
+        {
+          "type": "section_heading",
+          "value": {
+            "eyebrow": "Important",
+            "title": "Service lifetimes"
+          }
+        },
+        {
+          "type": "rich_text",
+          "value": "<ul><li><b>Singleton</b> – one instance</li><li><b>Scoped</b> – per request (most used)</li><li><b>Transient</b> – always new</li></ul>"
+        },
+
+        {
+          "type": "section_heading",
+          "value": {
+            "eyebrow": "Summary",
+            "title": "How to think about ASP.NET Core"
+          }
+        },
+        {
+          "type": "rich_text",
+          "value": "<p>Do not think \"controller handles request\".</p><p>Think:</p><ul><li>Kestrel receives request</li><li>Middleware pipeline processes it</li><li>Routing selects handler</li><li>Code runs</li><li>Response returns</li></ul><p>This is the real model.</p>"
+        }
+      ]
+    }
 ]
