@@ -19,5 +19,7 @@
   { "slug": "iac", "name": "IaC" },
   { "slug": "architecture", "name": "Architecture" },
   { "slug": "patterns", "name": "Patterns" },
-  { "slug": "backend", "name": "Backend" }
+  { "slug": "backend", "name": "Backend" },
+  { "slug": "ef", "name": "EF" },
+  { "slug": "ef-core", "name": "EF Core" }
 ]

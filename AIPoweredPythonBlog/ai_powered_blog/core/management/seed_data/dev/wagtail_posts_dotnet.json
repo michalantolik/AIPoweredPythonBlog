@@ -10,7 +10,7 @@
       "aspnet-core"
     ],
     "live": true,
-    "published_at": "2026-04-10T09:00:00+02:00",
+    "published_at": "2026-04-01T09:00:00+02:00",
     "body": [
       {
         "type": "section_heading",
@@ -219,7 +219,7 @@
         "backend"
       ],
       "live": true,
-      "published_at": "2026-04-11T12:00:00+02:00",
+      "published_at": "2026-04-09T12:00:00+02:00",
       "body": [
         {
           "type": "section_heading",
@@ -371,7 +371,19 @@
 {
   "title": "Building a Data-Driven ASP.NET Core App with EF Core",
   "slug": "aspnet-core-efcore-data-driven-app",
-  "content": [
+      "excerpt": "Building a Data-Driven ASP.NET Core App with EF Core.",
+      "author_username": "Michał Antolik",
+      "category_slug": "dotnet-ecosystem",
+      "tag_slugs": [
+        "dotnet",
+        "aspnet-core",
+        "backend",
+        "ef",
+        "ef-core"
+      ],
+      "live": true,
+      "published_at": "2026-04-11T12:00:00+02:00",
+  "body": [
     {
       "type": "heading",
       "value": "Building a Data-Driven ASP.NET Core App with EF Core (Simple Guide)"
