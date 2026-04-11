@@ -367,5 +367,147 @@
           "value": "<p>Do not think \"controller handles request\".</p><p>Think:</p><ul><li>Kestrel receives request</li><li>Middleware pipeline processes it</li><li>Routing selects handler</li><li>Code runs</li><li>Response returns</li></ul><p>This is the real model.</p>"
         }
       ]
+    },
+{
+  "title": "Building a Data-Driven ASP.NET Core App with EF Core",
+  "slug": "aspnet-core-efcore-data-driven-app",
+  "content": [
+    {
+      "type": "heading",
+      "value": "Building a Data-Driven ASP.NET Core App with EF Core (Simple Guide)"
+    },
+    {
+      "type": "paragraph",
+      "value": "This is a practical mental model of how ASP.NET Core and EF Core work together. No unnecessary theory. Only what matters."
+    },
+    {
+      "type": "heading",
+      "value": "1. Big picture"
+    },
+    {
+      "type": "code",
+      "language": "mermaid",
+      "value": "flowchart LR\nUser --> Controller\nController --> Repository\nRepository --> DbContext\nDbContext --> Database"
+    },
+    {
+      "type": "paragraph",
+      "value": "Controller handles HTTP, Repository handles data logic, DbContext talks to database."
+    },
+    {
+      "type": "heading",
+      "value": "2. EF Core in one sentence"
+    },
+    {
+      "type": "paragraph",
+      "value": "EF Core is an ORM that maps C# objects to database tables."
+    },
+    {
+      "type": "heading",
+      "value": "3. Code-first workflow"
+    },
+    {
+      "type": "code",
+      "language": "mermaid",
+      "value": "flowchart TD\nA[Create classes] --> B[DbContext]\nB --> C[Migration]\nC --> D[Database]"
+    },
+    {
+      "type": "heading",
+      "value": "4. Entity example"
+    },
+    {
+      "type": "code",
+      "language": "csharp",
+      "value": "public class Pie\n{\n    public int PieId { get; set; }\n    public string Name { get; set; }\n    public decimal Price { get; set; }\n    public int CategoryId { get; set; }\n    public Category Category { get; set; }\n}"
+    },
+    {
+      "type": "heading",
+      "value": "5. DbContext"
+    },
+    {
+      "type": "code",
+      "language": "csharp",
+      "value": "public class AppDbContext : DbContext\n{\n    public DbSet<Pie> Pies => Set<Pie>();\n    public DbSet<Category> Categories => Set<Category>();\n}"
+    },
+    {
+      "type": "heading",
+      "value": "6. Register EF Core"
+    },
+    {
+      "type": "code",
+      "language": "csharp",
+      "value": "builder.Services.AddDbContext<AppDbContext>(options =>\n    options.UseSqlServer(builder.Configuration.GetConnectionString(\"Default\")));"
+    },
+    {
+      "type": "heading",
+      "value": "7. Migrations"
+    },
+    {
+      "type": "code",
+      "language": "text",
+      "value": "add-migration Initial\nupdate-database"
+    },
+    {
+      "type": "heading",
+      "value": "8. Repository pattern"
+    },
+    {
+      "type": "code",
+      "language": "mermaid",
+      "value": "flowchart LR\nController --> Repository --> DbContext"
+    },
+    {
+      "type": "heading",
+      "value": "9. Repository example"
+    },
+    {
+      "type": "code",
+      "language": "csharp",
+      "value": "public async Task<List<Category>> GetAllAsync()\n{\n    return await _db.Categories.OrderBy(c => c.CategoryId).ToListAsync();\n}"
+    },
+    {
+      "type": "heading",
+      "value": "10. Controller"
+    },
+    {
+      "type": "code",
+      "language": "csharp",
+      "value": "public async Task<IActionResult> Index()\n{\n    var data = await _repo.GetAllAsync();\n    return View(data);\n}"
+    },
+    {
+      "type": "heading",
+      "value": "11. Loading related data"
+    },
+    {
+      "type": "code",
+      "language": "csharp",
+      "value": "var category = await _db.Categories\n    .Include(c => c.Pies)\n    .FirstOrDefaultAsync(c => c.CategoryId == id);"
+    },
+    {
+      "type": "heading",
+      "value": "12. Form flow"
+    },
+    {
+      "type": "code",
+      "language": "mermaid",
+      "value": "sequenceDiagram\nUser->>View: Fill form\nView->>Controller: POST\nController->>DbContext: Save"
+    },
+    {
+      "type": "heading",
+      "value": "13. Save data"
+    },
+    {
+      "type": "code",
+      "language": "csharp",
+      "value": "_db.Categories.Add(category);\nawait _db.SaveChangesAsync();"
+    },
+    {
+      "type": "heading",
+      "value": "14. Key takeaways"
+    },
+    {
+      "type": "paragraph",
+      "value": "EF Core maps objects to database, DbContext is central, repository keeps code clean, migrations manage schema, Include loads relations, SaveChanges writes data."
     }
+  ]
+}
 ]
