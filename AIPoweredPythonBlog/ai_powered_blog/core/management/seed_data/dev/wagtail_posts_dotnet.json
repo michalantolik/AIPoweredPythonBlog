@@ -1,525 +1,446 @@
 [
   {
-    "slug": "aspnet-core-big-picture-guide",
-    "title": "ASP.NET Core Big Picture: A Practical Developer Guide",
-    "excerpt": "A simple and practical overview of ASP.NET Core: what it is, how it works, MVC vs Razor Pages vs Blazor, Web API vs gRPC, and where SignalR fits.",
+    "slug": "01-aspnet-core-big-picture",
+    "title": "ASP.NET Core: The Big Picture Explained",
+    "excerpt": "Understand what ASP.NET Core really is, how it works, and when to use each part of it.",
     "author_username": "Michał Antolik",
     "category_slug": "dotnet-ecosystem",
-    "tag_slugs": [
-      "dotnet",
-      "aspnet-core"
-    ],
+    "tag_slugs": ["aspnet-core", "architecture"],
     "live": true,
-    "published_at": "2026-04-01T09:00:00+02:00",
     "body": [
       {
         "type": "section_heading",
-        "value": {
-          "eyebrow": "Start here",
-          "title": "ASP.NET Core Big Picture"
-        }
+        "value": { "title": "What is it" }
       },
       {
         "type": "rich_text",
-        "value": "<p>ASP.NET Core is Microsoft's web framework for building web applications on .NET.</p><p>The easiest way to understand it is this: it provides ready-to-use building blocks so you don’t have to implement everything from scratch.</p><p>It is not just about generating HTML pages. It supports multiple application styles including front-end UI, APIs, and real-time communication.</p>"
-      },
-      {
-        "type": "callout",
-        "value": {
-          "title": "Key idea",
-          "text": "ASP.NET Core is a single platform that supports multiple ways of building web applications.",
-          "tone": "success"
-        }
-      },
-      {
-        "type": "mermaid",
-        "value": {
-          "caption": "ASP.NET Core overview",
-          "diagram": "flowchart TD\n    A[ASP.NET Core] --> B[Server-rendered UI]\n    A --> C[Client-rendered UI]\n    A --> D[Back-end APIs]\n    A --> E[Real-time features]\n    B --> B1[MVC]\n    B --> B2[Razor Pages]\n    C --> C1[Blazor]\n    D --> D1[Web API]\n    D --> D2[gRPC]\n    E --> E1[SignalR]",
-          "width": "wide"
-        }
+        "value": "<p>ASP.NET Core is a framework for building web applications and APIs using C#.</p><p>It is not one thing. It is a collection of tools.</p><p>You use it to build websites, APIs, real-time apps, and more.</p><p>It works on Windows, Linux, and Mac.</p>"
       },
       {
         "type": "section_heading",
-        "value": {
-          "eyebrow": "Purpose",
-          "title": "Why ASP.NET Core exists"
-        }
+        "value": { "title": "Why it matters" }
       },
       {
         "type": "rich_text",
-        "value": "<p>A static website serves fixed content like HTML and CSS. A real application needs more: data access, business logic, validation, and interaction.</p><p>ASP.NET Core exists to provide a structured way to build such applications without reinventing core functionality like routing, dependency injection, or request handling.</p>"
+        "value": "<p>Modern applications are dynamic. Data changes. Users interact.</p><p>Static HTML is not enough.</p><p>You need a system that handles requests, processes logic, and returns results.</p><p>ASP.NET Core gives you structure, performance, and flexibility.</p>"
       },
       {
         "type": "section_heading",
-        "value": {
-          "eyebrow": "Strengths",
-          "title": "Why developers use ASP.NET Core"
-        }
+        "value": { "title": "How it works" }
       },
       {
         "type": "rich_text",
-        "value": "<ul><li>Cross-platform (Windows, Linux)</li><li>Open source</li><li>High performance</li><li>Built on .NET and C#</li><li>Modular (features are opt-in)</li><li>Shared foundation across all application styles</li></ul>"
-      },
-      {
-        "type": "section_heading",
-        "value": {
-          "eyebrow": "Foundation",
-          "title": "How every ASP.NET Core app starts"
-        }
-      },
-      {
-        "type": "code",
-        "value": {
-          "caption": "Application startup",
-          "language": "csharp",
-          "code": "var builder = WebApplication.CreateBuilder(args);\n\nbuilder.Services.AddRazorPages();\n\nvar app = builder.Build();\n\napp.UseStaticFiles();\napp.UseRouting();\napp.UseAuthorization();\napp.MapRazorPages();\n\napp.Run();",
-          "show_line_numbers": true,
-          "width": "content"
-        }
-      },
-      {
-        "type": "rich_text",
-        "value": "<p>Core concepts:</p><ul><li><b>Dependency Injection</b> via builder.Services</li><li><b>Middleware pipeline</b> via app.Use*</li><li><b>Routing</b> via app.Map*</li></ul>"
-      },
-      {
-        "type": "section_heading",
-        "value": {
-          "eyebrow": "Hosting",
-          "title": "Kestrel and request pipeline"
-        }
+        "value": "<p>A request comes from the browser.</p><p>It goes through middleware.</p><p>Then it reaches your code.</p><p>Your code processes it and returns a response.</p>"
       },
       {
         "type": "mermaid",
         "value": {
           "caption": "Request flow",
-          "diagram": "flowchart LR\n    A[Browser] --> B[Kestrel]\n    B --> C[Middleware]\n    C --> D[Routing]\n    D --> E[Handler]\n    E --> F[Response]",
+          "diagram": "flowchart LR\nBrowser --> Middleware\nMiddleware --> Application\nApplication --> Response\nResponse --> Browser",
           "width": "wide"
         }
       },
       {
         "type": "rich_text",
-        "value": "<p>Kestrel is the built-in web server. In production, it is often placed behind IIS or NGINX.</p><p>Middleware defines how requests are processed. Order matters because each step runs sequentially.</p>"
+        "value": "<p>ASP.NET Core supports multiple styles:</p><ul><li>MVC (server-rendered UI)</li><li>Web API (data endpoints)</li><li>Blazor (interactive UI)</li><li>gRPC (high-performance services)</li></ul>"
       },
       {
         "type": "section_heading",
-        "value": {
-          "eyebrow": "Core feature",
-          "title": "Dependency Injection"
-        }
+        "value": { "title": "Code example" }
       },
       {
-        "type": "rich_text",
-        "value": "<p>ASP.NET Core uses built-in dependency injection.</p><ul><li><b>Singleton</b> - one instance for entire app</li><li><b>Scoped</b> - one per request</li><li><b>Transient</b> - new instance each time</li></ul>"
+        "type": "code",
+        "value": {
+          "language": "csharp",
+          "code": "var builder = WebApplication.CreateBuilder(args);\nvar app = builder.Build();\n\napp.MapGet(\"/\", () => \"Hello World\");\n\napp.Run();"
+        }
       },
       {
         "type": "section_heading",
-        "value": {
-          "eyebrow": "UI",
-          "title": "Razor"
-        }
+        "value": { "title": "Common mistakes" }
       },
       {
         "type": "rich_text",
-        "value": "<p>Razor allows combining HTML and C# using the @ syntax. It is used in Razor Pages, MVC, and Blazor.</p>"
+        "value": "<ul><li>Treating ASP.NET Core as only MVC</li><li>Ignoring middleware pipeline</li><li>Not understanding request flow</li></ul>"
       },
       {
         "type": "section_heading",
+        "value": { "title": "Quick summary" }
+      },
+      {
+        "type": "callout",
         "value": {
-          "eyebrow": "Server rendering",
-          "title": "MVC and Razor Pages"
+          "text": "ASP.NET Core is a flexible platform. Choose the right tool for the job."
         }
-      },
-      {
-        "type": "mermaid",
-        "value": {
-          "caption": "Server-rendered flow",
-          "diagram": "sequenceDiagram\n    Browser->>Server: Request\n    Server->>Database: Load data\n    Server-->>Browser: HTML",
-          "width": "wide"
-        }
-      },
-      {
-        "type": "rich_text",
-        "value": "<p>Server-rendered applications generate HTML on the server and send it to the browser.</p><p><b>Razor Pages</b> is page-focused and simpler. <b>MVC</b> separates logic into controllers, models, and views.</p>"
-      },
-      {
-        "type": "section_heading",
-        "value": {
-          "eyebrow": "Client rendering",
-          "title": "Blazor"
-        }
-      },
-      {
-        "type": "mermaid",
-        "value": {
-          "caption": "Blazor models",
-          "diagram": "flowchart TD\n    A[Blazor] --> B[WebAssembly]\n    A --> C[Server]",
-          "width": "wide"
-        }
-      },
-      {
-        "type": "rich_text",
-        "value": "<p>Blazor allows building interactive UI using C#.</p><ul><li><b>WebAssembly</b> runs in browser</li><li><b>Server</b> runs on server via SignalR</li></ul>"
-      },
-      {
-        "type": "section_heading",
-        "value": {
-          "eyebrow": "Backend",
-          "title": "Web API (REST)"
-        }
-      },
-      {
-        "type": "rich_text",
-        "value": "<p>Web API is used to expose data via HTTP using JSON.</p><ul><li>GET - read</li><li>POST - create</li><li>PUT - update</li></ul>"
-      },
-      {
-        "type": "section_heading",
-        "value": {
-          "eyebrow": "Alternative",
-          "title": "gRPC"
-        }
-      },
-      {
-        "type": "rich_text",
-        "value": "<p>gRPC uses contracts and binary communication for high performance.</p><p>It is typically used for internal communication between services.</p>"
-      },
-      {
-        "type": "section_heading",
-        "value": {
-          "eyebrow": "Realtime",
-          "title": "SignalR"
-        }
-      },
-      {
-        "type": "rich_text",
-        "value": "<p>SignalR enables real-time communication between server and clients using persistent connections.</p><p>It is commonly used for live updates like dashboards or notifications.</p>"
-      },
-      {
-        "type": "section_heading",
-        "value": {
-          "eyebrow": "Summary",
-          "title": "What to remember"
-        }
-      },
-      {
-        "type": "rich_text",
-        "value": "<p>ASP.NET Core is one platform with multiple approaches to solving different problems.</p><p>All application types share the same foundation: middleware, dependency injection, and routing.</p><p>Once the core concepts are understood, moving between different parts of ASP.NET Core becomes much easier.</p>"
       }
     ]
   },
   {
-      "slug": "aspnet-core-how-it-really-works",
-      "title": "ASP.NET Core: How It Really Works (Simple Explanation)",
-      "excerpt": "Understand what actually happens inside ASP.NET Core: request pipeline, middleware, Program.cs, and dependency injection.",
-      "author_username": "Michał Antolik",
-      "category_slug": "dotnet-ecosystem",
-      "tag_slugs": [
-        "dotnet",
-        "aspnet-core",
-        "backend"
-      ],
-      "live": true,
-      "published_at": "2026-04-09T12:00:00+02:00",
-      "body": [
-        {
-          "type": "section_heading",
-          "value": {
-            "eyebrow": "Start here",
-            "title": "Think in pipeline, not in controllers"
-          }
-        },
-        {
-          "type": "rich_text",
-          "value": "<p>ASP.NET Core is not about controllers or pages.</p><p>It is a pipeline.</p><p>A request goes through steps and becomes a response.</p>"
-        },
-        {
-          "type": "mermaid",
-          "value": {
-            "caption": "Simple mental model",
-            "diagram": "flowchart LR\nA[Browser] --> B[Kestrel]\nB --> C[Middleware]\nC --> D[Routing]\nD --> E[Controller/API]\nE --> F[Response]",
-            "width": "wide"
-          }
-        },
-
-        {
-          "type": "section_heading",
-          "value": {
-            "eyebrow": "Core",
-            "title": "Program.cs controls everything"
-          }
-        },
-        {
-          "type": "rich_text",
-          "value": "<p>Every ASP.NET Core app starts in Program.cs.</p><p>Two responsibilities:</p><ul><li>Register services</li><li>Build request pipeline</li></ul>"
-        },
-        {
-          "type": "code",
-          "value": {
-            "caption": "Minimal app",
-            "language": "csharp",
-            "code": "var builder = WebApplication.CreateBuilder(args);\n\nbuilder.Services.AddControllers();\n\nvar app = builder.Build();\n\napp.UseRouting();\napp.MapControllers();\n\napp.Run();",
-            "show_line_numbers": true,
-            "width": "content"
-          }
-        },
-
-        {
-          "type": "section_heading",
-          "value": {
-            "eyebrow": "Server",
-            "title": "Kestrel receives the request"
-          }
-        },
-        {
-          "type": "rich_text",
-          "value": "<p>Kestrel is the built-in web server.</p><p>It listens for HTTP requests.</p><p>Then it passes them into the pipeline.</p>"
-        },
-
-        {
-          "type": "section_heading",
-          "value": {
-            "eyebrow": "Important",
-            "title": "Middleware = processing steps"
-          }
-        },
-        {
-          "type": "rich_text",
-          "value": "<p>Middleware are functions executed one after another.</p><p>Each middleware can:</p><ul><li>Handle request</li><li>Modify request</li><li>Stop pipeline</li></ul>"
-        },
-        {
-          "type": "mermaid",
-          "value": {
-            "caption": "Middleware flow",
-            "diagram": "flowchart TD\nA[Request] --> B[Middleware 1]\nB --> C[Middleware 2]\nC --> D[Middleware 3]\nD --> E[Handler]\nE --> F[Response]",
-            "width": "wide"
-          }
-        },
-
-        {
-          "type": "section_heading",
-          "value": {
-            "eyebrow": "Key behavior",
-            "title": "Pipeline can stop early"
-          }
-        },
-        {
-          "type": "rich_text",
-          "value": "<p>Example: static files.</p><p>If browser asks for image.jpg:</p><ul><li>StaticFiles middleware finds it</li><li>Returns response immediately</li><li>Controller is skipped</li></ul>"
-        },
-
-        {
-          "type": "section_heading",
-          "value": {
-            "eyebrow": "Core feature",
-            "title": "Dependency Injection"
-          }
-        },
-        {
-          "type": "rich_text",
-          "value": "<p>ASP.NET Core creates objects for you.</p><p>You register services once:</p>"
-        },
-        {
-          "type": "code",
-          "value": {
-            "caption": "Register service",
-            "language": "csharp",
-            "code": "builder.Services.AddScoped<IService, Service>();",
-            "show_line_numbers": false,
-            "width": "content"
-          }
-        },
-        {
-          "type": "rich_text",
-          "value": "<p>Then use them anywhere:</p>"
-        },
-        {
-          "type": "code",
-          "value": {
-            "caption": "Use service",
-            "language": "csharp",
-            "code": "public class MyController\n{\n    private readonly IService _service;\n\n    public MyController(IService service)\n    {\n        _service = service;\n    }\n}",
-            "show_line_numbers": false,
-            "width": "content"
-          }
-        },
-
-        {
-          "type": "section_heading",
-          "value": {
-            "eyebrow": "Important",
-            "title": "Service lifetimes"
-          }
-        },
-        {
-          "type": "rich_text",
-          "value": "<ul><li><b>Singleton</b> – one instance</li><li><b>Scoped</b> – per request (most used)</li><li><b>Transient</b> – always new</li></ul>"
-        },
-
-        {
-          "type": "section_heading",
-          "value": {
-            "eyebrow": "Summary",
-            "title": "How to think about ASP.NET Core"
-          }
-        },
-        {
-          "type": "rich_text",
-          "value": "<p>Do not think \"controller handles request\".</p><p>Think:</p><ul><li>Kestrel receives request</li><li>Middleware pipeline processes it</li><li>Routing selects handler</li><li>Code runs</li><li>Response returns</li></ul><p>This is the real model.</p>"
+    "slug": "02-aspnet-core-fundamentals",
+    "title": "ASP.NET Core Fundamentals: Build Real Web Apps",
+    "excerpt": "Learn how ASP.NET Core builds dynamic web applications from request to response.",
+    "author_username": "Michał Antolik",
+    "category_slug": "dotnet-ecosystem",
+    "tag_slugs": ["aspnet-core", "web-development"],
+    "live": true,
+    "body": [
+      {
+        "type": "section_heading",
+        "value": { "title": "What is it" }
+      },
+      {
+        "type": "rich_text",
+        "value": "<p>ASP.NET Core is a backend framework.</p><p>It generates HTML or returns data.</p><p>It turns requests into responses.</p>"
+      },
+      {
+        "type": "section_heading",
+        "value": { "title": "Why it matters" }
+      },
+      {
+        "type": "rich_text",
+        "value": "<p>Users expect dynamic systems.</p><p>Products, search, login, orders.</p><p>All require server logic.</p><p>ASP.NET Core makes this manageable.</p>"
+      },
+      {
+        "type": "section_heading",
+        "value": { "title": "How it works" }
+      },
+      {
+        "type": "rich_text",
+        "value": "<p>Data flows like this:</p>"
+      },
+      {
+        "type": "mermaid",
+        "value": {
+          "caption": "Application flow",
+          "diagram": "flowchart LR\nRequest --> Controller\nController --> Service\nService --> Database\nDatabase --> Service\nService --> Controller\nController --> Response",
+          "width": "wide"
         }
-      ]
-    },
-{
-  "title": "Building a Data-Driven ASP.NET Core App with EF Core",
-  "slug": "aspnet-core-efcore-data-driven-app",
-      "excerpt": "Building a Data-Driven ASP.NET Core App with EF Core.",
-      "author_username": "Michał Antolik",
-      "category_slug": "dotnet-ecosystem",
-      "tag_slugs": [
-        "dotnet",
-        "aspnet-core",
-        "backend",
-        "ef",
-        "ef-core"
-      ],
-      "live": true,
-      "published_at": "2026-04-11T12:00:00+02:00",
-  "body": [
-    {
-      "type": "heading",
-      "value": "Building a Data-Driven ASP.NET Core App with EF Core (Simple Guide)"
-    },
-    {
-      "type": "paragraph",
-      "value": "This is a practical mental model of how ASP.NET Core and EF Core work together. No unnecessary theory. Only what matters."
-    },
-    {
-      "type": "heading",
-      "value": "1. Big picture"
-    },
-    {
-      "type": "code",
-      "language": "mermaid",
-      "value": "flowchart LR\nUser --> Controller\nController --> Repository\nRepository --> DbContext\nDbContext --> Database"
-    },
-    {
-      "type": "paragraph",
-      "value": "Controller handles HTTP, Repository handles data logic, DbContext talks to database."
-    },
-    {
-      "type": "heading",
-      "value": "2. EF Core in one sentence"
-    },
-    {
-      "type": "paragraph",
-      "value": "EF Core is an ORM that maps C# objects to database tables."
-    },
-    {
-      "type": "heading",
-      "value": "3. Code-first workflow"
-    },
-    {
-      "type": "code",
-      "language": "mermaid",
-      "value": "flowchart TD\nA[Create classes] --> B[DbContext]\nB --> C[Migration]\nC --> D[Database]"
-    },
-    {
-      "type": "heading",
-      "value": "4. Entity example"
-    },
-    {
-      "type": "code",
-      "language": "csharp",
-      "value": "public class Pie\n{\n    public int PieId { get; set; }\n    public string Name { get; set; }\n    public decimal Price { get; set; }\n    public int CategoryId { get; set; }\n    public Category Category { get; set; }\n}"
-    },
-    {
-      "type": "heading",
-      "value": "5. DbContext"
-    },
-    {
-      "type": "code",
-      "language": "csharp",
-      "value": "public class AppDbContext : DbContext\n{\n    public DbSet<Pie> Pies => Set<Pie>();\n    public DbSet<Category> Categories => Set<Category>();\n}"
-    },
-    {
-      "type": "heading",
-      "value": "6. Register EF Core"
-    },
-    {
-      "type": "code",
-      "language": "csharp",
-      "value": "builder.Services.AddDbContext<AppDbContext>(options =>\n    options.UseSqlServer(builder.Configuration.GetConnectionString(\"Default\")));"
-    },
-    {
-      "type": "heading",
-      "value": "7. Migrations"
-    },
-    {
-      "type": "code",
-      "language": "text",
-      "value": "add-migration Initial\nupdate-database"
-    },
-    {
-      "type": "heading",
-      "value": "8. Repository pattern"
-    },
-    {
-      "type": "code",
-      "language": "mermaid",
-      "value": "flowchart LR\nController --> Repository --> DbContext"
-    },
-    {
-      "type": "heading",
-      "value": "9. Repository example"
-    },
-    {
-      "type": "code",
-      "language": "csharp",
-      "value": "public async Task<List<Category>> GetAllAsync()\n{\n    return await _db.Categories.OrderBy(c => c.CategoryId).ToListAsync();\n}"
-    },
-    {
-      "type": "heading",
-      "value": "10. Controller"
-    },
-    {
-      "type": "code",
-      "language": "csharp",
-      "value": "public async Task<IActionResult> Index()\n{\n    var data = await _repo.GetAllAsync();\n    return View(data);\n}"
-    },
-    {
-      "type": "heading",
-      "value": "11. Loading related data"
-    },
-    {
-      "type": "code",
-      "language": "csharp",
-      "value": "var category = await _db.Categories\n    .Include(c => c.Pies)\n    .FirstOrDefaultAsync(c => c.CategoryId == id);"
-    },
-    {
-      "type": "heading",
-      "value": "12. Form flow"
-    },
-    {
-      "type": "code",
-      "language": "mermaid",
-      "value": "sequenceDiagram\nUser->>View: Fill form\nView->>Controller: POST\nController->>DbContext: Save"
-    },
-    {
-      "type": "heading",
-      "value": "13. Save data"
-    },
-    {
-      "type": "code",
-      "language": "csharp",
-      "value": "_db.Categories.Add(category);\nawait _db.SaveChangesAsync();"
-    },
-    {
-      "type": "heading",
-      "value": "14. Key takeaways"
-    },
-    {
-      "type": "paragraph",
-      "value": "EF Core maps objects to database, DbContext is central, repository keeps code clean, migrations manage schema, Include loads relations, SaveChanges writes data."
-    }
-  ]
-}
+      },
+      {
+        "type": "rich_text",
+        "value": "<p>Key concepts:</p><ul><li>Routing (URL → code)</li><li>Model binding (input → objects)</li><li>Views (HTML output)</li><li>Dependency Injection</li></ul>"
+      },
+      {
+        "type": "section_heading",
+        "value": { "title": "Code example" }
+      },
+      {
+        "type": "code",
+        "value": {
+          "language": "csharp",
+          "code": "public class ProductsController : Controller\n{\n    public IActionResult Index()\n    {\n        return View();\n    }\n}"
+        }
+      },
+      {
+        "type": "section_heading",
+        "value": { "title": "Common mistakes" }
+      },
+      {
+        "type": "rich_text",
+        "value": "<ul><li>Putting logic in controllers</li><li>Skipping validation</li><li>Ignoring separation of concerns</li></ul>"
+      },
+      {
+        "type": "section_heading",
+        "value": { "title": "Quick summary" }
+      },
+      {
+        "type": "callout",
+        "value": {
+          "text": "ASP.NET Core turns requests into dynamic responses using structured layers."
+        }
+      }
+    ]
+  },
+  {
+    "slug": "03-ef-core-data-driven-apps",
+    "title": "Data-Driven Applications with EF Core",
+    "excerpt": "Learn how to work with data in ASP.NET Core using Entity Framework Core.",
+    "author_username": "Michał Antolik",
+    "category_slug": "dotnet-ecosystem",
+    "tag_slugs": ["ef-core", "database"],
+    "live": true,
+    "body": [
+      {
+        "type": "section_heading",
+        "value": { "title": "What is it" }
+      },
+      {
+        "type": "rich_text",
+        "value": "<p>EF Core is an ORM.</p><p>It lets you work with a database using C# objects.</p><p>No raw SQL needed for most cases.</p>"
+      },
+      {
+        "type": "section_heading",
+        "value": { "title": "Why it matters" }
+      },
+      {
+        "type": "rich_text",
+        "value": "<p>Most apps depend on data.</p><p>Products, users, orders.</p><p>Without structure, data access becomes messy.</p><p>EF Core gives consistency.</p>"
+      },
+      {
+        "type": "section_heading",
+        "value": { "title": "How it works" }
+      },
+      {
+        "type": "mermaid",
+        "value": {
+          "caption": "EF Core flow",
+          "diagram": "flowchart LR\nApp --> DbContext\nDbContext --> Database\nDatabase --> DbContext\nDbContext --> App",
+          "width": "wide"
+        }
+      },
+      {
+        "type": "rich_text",
+        "value": "<p>Steps:</p><ul><li>Define models</li><li>Create DbContext</li><li>Query data</li><li>Save changes</li></ul>"
+      },
+      {
+        "type": "section_heading",
+        "value": { "title": "Code example" }
+      },
+      {
+        "type": "code",
+        "value": {
+          "language": "csharp",
+          "code": "public class AppDbContext : DbContext\n{\n    public DbSet<Product> Products { get; set; }\n}\n\nvar products = context.Products.ToList();"
+        }
+      },
+      {
+        "type": "section_heading",
+        "value": { "title": "Common mistakes" }
+      },
+      {
+        "type": "rich_text",
+        "value": "<ul><li>Loading too much data</li><li>Ignoring performance</li><li>No repository pattern</li></ul>"
+      },
+      {
+        "type": "section_heading",
+        "value": { "title": "Quick summary" }
+      },
+      {
+        "type": "callout",
+        "value": {
+          "text": "EF Core simplifies data access but still requires good design."
+        }
+      }
+    ]
+  },
+  {
+    "slug": "04-debugging-error-handling-aspnet-core",
+    "title": "Debugging and Error Handling in ASP.NET Core",
+    "excerpt": "Learn how to find problems fast and handle errors correctly in real systems.",
+    "author_username": "Michał Antolik",
+    "category_slug": "dotnet-ecosystem",
+    "tag_slugs": ["debugging", "error-handling"],
+    "live": true,
+    "body": [
+      {
+        "type": "section_heading",
+        "value": { "title": "What is it" }
+      },
+      {
+        "type": "rich_text",
+        "value": "<p>Debugging is the process of finding why your code behaves incorrectly.</p><p>Error handling is how your system reacts when something goes wrong.</p><p>Both are not optional. They are part of real software.</p>"
+      },
+      {
+        "type": "section_heading",
+        "value": { "title": "Why it matters" }
+      },
+      {
+        "type": "rich_text",
+        "value": "<p>Systems always fail.</p><p>Files are missing. Data is null. APIs fail.</p><p>If you ignore this, your app crashes.</p><p>If you handle it well, your app stays stable.</p><p>The difference is architecture thinking.</p>"
+      },
+      {
+        "type": "section_heading",
+        "value": { "title": "How it works" }
+      },
+      {
+        "type": "rich_text",
+        "value": "<p>Debugging is about assumptions.</p><p>Your code assumes something is true.</p><p>When that assumption is wrong → error.</p>"
+      },
+      {
+        "type": "mermaid",
+        "value": {
+          "caption": "Debugging mindset",
+          "diagram": "flowchart LR\nAssumption --> Reality\nReality --> Mismatch\nMismatch --> Exception\nException --> Debugging",
+          "width": "wide"
+        }
+      },
+      {
+        "type": "rich_text",
+        "value": "<p>Good debugging steps:</p><ul><li>Read the error message</li><li>Find where it happens</li><li>Verify assumptions</li><li>Fix root cause</li></ul>"
+      },
+      {
+        "type": "section_heading",
+        "value": { "title": "Code example" }
+      },
+      {
+        "type": "code",
+        "value": {
+          "language": "csharp",
+          "code": "if (documents == null)\n{\n    throw new InvalidOperationException(\"Documents cannot be null\");\n}"
+        }
+      },
+      {
+        "type": "section_heading",
+        "value": { "title": "Common mistakes" }
+      },
+      {
+        "type": "rich_text",
+        "value": "<ul><li>Ignoring error messages</li><li>Debugging randomly without hypothesis</li><li>Mixing too much logic in one place</li><li>Using try/catch everywhere blindly</li></ul>"
+      },
+      {
+        "type": "section_heading",
+        "value": { "title": "Quick summary" }
+      },
+      {
+        "type": "callout",
+        "value": {
+          "text": "Debugging is about verifying assumptions. Clean code makes debugging easy."
+        }
+      }
+    ]
+  },
+  {
+    "slug": "05-aspnet-core-mvc-deep-dive",
+    "title": "ASP.NET Core MVC: Deep Dive into Real Applications",
+    "excerpt": "Understand how MVC really works and how to build scalable web applications.",
+    "author_username": "Michał Antolik",
+    "category_slug": "dotnet-ecosystem",
+    "tag_slugs": ["mvc", "architecture"],
+    "live": true,
+    "body": [
+      {
+        "type": "section_heading",
+        "value": { "title": "What is it" }
+      },
+      {
+        "type": "rich_text",
+        "value": "<p>MVC is a pattern.</p><p>It splits your app into three parts:</p><ul><li>Model (data)</li><li>View (UI)</li><li>Controller (logic)</li></ul>"
+      },
+      {
+        "type": "section_heading",
+        "value": { "title": "Why it matters" }
+      },
+      {
+        "type": "rich_text",
+        "value": "<p>Without structure, code becomes messy.</p><p>MVC keeps things separate.</p><p>This makes systems easier to change and test.</p>"
+      },
+      {
+        "type": "section_heading",
+        "value": { "title": "How it works" }
+      },
+      {
+        "type": "mermaid",
+        "value": {
+          "caption": "MVC flow",
+          "diagram": "flowchart LR\nUser --> Controller\nController --> Model\nModel --> Controller\nController --> View\nView --> User",
+          "width": "wide"
+        }
+      },
+      {
+        "type": "rich_text",
+        "value": "<p>Controller decides what to do.</p><p>Model contains data.</p><p>View displays it.</p>"
+      },
+      {
+        "type": "section_heading",
+        "value": { "title": "Code example" }
+      },
+      {
+        "type": "code",
+        "value": {
+          "language": "csharp",
+          "code": "public IActionResult Index()\n{\n    var products = _repository.GetAll();\n    return View(products);\n}"
+        }
+      },
+      {
+        "type": "section_heading",
+        "value": { "title": "Common mistakes" }
+      },
+      {
+        "type": "rich_text",
+        "value": "<ul><li>Putting business logic in controllers</li><li>Using DbContext directly everywhere</li><li>Not separating models for views</li></ul>"
+      },
+      {
+        "type": "section_heading",
+        "value": { "title": "Quick summary" }
+      },
+      {
+        "type": "callout",
+        "value": {
+          "text": "MVC is about separation. Keep each part simple and focused."
+        }
+      }
+    ]
+  },
+  {
+    "slug": "06-authentication-authorization-aspnet-core",
+    "title": "Authentication and Authorization in ASP.NET Core",
+    "excerpt": "Secure your application and control access the right way.",
+    "author_username": "Michał Antolik",
+    "category_slug": "dotnet-ecosystem",
+    "tag_slugs": ["security", "auth"],
+    "live": true,
+    "body": [
+      {
+        "type": "section_heading",
+        "value": { "title": "What is it" }
+      },
+      {
+        "type": "rich_text",
+        "value": "<p>Authentication = who you are.</p><p>Authorization = what you can do.</p>"
+      },
+      {
+        "type": "section_heading",
+        "value": { "title": "Why it matters" }
+      },
+      {
+        "type": "rich_text",
+        "value": "<p>Without security, anyone can access everything.</p><p>This leads to data leaks and system abuse.</p><p>Security must be part of the design.</p>"
+      },
+      {
+        "type": "section_heading",
+        "value": { "title": "How it works" }
+      },
+      {
+        "type": "mermaid",
+        "value": {
+          "caption": "Auth flow",
+          "diagram": "flowchart LR\nUser --> Login\nLogin --> IdentityCookie\nIdentityCookie --> Request\nRequest --> Authorization\nAuthorization --> Response",
+          "width": "wide"
+        }
+      },
+      {
+        "type": "rich_text",
+        "value": "<p>User logs in.</p><p>System creates identity cookie.</p><p>Each request uses that identity.</p><p>Authorization checks permissions.</p>"
+      },
+      {
+        "type": "section_heading",
+        "value": { "title": "Code example" }
+      },
+      {
+        "type": "code",
+        "value": {
+          "language": "csharp",
+          "code": "builder.Services.AddAuthentication(\"Cookies\")\n    .AddCookie();\n\napp.UseAuthentication();\napp.UseAuthorization();"
+        }
+      },
+      {
+        "type": "section_heading",
+        "value": { "title": "Common mistakes" }
+      },
+      {
+        "type": "rich_text",
+        "value": "<ul><li>Mixing authentication with authorization</li><li>Not protecting endpoints</li><li>Storing sensitive data in cookies</li></ul>"
+      },
+      {
+        "type": "section_heading",
+        "value": { "title": "Quick summary" }
+      },
+      {
+        "type": "callout",
+        "value": {
+          "text": "Authentication proves identity. Authorization controls access."
+        }
+      }
+    ]
+  }
 ]

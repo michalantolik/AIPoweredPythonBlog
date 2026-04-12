@@ -27,5 +27,16 @@
   { "slug": "command", "name": "Command" },
   { "slug": "null-object", "name": "Null Object" },
   { "slug": "specification", "name": "Specification" },
-  { "slug": "state", "name": "State" }
+  { "slug": "state", "name": "State" },
+  { "slug": "mvc", "name": "MVC" },
+  { "slug": "web", "name": "Web" },
+  { "slug": "database", "name": "Database" },
+  { "slug": "debugging", "name": "Debugging" },
+  { "slug": "security", "name": "Security" },
+  { "slug": "config", "name": "Config" },
+  { "slug": "logging", "name": "Logging" },
+  { "slug": "testing", "name": "Testing" },
+  { "slug": "web-development", "name": "Web Development" },
+  { "slug": "error-handling", "name": "Error Handling" },
+  { "slug": "auth", "name": "Auth" }
 ]
