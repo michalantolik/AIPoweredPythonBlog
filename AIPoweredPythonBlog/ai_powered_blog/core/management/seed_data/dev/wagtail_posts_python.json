@@ -1,131 +1,583 @@
 [
   {
-    "slug": "django-settings-structure-for-growing-projects",
-    "title": "Django Settings Structure for Growing Projects",
-    "excerpt": "DEV Wagtail seed article for django settings structure for growing projects in the python-ecosystem category.",
+    "slug": "01-python-big-picture-real-world-guide",
+    "title": "01. Python Big Picture for Real Projects",
+    "excerpt": "Why Python became a practical choice across automation, web work, data tasks, and internal tools.",
     "author_username": "Michał Antolik",
     "category_slug": "python-ecosystem",
     "tag_slugs": [
       "python",
-      "django"
+      "backend",
+      "patterns"
     ],
     "live": true,
-    "published_at": "2026-01-04T09:00:00+01:00",
+    "published_at": "2026-02-01T09:00:00+01:00",
     "body": [
       {
         "type": "section_heading",
         "value": {
-          "eyebrow": "Foundations",
-          "title": "Django Settings Structure for Growing Projects"
+          "eyebrow": "01 • Big picture",
+          "title": "Python Big Picture for Real Projects"
         }
       },
       {
         "type": "rich_text",
-        "value": "<p>This seeded article belongs to the <b>python-ecosystem</b> category and is meant to populate the Wagtail DEV blog with realistic technical content. It follows the same StreamField structure as the existing sample data, so the seeder can call <b>to_python(...)</b> and validate the payload before saving the page.</p><p>The goal is not only to test page creation, but also to exercise sidebar category filtering, tag chips, publish timestamps, and rich article rendering under <b>/articles/</b>. Keeping three posts per category makes the local dataset feel balanced and makes sorting by <b>sort_order</b> easy to verify.</p>"
+        "value": "<p><b>What is it</b></p><p>Python is a general-purpose language built around readable code and quick problem solving. It is used for scripts, APIs, data pipelines, internal tools, backend services, and automation.</p><p><b>Why it matters</b></p><p>Python is popular because teams can start small and still grow into real systems. The source material highlights four big strengths: simple syntax, a strong community, a large standard library, and a mature package ecosystem through PyPI and pip.</p><p><b>How it works</b></p><p>Python gives you a clean language core, built-in tools for common tasks, and third-party packages when you need more. That means you can read files, work with JSON, call APIs, and automate tasks quickly without building everything from scratch.</p><p>Python also evolves in public through the PEP process. That matters because the language is shaped around readability and practical use, not random feature growth.</p><p><b>Practical mindset</b></p><p>Python is very good glue code. It is often the layer that connects APIs, files, databases, queues, and user workflows. It is not always the fastest runtime, but it is often one of the fastest ways to deliver clear business value.</p>"
       },
       {
         "type": "code",
         "value": {
-          "caption": "Seeder-oriented example",
-          "language": "bash",
-          "code": "python manage.py seed_dev_wagtail_db\npython manage.py runserver",
-          "show_line_numbers": true,
-          "width": "content"
-        }
-      },
-      {
-        "type": "callout",
-        "value": {
-          "title": "Why this helps locally",
-          "text": "A seeded technical post like this proves that category filters, tag relationships, and body block rendering all work together.",
-          "tone": "info"
-        }
-      }
-    ]
-  },
-  {
-    "slug": "fastapi-background-jobs-for-io-heavy-workflows",
-    "title": "FastAPI Background Jobs for IO-Heavy Workflows",
-    "excerpt": "DEV Wagtail seed article for fastapi background jobs for io-heavy workflows in the python-ecosystem category.",
-    "author_username": "Michał Antolik",
-    "category_slug": "python-ecosystem",
-    "tag_slugs": [
-      "python",
-      "django"
-    ],
-    "live": true,
-    "published_at": "2026-01-05T09:00:00+01:00",
-    "body": [
-      {
-        "type": "section_heading",
-        "value": {
-          "eyebrow": "Practical design",
-          "title": "FastAPI Background Jobs for IO-Heavy Workflows"
-        }
-      },
-      {
-        "type": "rich_text",
-        "value": "<p>This seeded article belongs to the <b>python-ecosystem</b> category and is meant to populate the Wagtail DEV blog with realistic technical content. It follows the same StreamField structure as the existing sample data, so the seeder can call <b>to_python(...)</b> and validate the payload before saving the page.</p><p>The goal is not only to test page creation, but also to exercise sidebar category filtering, tag chips, publish timestamps, and rich article rendering under <b>/articles/</b>. Keeping three posts per category makes the local dataset feel balanced and makes sorting by <b>sort_order</b> easy to verify.</p>"
-      },
-      {
-        "type": "callout",
-        "value": {
-          "title": "Operational reminder",
-          "text": "Keep the JSON shape stable. Each post should provide slug, title, excerpt, author, category, tags, publish status, publish time, and a StreamField body array.",
-          "tone": "warning"
-        }
-      },
-      {
-        "type": "code",
-        "value": {
-          "caption": "Representative snippet",
+          "caption": "A tiny script that already feels useful",
           "language": "python",
-          "code": "def load_posts(files):\n    posts = []\n    for path in files:\n        posts.extend(read_json(path))\n    return posts",
+          "code": "from pathlib import Path\nimport json\n\ndef load_config(path: str) -> dict:\n    return json.loads(Path(path).read_text(encoding=\"utf-8\"))\n\nconfig = load_config(\"settings.json\")\nprint(config.get(\"app_name\", \"demo\"))",
           "show_line_numbers": true,
           "width": "content"
         }
-      }
-    ]
-  },
-  {
-    "slug": "python-cli-tools-with-typer-and-clear-boundaries",
-    "title": "Python CLI Tools with Typer and Clear Boundaries",
-    "excerpt": "DEV Wagtail seed article for python cli tools with typer and clear boundaries in the python-ecosystem category.",
-    "author_username": "Michał Antolik",
-    "category_slug": "python-ecosystem",
-    "tag_slugs": [
-      "django",
-      "fastapi"
-    ],
-    "live": true,
-    "published_at": "2026-01-06T09:00:00+01:00",
-    "body": [
-      {
-        "type": "section_heading",
-        "value": {
-          "eyebrow": "Operational view",
-          "title": "Python CLI Tools with Typer and Clear Boundaries"
-        }
-      },
-      {
-        "type": "rich_text",
-        "value": "<p>This seeded article belongs to the <b>python-ecosystem</b> category and is meant to populate the Wagtail DEV blog with realistic technical content. It follows the same StreamField structure as the existing sample data, so the seeder can call <b>to_python(...)</b> and validate the payload before saving the page.</p><p>The goal is not only to test page creation, but also to exercise sidebar category filtering, tag chips, publish timestamps, and rich article rendering under <b>/articles/</b>. Keeping three posts per category makes the local dataset feel balanced and makes sorting by <b>sort_order</b> easy to verify.</p>"
       },
       {
         "type": "mermaid",
         "value": {
-          "caption": "Simple flow",
-          "diagram": "flowchart TD\n    A[Seed JSON] --> B[Read file]\n    B --> C[Validate StreamField blocks]\n    C --> D[Create or update BlogPostPage]\n    D --> E[Publish revision]",
+          "caption": "Why Python feels productive",
+          "diagram": "flowchart LR\n    A[Readable syntax] --> B[Faster learning]\n    B --> C[Faster delivery]\n    D[Standard library] --> C\n    E[PyPI ecosystem] --> C\n    C --> F[Scripts]\n    C --> G[APIs]\n    C --> H[Automation]",
           "width": "wide"
         }
       },
       {
         "type": "callout",
         "value": {
-          "title": "Design takeaway",
-          "text": "The most useful DEV content is content that looks real enough to validate templates, but simple enough to maintain as source-controlled seed data.",
+          "title": "Common mistake",
+          "text": "Easy syntax does not remove the need for good design. Python reduces syntax noise, but you still need boundaries, tests, logging, and clear data flow.",
+          "tone": "warning"
+        }
+      },
+      {
+        "type": "rich_text",
+        "value": "<p><b>Common mistakes</b></p><p>One mistake is treating Python as only a beginner language. Another is pulling too many libraries too early. Start with the standard library when it is enough, then add packages for a clear reason.</p><p><b>Quick summary</b></p><p>Python wins because it lowers friction. A language plus batteries plus ecosystem plus tooling is what makes it strong in real projects.</p>"
+      }
+    ]
+  },
+  {
+    "slug": "02-python-fundamentals-that-make-programs-work",
+    "title": "02. Python Fundamentals That Make Programs Work",
+    "excerpt": "A practical guide to variables, data types, input, control flow, JSON, packages, and small programs that build real intuition.",
+    "author_username": "Michał Antolik",
+    "category_slug": "python-ecosystem",
+    "tag_slugs": [
+      "python",
+      "automation",
+      "backend"
+    ],
+    "live": true,
+    "published_at": "2026-02-02T09:00:00+01:00",
+    "body": [
+      {
+        "type": "section_heading",
+        "value": {
+          "eyebrow": "02 • Fundamentals",
+          "title": "Python Fundamentals That Make Programs Work"
+        }
+      },
+      {
+        "type": "rich_text",
+        "value": "<p><b>What is it</b></p><p>Python fundamentals are the small parts every larger program depends on: variables, numbers, strings, input, output, conditions, loops, lists, dictionaries, functions, files, and packages.</p><p><b>Why it matters</b></p><p>Frameworks make more sense when you understand how values move through a program. The source material uses simple programs like a tax calculator, age calculator, loan calculator, acronym translator, and weather reader to build that intuition step by step.</p><p><b>How it works</b></p><p>Input from the console starts as text. Numbers must be converted before math. Loops repeat logic. Conditions choose a path. Dictionaries map keys to values, which is why they are so good for lookups and parsed JSON data.</p><p><b>Practical mindset</b></p><p>A calculator is useful because it teaches the shape of many real programs: read input, convert values, apply rules, repeat when needed, and show a result.</p>"
+      },
+      {
+        "type": "code",
+        "value": {
+          "caption": "A small loan calculation loop",
+          "language": "python",
+          "code": "money_owed = 50000\nannual_rate = 0.03\nmonthly_payment = 1000\nmonthly_rate = annual_rate / 12\n\nfor month in range(1, 55):\n    interest = money_owed * monthly_rate\n    money_owed = money_owed + interest - monthly_payment\n\n    if money_owed <= 0:\n        print(f\"Paid off in {month} months\")\n        break\n\n    print(month, round(money_owed, 2))",
+          "show_line_numbers": true,
+          "width": "content"
+        }
+      },
+      {
+        "type": "mermaid",
+        "value": {
+          "caption": "Basic program flow",
+          "diagram": "flowchart TD\n    A[Read input] --> B[Convert values]\n    B --> C[Apply logic]\n    C --> D{Repeat?}\n    D -- yes --> C\n    D -- no --> E[Print result]",
+          "width": "wide"
+        }
+      },
+      {
+        "type": "callout",
+        "value": {
+          "title": "Rule of thumb",
+          "text": "If your program feels confusing, make the data flow visible. Give values clear names, convert input early, and split logic into small steps.",
           "tone": "success"
         }
+      },
+      {
+        "type": "rich_text",
+        "value": "<p><b>Common mistakes</b></p><p>Mixing strings and numbers is a common source of bugs. Another mistake is writing everything in one long block instead of small functions. Edge cases matter too. In the loan example, the last payment can overshoot. That is the same type of detail that causes money bugs in business software.</p><p><b>Quick summary</b></p><p>Fundamentals are not small because they are unimportant. They are small because every larger system is built from them.</p>"
+      }
+    ]
+  },
+  {
+    "slug": "03-classes-and-oop-in-python-explained-simply",
+    "title": "03. Classes and Object-Oriented Programming in Python",
+    "excerpt": "How classes help group data and behavior, and how to use properties, inheritance, and data classes without making code heavy.",
+    "author_username": "Michał Antolik",
+    "category_slug": "python-ecosystem",
+    "tag_slugs": [
+      "python",
+      "patterns",
+      "backend"
+    ],
+    "live": true,
+    "published_at": "2026-02-03T09:00:00+01:00",
+    "body": [
+      {
+        "type": "section_heading",
+        "value": {
+          "eyebrow": "03 • OOP",
+          "title": "Classes and Object-Oriented Programming in Python"
+        }
+      },
+      {
+        "type": "rich_text",
+        "value": "<p><b>What is it</b></p><p>Object-oriented programming is a way to keep related data and behavior together. In Python, a class is a tool for building objects that represent something meaningful in your system, such as an employee, order, invoice, or API client.</p><p><b>Why it matters</b></p><p>When code grows, the hard part is not syntax. The hard part is managing complexity. The source material shows this well by moving from loose variables to lists, then dictionaries, and finally classes that keep rules close to data.</p><p><b>How it works</b></p><p>A class defines attributes and methods. An object is one instance of that class. Properties let you validate or compute values during access. Inheritance lets one class reuse behavior from another. Data classes reduce boilerplate when you mainly need structured data.</p><p><b>Practical mindset</b></p><p>Use classes when you have a stable domain concept with rules. Do not create classes just to make code look formal. Start simple and add structure when boundaries become clear.</p>"
+      },
+      {
+        "type": "code",
+        "value": {
+          "caption": "A small class with validation",
+          "language": "python",
+          "code": "from dataclasses import dataclass\n\n@dataclass\nclass Employee:\n    name: str\n    _salary: float\n\n    @property\n    def salary(self) -> float:\n        return self._salary\n\n    @salary.setter\n    def salary(self, value: float) -> None:\n        if value < 0:\n            raise ValueError(\"salary cannot be negative\")\n        self._salary = value\n\n    def give_raise(self, percent: float) -> None:\n        self.salary = self.salary * (1 + percent / 100)",
+          "show_line_numbers": true,
+          "width": "content"
+        }
+      },
+      {
+        "type": "mermaid",
+        "value": {
+          "caption": "How classes reduce scattered logic",
+          "diagram": "flowchart LR\n    A[Loose variables] --> B[Lists]\n    B --> C[Dictionaries]\n    C --> D[Class]\n    D --> E[Data]\n    D --> F[Behavior]\n    E --> G[Better maintainability]\n    F --> G",
+          "width": "wide"
+        }
+      },
+      {
+        "type": "callout",
+        "value": {
+          "title": "Practical rule",
+          "text": "If you cannot explain what one object represents in one simple sentence, the class boundary is probably still too vague.",
+          "tone": "warning"
+        }
+      },
+      {
+        "type": "rich_text",
+        "value": "<p><b>Common mistakes</b></p><p>One mistake is forcing inheritance where composition would be simpler. Another is building classes that only store data while all behavior stays elsewhere. Advanced topics like method resolution order and slots are useful, but they are not the place to start.</p><p><b>Quick summary</b></p><p>Classes are useful when they keep rules close to the data they control. Use them to make systems easier to change, not just to make them look bigger.</p>"
+      }
+    ]
+  },
+  {
+    "slug": "04-working-with-files-in-python-without-chaos",
+    "title": "04. Working with Files in Python Without Chaos",
+    "excerpt": "A practical guide to finding files, traversing folders, copying and moving data, and reading common formats safely.",
+    "author_username": "Michał Antolik",
+    "category_slug": "python-ecosystem",
+    "tag_slugs": [
+      "python",
+      "automation",
+      "patterns"
+    ],
+    "live": true,
+    "published_at": "2026-02-04T09:00:00+01:00",
+    "body": [
+      {
+        "type": "section_heading",
+        "value": {
+          "eyebrow": "04 • Files",
+          "title": "Working with Files in Python Without Chaos"
+        }
+      },
+      {
+        "type": "rich_text",
+        "value": "<p><b>What is it</b></p><p>Real file work means more than opening a text file. It includes finding files, inspecting directories, copying, moving, renaming, deleting, archiving, and reading formats such as TXT, CSV, XML, JSON, and sometimes pickle.</p><p><b>Why it matters</b></p><p>A lot of automation work is file work in disguise. Reports arrive in folders. Logs need cleanup. CSV exports need processing. Backups need archiving. The source material covers that full path from file discovery to content handling.</p><p><b>How it works</b></p><p>Python supports simple directory listing with os.listdir, pattern matching with fnmatch, and path-based matching with glob and pathlib. Once files are located reliably, operations like copy, move, rename, delete, and archive become much safer because you act on a known list of paths.</p><p><b>Practical mindset</b></p><p>Separate discovery from processing. First build a reliable list of files. Then process each file. Then move or archive only after success.</p>"
+      },
+      {
+        "type": "code",
+        "value": {
+          "caption": "Find all JSON files under a folder",
+          "language": "python",
+          "code": "from pathlib import Path\n\nroot = Path(\"data\")\nfor path in root.rglob(\"*.json\"):\n    print(path)",
+          "show_line_numbers": true,
+          "width": "content"
+        }
+      },
+      {
+        "type": "mermaid",
+        "value": {
+          "caption": "A safe file processing pipeline",
+          "diagram": "flowchart TD\n    A[Choose root folder] --> B[Match paths]\n    B --> C[Filter wanted files]\n    C --> D[Read content]\n    D --> E[Transform data]\n    E --> F[Write result]\n    F --> G[Archive or move original]",
+          "width": "wide"
+        }
+      },
+      {
+        "type": "callout",
+        "value": {
+          "title": "Real-world tip",
+          "text": "When a script touches many files, log both the source path and the final action. That makes recovery much easier when something fails halfway.",
+          "tone": "info"
+        }
+      },
+      {
+        "type": "rich_text",
+        "value": "<p><b>Common mistakes</b></p><p>One mistake is mixing path discovery and content logic in one loop with no error handling. Another is reading large files fully into memory without need. Another is using pickle as a general interchange format. Pickle is convenient for trusted Python-only workflows, but not for untrusted input.</p><p><b>Quick summary</b></p><p>Good file code is predictable. Find files with clear patterns. Process them with clear steps. Move or archive only after the result is safe.</p>"
+      }
+    ]
+  },
+  {
+    "slug": "05-working-with-databases-in-python-practical-guide",
+    "title": "05. Working with Databases in Python Practical Guide",
+    "excerpt": "How to think about SQLite, database servers, parameterized queries, and the trade-offs between low-level and higher-level database access.",
+    "author_username": "Michał Antolik",
+    "category_slug": "python-ecosystem",
+    "tag_slugs": [
+      "python",
+      "backend",
+      "api"
+    ],
+    "live": true,
+    "published_at": "2026-02-05T09:00:00+01:00",
+    "body": [
+      {
+        "type": "section_heading",
+        "value": {
+          "eyebrow": "05 • Databases",
+          "title": "Working with Databases in Python Practical Guide"
+        }
+      },
+      {
+        "type": "rich_text",
+        "value": "<p><b>What is it</b></p><p>A database stores application data in a form that can be queried, updated, and kept consistent over time. In Python, that can mean SQLite, a server database like PostgreSQL, or another storage model chosen for a specific workload.</p><p><b>Why it matters</b></p><p>Most applications need durable state. The source material is useful because it does not treat all database choices as equal. It explains when a local file-based database is enough and when a server database or higher-level abstraction is a better fit.</p><p><b>How it works</b></p><p>SQLite is just a file, not a server. Python includes sqlite3 in the standard library, so you can connect, create tables, insert rows, commit, and fetch results with no extra package. That makes SQLite great for embedded tools, prototypes, and tests.</p><p>When you need shared access, authentication, stronger concurrency, or production deployment patterns, a server database becomes a better fit. Then you can use a driver such as psycopg2 or a higher-level tool such as SQLAlchemy. Another useful idea from the source material is row factories, which let you access columns by name or convert rows into dataclasses.</p>"
+      },
+      {
+        "type": "code",
+        "value": {
+          "caption": "A clean SQLite example with parameters",
+          "language": "python",
+          "code": "import sqlite3\n\nwith sqlite3.connect(\"portfolio.db\") as conn:\n    cur = conn.cursor()\n    cur.execute(\n        \"create table if not exists investments (coin_id text, amount real, price_usd real)\"\n    )\n    cur.execute(\n        \"insert into investments values (?, ?, ?)\",\n        (\"bitcoin\", 0.25, 64000.0),\n    )\n    conn.commit()\n\n    rows = cur.execute(\n        \"select coin_id, amount, price_usd from investments\"\n    ).fetchall()\n\nprint(rows)",
+          "show_line_numbers": true,
+          "width": "wide"
+        }
+      },
+      {
+        "type": "mermaid",
+        "value": {
+          "caption": "Choosing a database path",
+          "diagram": "flowchart TD\n    A[Need durable data] --> B{Single user or local app?}\n    B -- yes --> C[SQLite]\n    B -- no --> D[Server database]\n    D --> E[Driver or ORM]\n    C --> F[Prototype or embedded tool]\n    E --> G[Shared production service]",
+          "width": "wide"
+        }
+      },
+      {
+        "type": "callout",
+        "value": {
+          "title": "Design rule",
+          "text": "SQLite is not a toy. It is often the right answer for local tools, prototypes, tests, and embedded apps.",
+          "tone": "success"
+        }
+      },
+      {
+        "type": "rich_text",
+        "value": "<p><b>Common mistakes</b></p><p>Building SQL by string concatenation is one of the worst mistakes. Use parameterized queries. Another is using an ORM without understanding what SQL it sends. Another is choosing a heavy stack for a tiny local workflow where SQLite would be simpler.</p><p><b>Quick summary</b></p><p>Start with the simplest data store that matches the real problem. Keep SQL safe with parameters. Choose abstraction levels on purpose, not by habit.</p>"
+      }
+    ]
+  },
+  {
+    "slug": "06-python-best-practices-that-age-well",
+    "title": "06. Python Best Practices That Age Well",
+    "excerpt": "How style, formatting, documentation, and type hints make Python code easier to read, safer to change, and simpler to maintain.",
+    "author_username": "Michał Antolik",
+    "category_slug": "python-ecosystem",
+    "tag_slugs": [
+      "python",
+      "patterns",
+      "automation"
+    ],
+    "live": true,
+    "published_at": "2026-02-06T09:00:00+01:00",
+    "body": [
+      {
+        "type": "section_heading",
+        "value": {
+          "eyebrow": "06 • Best practices",
+          "title": "Python Best Practices That Age Well"
+        }
+      },
+      {
+        "type": "rich_text",
+        "value": "<p><b>What is it</b></p><p>Best practices are habits that improve code quality without changing what the program does. In Python, the main ones are consistent style, automatic formatting, useful docstrings, and type hints checked by tools.</p><p><b>Why it matters</b></p><p>Most maintenance work is reading and changing existing code, not writing brand new code. The source material focuses on PEP 8, Pylint, Black, Sphinx, and Mypy because those tools reduce friction when code grows.</p><p><b>How it works</b></p><p>PEP 8 is the style guide. Black automates formatting. Pylint points out code smells. Sphinx turns docstrings into browsable documentation. Mypy checks type hints and catches mistakes earlier. The point is not to memorize every rule. Let tools enforce the repeatable parts so people can focus on behavior and design.</p>"
+      },
+      {
+        "type": "code",
+        "value": {
+          "caption": "Type hints plus docstring",
+          "language": "python",
+          "code": "def monthly_payment(balance: float, annual_rate: float, months: int) -> float:\n    \"\"\"\n    Calculate a fixed monthly payment for a simple loan model.\n\n    :param balance: Current loan balance.\n    :param annual_rate: Annual interest rate as a decimal.\n    :param months: Number of remaining months.\n    :return: Monthly payment amount.\n    \"\"\"\n    if months <= 0:\n        raise ValueError(\"months must be positive\")\n    monthly_rate = annual_rate / 12\n    return (balance / months) + (balance * monthly_rate)",
+          "show_line_numbers": true,
+          "width": "content"
+        }
+      },
+      {
+        "type": "mermaid",
+        "value": {
+          "caption": "How quality tools fit into a workflow",
+          "diagram": "flowchart LR\n    A[Write code] --> B[Black formats]\n    B --> C[Pylint checks smells]\n    C --> D[Mypy checks types]\n    D --> E[Sphinx builds docs]\n    E --> F[Cleaner review and safer changes]",
+          "width": "wide"
+        }
+      },
+      {
+        "type": "callout",
+        "value": {
+          "title": "Simple rule",
+          "text": "Automate anything a machine can check. Save human attention for design, naming, and trade-offs.",
+          "tone": "info"
+        }
+      },
+      {
+        "type": "rich_text",
+        "value": "<p><b>Common mistakes</b></p><p>One mistake is thinking style tools are only cosmetic. Another is writing docstrings that repeat the function name with no value. Another is adding type hints but never checking them with Mypy or a similar tool.</p><p><b>Quick summary</b></p><p>Best practices are not decoration. They are small constraints that keep code easier to read and easier to change under pressure.</p>"
+      }
+    ]
+  },
+  {
+    "slug": "07-python-environments-and-package-management-made-practical",
+    "title": "07. Python Environments and Package Management Made Practical",
+    "excerpt": "How pip, virtual environments, pipenv, poetry, and pipx solve different dependency problems in real projects.",
+    "author_username": "Michał Antolik",
+    "category_slug": "python-ecosystem",
+    "tag_slugs": [
+      "python",
+      "devops",
+      "automation"
+    ],
+    "live": true,
+    "published_at": "2026-02-07T09:00:00+01:00",
+    "body": [
+      {
+        "type": "section_heading",
+        "value": {
+          "eyebrow": "07 • Environments",
+          "title": "Python Environments and Package Management Made Practical"
+        }
+      },
+      {
+        "type": "rich_text",
+        "value": "<p><b>What is it</b></p><p>Environment and package management is the work of controlling which Python version and which dependencies your project runs with.</p><p><b>Why it matters</b></p><p>Dependency problems are slow and expensive. The source material shows why pip, virtual environments, pipenv, poetry, and pipx all exist: they solve different parts of the same reliability problem.</p><p><b>How it works</b></p><p>Use pip to install packages. Use a virtual environment so those packages belong to one project, not to your whole machine. Use requirement specifiers to pin or constrain versions. Use pipx for standalone tools such as Black or Pylint. Use pipenv or poetry when you want stronger project-level dependency management and lock files.</p><p><b>Practical mindset</b></p><p>For a simple app, venv plus pip may be enough. For a packaged application or stronger team workflow, Poetry is often a strong default. For global developer tools, use pipx.</p>"
+      },
+      {
+        "type": "code",
+        "value": {
+          "caption": "A sane minimal setup",
+          "language": "bash",
+          "code": "python -m venv .venv\nsource .venv/bin/activate\npython -m pip install --upgrade pip\npython -m pip install requests pytest\n\n# later\npython -m pip freeze > requirements.txt",
+          "show_line_numbers": true,
+          "width": "content"
+        }
+      },
+      {
+        "type": "mermaid",
+        "value": {
+          "caption": "Dependency control in one view",
+          "diagram": "flowchart TD\n    A[Python version] --> B[Virtual environment]\n    B --> C[Project dependencies]\n    C --> D[Lock or requirements file]\n    D --> E[Same setup on every machine]\n    F[pipx] --> G[Standalone tools]",
+          "width": "wide"
+        }
+      },
+      {
+        "type": "callout",
+        "value": {
+          "title": "Operational tip",
+          "text": "Record both the Python version and the dependency set. One without the other is not a reproducible environment.",
+          "tone": "warning"
+        }
+      },
+      {
+        "type": "rich_text",
+        "value": "<p><b>Common mistakes</b></p><p>Installing packages into the system Python is a common mistake. Another is updating packages without a lock strategy. Another is mixing project dependencies with standalone tools. The source material is clear that pipx is usually a better fit for global utilities.</p><p><b>Quick summary</b></p><p>Environment management is how you make 'works on my machine' stop being a team problem.</p>"
+      }
+    ]
+  },
+  {
+    "slug": "08-testing-python-code-that-stays-useful",
+    "title": "08. Testing Python Code That Stays Useful",
+    "excerpt": "How to design tests around behavior, keep them fast, and use unittest and pytest without turning tests into noise.",
+    "author_username": "Michał Antolik",
+    "category_slug": "python-ecosystem",
+    "tag_slugs": [
+      "python",
+      "patterns",
+      "backend"
+    ],
+    "live": true,
+    "published_at": "2026-02-08T09:00:00+01:00",
+    "body": [
+      {
+        "type": "section_heading",
+        "value": {
+          "eyebrow": "08 • Testing",
+          "title": "Testing Python Code That Stays Useful"
+        }
+      },
+      {
+        "type": "rich_text",
+        "value": "<p><b>What is it</b></p><p>Testing is the practice of checking behavior automatically so code can change without fear. In Python, that usually starts with unit tests and then grows into broader test layers as the system grows.</p><p><b>Why it matters</b></p><p>Tests exist to shorten feedback loops. The source material emphasizes that good unit tests are small, fast, and focused on logic that runs in memory. When tests are clear and fast, they also help you design better code.</p><p><b>How it works</b></p><p>A useful unit test usually follows arrange, act, assert. Set up the data. Run the behavior. Check the result. Each test should describe one scenario clearly. Shared setup can move into fixtures. Pytest adds parameterized tests, fixtures, markers, and better failure output.</p><p><b>Practical mindset</b></p><p>Start at the edges of business rules. Write tests for behavior that is easy to break and expensive to verify manually.</p>"
+      },
+      {
+        "type": "code",
+        "value": {
+          "caption": "A small pytest example",
+          "language": "python",
+          "code": "import pytest\n\ndef discount(price: float, percent: int) -> float:\n    if percent < 0 or percent > 100:\n        raise ValueError(\"invalid discount\")\n    return price * (1 - percent / 100)\n\n@pytest.mark.parametrize(\n    \"price,percent,expected\",\n    [(100, 10, 90), (80, 25, 60), (50, 0, 50)],\n)\ndef test_discount(price, percent, expected):\n    assert discount(price, percent) == expected",
+          "show_line_numbers": true,
+          "width": "content"
+        }
+      },
+      {
+        "type": "mermaid",
+        "value": {
+          "caption": "Testing pyramid in plain words",
+          "diagram": "flowchart TD\n    A[Many fast unit tests]\n    B[Fewer integration tests]\n    C[Small number of end-to-end tests]\n    A --> B --> C",
+          "width": "wide"
+        }
+      },
+      {
+        "type": "callout",
+        "value": {
+          "title": "Practical signal",
+          "text": "If a unit test needs a lot of setup, many mocks, or deep patching, the production code may be doing too much in one place.",
+          "tone": "danger"
+        }
+      },
+      {
+        "type": "rich_text",
+        "value": "<p><b>Common mistakes</b></p><p>One mistake is writing large tests that try to check many things at once. Another is testing private implementation details instead of public behavior. Another is reaching for mocks too early instead of improving boundaries in the production code.</p><p><b>Quick summary</b></p><p>Write small tests that run fast and describe behavior clearly. When tests are painful to write, it is often a design signal, not just a testing problem.</p>"
+      }
+    ]
+  },
+  {
+    "slug": "09-python-regex-for-real-text-problems",
+    "title": "09. Python Regex for Real Text Problems",
+    "excerpt": "A practical guide to searching, validating, parsing, and cleaning text with regex without turning patterns into unreadable puzzles.",
+    "author_username": "Michał Antolik",
+    "category_slug": "python-ecosystem",
+    "tag_slugs": [
+      "python",
+      "automation",
+      "patterns"
+    ],
+    "live": true,
+    "published_at": "2026-02-09T09:00:00+01:00",
+    "body": [
+      {
+        "type": "section_heading",
+        "value": {
+          "eyebrow": "09 • Regex",
+          "title": "Python Regex for Real Text Problems"
+        }
+      },
+      {
+        "type": "rich_text",
+        "value": "<p><b>What is it</b></p><p>Regex is a compact language for describing text patterns. In Python, it helps when plain string methods are too weak and a full parser would be too heavy.</p><p><b>Why it matters</b></p><p>Text processing appears everywhere: log files, emails, IDs, input validation, search and replace work, and data extraction. The source material frames regex the right way: not as magic syntax, but as pattern matching read from left to right.</p><p><b>How it works</b></p><p>A regex pattern combines literal text with special characters. A dot matches almost any character. Anchors like ^ and $ tie a pattern to the start or end of a string. Character classes allow alternatives. Groups let you capture or structure parts of the match. Python's re module gives you search, match, findall, sub, and compiled patterns.</p><p><b>Practical mindset</b></p><p>Regex is strongest when the text structure is repetitive and local. It is weaker when the input has deep nested grammar or too many exceptions.</p>"
+      },
+      {
+        "type": "code",
+        "value": {
+          "caption": "Validate a signed decimal number",
+          "language": "python",
+          "code": "import re\n\nNUMBER_PATTERN = re.compile(r\"^-?\\d+(\\.\\d+)?$\")\n\ndef is_number(value: str) -> bool:\n    return bool(NUMBER_PATTERN.search(value))\n\nprint(is_number(\"12\"))      # True\nprint(is_number(\"-4.5\"))    # True\nprint(is_number(\"1.2.3\"))   # False",
+          "show_line_numbers": true,
+          "width": "content"
+        }
+      },
+      {
+        "type": "mermaid",
+        "value": {
+          "caption": "How to approach a regex task",
+          "diagram": "flowchart TD\n    A[Describe the pattern in words]\n    B[Write a small regex]\n    C[Test with good and bad samples]\n    D[Refine slowly]\n    E[Wrap in a function]\n    A --> B --> C --> D --> E",
+          "width": "wide"
+        }
+      },
+      {
+        "type": "callout",
+        "value": {
+          "title": "Simple rule",
+          "text": "If a regex is hard to explain in one or two sentences, add comments or split the task into smaller steps.",
+          "tone": "info"
+        }
+      },
+      {
+        "type": "rich_text",
+        "value": "<p><b>Common mistakes</b></p><p>One mistake is making patterns too clever too early. Another is using regex for problems that should be parsed with a dedicated parser or library. Another is forgetting anchors, which turns validation into loose substring matching.</p><p><b>Quick summary</b></p><p>Regex is powerful when you keep it disciplined. Use it for repeatable text shapes, test it with real examples, and hide complexity behind clear function names.</p>"
+      }
+    ]
+  },
+  {
+    "slug": "10-building-a-rest-api-with-fastapi-and-clean-boundaries",
+    "title": "10. Building a REST API with FastAPI and Clean Boundaries",
+    "excerpt": "How to structure a realistic Python API project with FastAPI, SQLAlchemy, tests, configuration, and clean data boundaries.",
+    "author_username": "Michał Antolik",
+    "category_slug": "python-ecosystem",
+    "tag_slugs": [
+      "python",
+      "fastapi",
+      "api",
+      "rest-api",
+      "backend"
+    ],
+    "live": true,
+    "published_at": "2026-02-10T09:00:00+01:00",
+    "body": [
+      {
+        "type": "section_heading",
+        "value": {
+          "eyebrow": "10 • REST API",
+          "title": "Building a REST API with FastAPI and Clean Boundaries"
+        }
+      },
+      {
+        "type": "rich_text",
+        "value": "<p><b>What is it</b></p><p>A REST API is a service that exposes application data and behavior through HTTP endpoints. In Python, FastAPI is a strong choice when you want clear route definitions, data validation, and a modern developer experience.</p><p><b>Why it matters</b></p><p>An API becomes the contract between systems. The source material uses a realistic problem: some data lives in a database and some in frontmatter files. The API hides that storage detail and gives clients one clean interface.</p><p><b>How it works</b></p><p>The project uses FastAPI for endpoints, SQLAlchemy for database access, Poetry for dependency management, pytest for tests, and tools such as pre-commit, Black, Mypy, and dotenv. It also parses frontmatter files with regex and YAML, then merges that file data with database records before returning responses.</p><p><b>Practical mindset</b></p><p>The API layer should not care where data originally came from. It should ask a service or repository layer for a response-ready object. That boundary keeps clients stable even when storage changes later.</p>"
+      },
+      {
+        "type": "code",
+        "value": {
+          "caption": "A small FastAPI endpoint shape",
+          "language": "python",
+          "code": "from fastapi import FastAPI\nfrom pydantic import BaseModel\n\napp = FastAPI()\n\nclass Event(BaseModel):\n    id: int\n    title: str\n    city: str\n\n@app.get(\"/events/{event_id}\", response_model=Event)\ndef get_event(event_id: int) -> Event:\n    return Event(id=event_id, title=\"Python Meetup\", city=\"Warsaw\")",
+          "show_line_numbers": true,
+          "width": "content"
+        }
+      },
+      {
+        "type": "mermaid",
+        "value": {
+          "caption": "A clean API request flow",
+          "diagram": "flowchart LR\n    A[Client] --> B[FastAPI route]\n    B --> C[Service layer]\n    C --> D[Database access]\n    C --> E[Frontmatter file reader]\n    D --> F[Unified domain data]\n    E --> F\n    F --> G[Response model]\n    G --> A",
+          "width": "wide"
+        }
+      },
+      {
+        "type": "code",
+        "value": {
+          "caption": "A pre-commit fragment for quality gates",
+          "language": "yaml",
+          "code": "repos:\n  - repo: https://github.com/psf/black\n    rev: stable\n    hooks:\n      - id: black\n  - repo: https://github.com/pre-commit/mirrors-mypy\n    rev: stable\n    hooks:\n      - id: mypy",
+          "show_line_numbers": false,
+          "width": "content"
+        }
+      },
+      {
+        "type": "callout",
+        "value": {
+          "title": "Architectural rule",
+          "text": "Routes should stay thin. Put business rules and data assembly in dedicated layers so the API contract stays easy to understand and easy to change.",
+          "tone": "success"
+        }
+      },
+      {
+        "type": "rich_text",
+        "value": "<p><b>Common mistakes</b></p><p>One mistake is putting file parsing, DB queries, validation, and HTTP response shaping all inside the route function. Another is letting storage details leak into the API contract. Another is skipping tests on parsing code even though text formats fail in messy ways.</p><p><b>Quick summary</b></p><p>A good API gives clients one stable view of the system. Clean boundaries, tested parsing, predictable models, and automated quality checks make that possible.</p>"
       }
     ]
   }
