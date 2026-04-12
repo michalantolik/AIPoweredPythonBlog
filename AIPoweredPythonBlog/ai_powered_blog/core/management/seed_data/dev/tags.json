@@ -21,5 +21,11 @@
   { "slug": "patterns", "name": "Patterns" },
   { "slug": "backend", "name": "Backend" },
   { "slug": "ef", "name": "EF" },
-  { "slug": "ef-core", "name": "EF Core" }
+  { "slug": "ef-core", "name": "EF Core" },
+  { "slug": "design-patterns", "name": "Design Patterns" },
+  { "slug": "strategy", "name": "Strategy" },
+  { "slug": "command", "name": "Command" },
+  { "slug": "null-object", "name": "Null Object" },
+  { "slug": "specification", "name": "Specification" },
+  { "slug": "state", "name": "State" }
 ]
