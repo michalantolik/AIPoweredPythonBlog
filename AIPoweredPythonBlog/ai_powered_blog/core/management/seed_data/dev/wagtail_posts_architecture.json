@@ -5,32 +5,64 @@
     "excerpt": "Learn how design patterns solve real problems and make systems easier to build and maintain.",
     "author_username": "Michał Antolik",
     "category_slug": "architecture-patterns",
-    "tag_slugs": ["design-patterns", "architecture"],
+    "tag_slugs": [
+      "design-patterns",
+      "architecture"
+    ],
     "live": true,
     "body": [
-      { "type": "section_heading", "value": { "title": "What is it" } },
+      {
+        "type": "section_heading",
+        "value": {
+          "title": "What is it"
+        }
+      },
       {
         "type": "rich_text",
         "value": "<p>A design pattern is a proven way to solve a common problem in software.</p><p>It is not code. It is a structure you can apply when you recognize a situation.</p><p>Example: when your code depends too much on a database, you can use a Repository pattern.</p>"
       },
-
-      { "type": "section_heading", "value": { "title": "Why it matters" } },
+      {
+        "type": "section_heading",
+        "value": {
+          "title": "Why it matters"
+        }
+      },
       {
         "type": "rich_text",
         "value": "<p>Without patterns, developers solve the same problems again and again.</p><p>This leads to messy code, duplication, and hard-to-change systems.</p><p>Patterns give you a shared language. Instead of long explanations, you can say: \"use Strategy\".</p>"
       },
-
-      { "type": "mermaid", "value": "flowchart LR\nProblem --> Recognize\nRecognize --> Pattern\nPattern --> CleanSolution\nCleanSolution --> MaintainableSystem" },
-
-      { "type": "section_heading", "value": { "title": "How it works" } },
+      {
+        "type": "mermaid",
+        "value": {
+          "caption": "Pattern thinking flow",
+          "diagram": "flowchart LR\nProblem --> Recognize\nRecognize --> Pattern\nPattern --> CleanSolution\nCleanSolution --> MaintainableSystem",
+          "width": "wide"
+        }
+      },
+      {
+        "type": "section_heading",
+        "value": {
+          "title": "How it works"
+        }
+      },
       {
         "type": "rich_text",
         "value": "<p>Every pattern solves a specific type of problem.</p><p>You first recognize the problem. Then you apply the structure of the pattern.</p><p>Patterns usually define roles: interfaces, implementations, and interactions.</p>"
       },
-
-      { "type": "mermaid", "value": "flowchart LR\nClient --> Abstraction\nAbstraction --> ImplementationA\nAbstraction --> ImplementationB" },
-
-      { "type": "section_heading", "value": { "title": "Code example" } },
+      {
+        "type": "mermaid",
+        "value": {
+          "caption": "Abstraction and implementations",
+          "diagram": "flowchart LR\nClient --> Abstraction\nAbstraction --> ImplementationA\nAbstraction --> ImplementationB",
+          "width": "wide"
+        }
+      },
+      {
+        "type": "section_heading",
+        "value": {
+          "title": "Code example"
+        }
+      },
       {
         "type": "code",
         "value": {
@@ -38,53 +70,94 @@
           "code": "public interface IRepository\n{\n    void Save();\n}\n\npublic class SqlRepository : IRepository\n{\n    public void Save() { /* SQL logic */ }\n}"
         }
       },
-
-      { "type": "section_heading", "value": { "title": "Common mistakes" } },
+      {
+        "type": "section_heading",
+        "value": {
+          "title": "Common mistakes"
+        }
+      },
       {
         "type": "rich_text",
         "value": "<ul><li>Using patterns without a real problem</li><li>Overengineering simple code</li><li>Forgetting that patterns have trade-offs</li></ul>"
       },
-
-      { "type": "section_heading", "value": { "title": "Quick summary" } },
+      {
+        "type": "section_heading",
+        "value": {
+          "title": "Quick summary"
+        }
+      },
       {
         "type": "callout",
-        "value": { "text": "Patterns are tools. Use them when the problem matches. Not before." }
+        "value": {
+          "text": "Patterns are tools. Use them when the problem matches. Not before."
+        }
       }
     ]
   },
-
   {
     "slug": "02-strategy-pattern-deep",
     "title": "Strategy Pattern: Replace If-Else with Clean Design",
     "excerpt": "Learn how to remove conditional logic and make your system flexible.",
     "author_username": "Michał Antolik",
     "category_slug": "architecture-patterns",
-    "tag_slugs": ["strategy", "design-patterns"],
+    "tag_slugs": [
+      "strategy",
+      "design-patterns"
+    ],
     "live": true,
     "body": [
-      { "type": "section_heading", "value": { "title": "What is it" } },
+      {
+        "type": "section_heading",
+        "value": {
+          "title": "What is it"
+        }
+      },
       {
         "type": "rich_text",
         "value": "<p>Strategy pattern lets you change behavior without modifying the main class.</p><p>You move logic into separate classes called strategies.</p>"
       },
-
-      { "type": "section_heading", "value": { "title": "Why it matters" } },
+      {
+        "type": "section_heading",
+        "value": {
+          "title": "Why it matters"
+        }
+      },
       {
         "type": "rich_text",
         "value": "<p>Large if/else blocks grow over time.</p><p>They become hard to read, test, and extend.</p><p>Strategy removes this problem by isolating behavior.</p>"
       },
-
-      { "type": "mermaid", "value": "flowchart LR\nOrder --> Strategy\nStrategy --> SwedenTax\nStrategy --> USTax\nStrategy --> NoTax" },
-
-      { "type": "section_heading", "value": { "title": "How it works" } },
+      {
+        "type": "mermaid",
+        "value": {
+          "caption": "Strategy selection overview",
+          "diagram": "flowchart LR\nOrder --> Strategy\nStrategy --> SwedenTax\nStrategy --> USTax\nStrategy --> NoTax",
+          "width": "wide"
+        }
+      },
+      {
+        "type": "section_heading",
+        "value": {
+          "title": "How it works"
+        }
+      },
       {
         "type": "rich_text",
         "value": "<p>You define an interface. Then multiple implementations.</p><p>The main class uses the interface, not the implementation.</p><p>The correct strategy is selected at runtime.</p>"
       },
-
-      { "type": "mermaid", "value": "sequenceDiagram\nClient->>Order: SetStrategy()\nOrder->>Strategy: Calculate()\nStrategy-->>Order: Result" },
-
-      { "type": "section_heading", "value": { "title": "Code example" } },
+      {
+        "type": "mermaid",
+        "value": {
+          "caption": "Strategy interaction flow",
+          "diagram": "sequenceDiagram\nClient->>Order: SetStrategy()\nOrder->>Strategy: Calculate()\nStrategy-->>Order: Result",
+          "width": "wide"
+        }
+      },
+      {
+        "type": "section_heading",
+        "value": {
+          "title": "Code example"
+        }
+      },
       {
         "type": "code",
         "value": {
@@ -92,47 +165,83 @@
           "code": "public interface ITaxStrategy\n{\n    decimal Calculate(decimal amount);\n}\n\npublic class SwedenTax : ITaxStrategy\n{\n    public decimal Calculate(decimal amount) => amount * 0.25m;\n}\n\npublic class Order\n{\n    public ITaxStrategy Strategy { get; set; }\n\n    public decimal GetTax(decimal amount)\n    {\n        return Strategy.Calculate(amount);\n    }\n}"
         }
       },
-
-      { "type": "section_heading", "value": { "title": "Common mistakes" } },
+      {
+        "type": "section_heading",
+        "value": {
+          "title": "Common mistakes"
+        }
+      },
       {
         "type": "rich_text",
         "value": "<ul><li>Too many small strategies</li><li>Choosing strategy in wrong place</li><li>Not using dependency injection</li></ul>"
       },
-
-      { "type": "section_heading", "value": { "title": "Quick summary" } },
+      {
+        "type": "section_heading",
+        "value": {
+          "title": "Quick summary"
+        }
+      },
       {
         "type": "callout",
-        "value": { "text": "Use Strategy when behavior changes based on conditions." }
+        "value": {
+          "text": "Use Strategy when behavior changes based on conditions."
+        }
       }
     ]
   },
-
   {
     "slug": "03-command-pattern-deep",
     "title": "Command Pattern: Turn Actions into Objects",
     "excerpt": "Encapsulate operations and unlock undo, queues, and flexibility.",
     "author_username": "Michał Antolik",
     "category_slug": "architecture-patterns",
-    "tag_slugs": ["command"],
+    "tag_slugs": [
+      "command"
+    ],
     "live": true,
     "body": [
-      { "type": "section_heading", "value": { "title": "What is it" } },
+      {
+        "type": "section_heading",
+        "value": {
+          "title": "What is it"
+        }
+      },
       {
         "type": "rich_text",
         "value": "<p>Command pattern wraps an action inside an object.</p><p>This allows you to execute, store, and undo operations.</p>"
       },
-
-      { "type": "mermaid", "value": "flowchart LR\nClient --> Invoker\nInvoker --> Command\nCommand --> Receiver" },
-
-      { "type": "section_heading", "value": { "title": "Why it matters" } },
+      {
+        "type": "mermaid",
+        "value": {
+          "caption": "Command pattern structure",
+          "diagram": "flowchart LR\nClient --> Invoker\nInvoker --> Command\nCommand --> Receiver",
+          "width": "wide"
+        }
+      },
+      {
+        "type": "section_heading",
+        "value": {
+          "title": "Why it matters"
+        }
+      },
       {
         "type": "rich_text",
         "value": "<p>In real systems, actions are not just executed once.</p><p>You may need to log them, retry them, or undo them.</p>"
       },
-
-      { "type": "mermaid", "value": "sequenceDiagram\nClient->>Invoker: Execute(Command)\nInvoker->>Command: Execute()\nCommand->>Receiver: Action()" },
-
-      { "type": "section_heading", "value": { "title": "Code example" } },
+      {
+        "type": "mermaid",
+        "value": {
+          "caption": "Command execution flow",
+          "diagram": "sequenceDiagram\nClient->>Invoker: Execute(Command)\nInvoker->>Command: Execute()\nCommand->>Receiver: Action()",
+          "width": "wide"
+        }
+      },
+      {
+        "type": "section_heading",
+        "value": {
+          "title": "Code example"
+        }
+      },
       {
         "type": "code",
         "value": {
@@ -140,45 +249,75 @@
           "code": "public interface ICommand\n{\n    void Execute();\n    void Undo();\n}\n\npublic class AddToCartCommand : ICommand\n{\n    public void Execute() { /* add item */ }\n    public void Undo() { /* remove item */ }\n}"
         }
       },
-
-      { "type": "section_heading", "value": { "title": "Common mistakes" } },
+      {
+        "type": "section_heading",
+        "value": {
+          "title": "Common mistakes"
+        }
+      },
       {
         "type": "rich_text",
         "value": "<ul><li>Putting too much logic in invoker</li><li>Not storing command state</li></ul>"
       },
-
-      { "type": "section_heading", "value": { "title": "Quick summary" } },
+      {
+        "type": "section_heading",
+        "value": {
+          "title": "Quick summary"
+        }
+      },
       {
         "type": "callout",
-        "value": { "text": "Command is perfect when actions must be stored, replayed, or undone." }
+        "value": {
+          "text": "Command is perfect when actions must be stored, replayed, or undone."
+        }
       }
     ]
   },
-
   {
     "slug": "04-null-object-pattern-deep",
     "title": "Null Object Pattern: Eliminate Null Checks",
     "excerpt": "Write safer code without endless null checks.",
     "author_username": "Michał Antolik",
     "category_slug": "architecture-patterns",
-    "tag_slugs": ["null-object"],
+    "tag_slugs": [
+      "null-object"
+    ],
     "live": true,
     "body": [
-      { "type": "section_heading", "value": { "title": "What is it" } },
+      {
+        "type": "section_heading",
+        "value": {
+          "title": "What is it"
+        }
+      },
       {
         "type": "rich_text",
         "value": "<p>Instead of returning null, return a safe default object.</p>"
       },
-
-      { "type": "section_heading", "value": { "title": "Why it matters" } },
+      {
+        "type": "section_heading",
+        "value": {
+          "title": "Why it matters"
+        }
+      },
       {
         "type": "rich_text",
         "value": "<p>Null checks increase complexity and bugs.</p><p>This pattern removes them.</p>"
       },
-
-      { "type": "mermaid", "value": "flowchart LR\nService --> RealObject\nService --> NullObject" },
-
-      { "type": "section_heading", "value": { "title": "Code example" } },
+      {
+        "type": "mermaid",
+        "value": {
+          "caption": "Real object and null object",
+          "diagram": "flowchart LR\nService --> RealObject\nService --> NullObject",
+          "width": "wide"
+        }
+      },
+      {
+        "type": "section_heading",
+        "value": {
+          "title": "Code example"
+        }
+      },
       {
         "type": "code",
         "value": {
@@ -186,39 +325,65 @@
           "code": "public interface IUser { string Name { get; } }\n\npublic class NullUser : IUser\n{\n    public string Name => \"Guest\";\n}"
         }
       },
-
-      { "type": "section_heading", "value": { "title": "Common mistakes" } },
+      {
+        "type": "section_heading",
+        "value": {
+          "title": "Common mistakes"
+        }
+      },
       {
         "type": "rich_text",
         "value": "<ul><li>Using null object where null has meaning</li></ul>"
       },
-
-      { "type": "section_heading", "value": { "title": "Quick summary" } },
+      {
+        "type": "section_heading",
+        "value": {
+          "title": "Quick summary"
+        }
+      },
       {
         "type": "callout",
-        "value": { "text": "Replace null with behavior, not checks." }
+        "value": {
+          "text": "Replace null with behavior, not checks."
+        }
       }
     ]
   },
-
   {
     "slug": "05-specification-pattern-deep",
     "title": "Specification Pattern: Keep Business Rules Clean",
     "excerpt": "Avoid duplication and centralize logic.",
     "author_username": "Michał Antolik",
     "category_slug": "architecture-patterns",
-    "tag_slugs": ["specification"],
+    "tag_slugs": [
+      "specification"
+    ],
     "live": true,
     "body": [
-      { "type": "section_heading", "value": { "title": "What is it" } },
+      {
+        "type": "section_heading",
+        "value": {
+          "title": "What is it"
+        }
+      },
       {
         "type": "rich_text",
         "value": "<p>Specification pattern stores business rules in reusable objects.</p>"
       },
-
-      { "type": "mermaid", "value": "flowchart LR\nSpecA --> Combine\nSpecB --> Combine\nCombine --> Query" },
-
-      { "type": "section_heading", "value": { "title": "Code example" } },
+      {
+        "type": "mermaid",
+        "value": {
+          "caption": "Combining specifications",
+          "diagram": "flowchart LR\nSpecA --> Combine\nSpecB --> Combine\nCombine --> Query",
+          "width": "wide"
+        }
+      },
+      {
+        "type": "section_heading",
+        "value": {
+          "title": "Code example"
+        }
+      },
       {
         "type": "code",
         "value": {
@@ -226,33 +391,55 @@
           "code": "public interface ISpec<T>\n{\n    bool IsSatisfied(T obj);\n}"
         }
       },
-
-      { "type": "section_heading", "value": { "title": "Quick summary" } },
+      {
+        "type": "section_heading",
+        "value": {
+          "title": "Quick summary"
+        }
+      },
       {
         "type": "callout",
-        "value": { "text": "Put rules in one place and reuse them everywhere." }
+        "value": {
+          "text": "Put rules in one place and reuse them everywhere."
+        }
       }
     ]
   },
-
   {
     "slug": "06-state-pattern-deep",
     "title": "State Pattern: Replace Complex Conditions",
     "excerpt": "Manage object behavior using states instead of flags.",
     "author_username": "Michał Antolik",
     "category_slug": "architecture-patterns",
-    "tag_slugs": ["state"],
+    "tag_slugs": [
+      "state"
+    ],
     "live": true,
     "body": [
-      { "type": "section_heading", "value": { "title": "What is it" } },
+      {
+        "type": "section_heading",
+        "value": {
+          "title": "What is it"
+        }
+      },
       {
         "type": "rich_text",
         "value": "<p>State pattern lets objects change behavior depending on their state.</p>"
       },
-
-      { "type": "mermaid", "value": "stateDiagram-v2\n[*] --> New\nNew --> Pending\nPending --> Completed\nPending --> Failed\nCompleted --> Closed\nFailed --> New" },
-
-      { "type": "section_heading", "value": { "title": "Code example" } },
+      {
+        "type": "mermaid",
+        "value": {
+          "caption": "State transition flow",
+          "diagram": "stateDiagram-v2\n[*] --> New\nNew --> Pending\nPending --> Completed\nPending --> Failed\nCompleted --> Closed\nFailed --> New",
+          "width": "wide"
+        }
+      },
+      {
+        "type": "section_heading",
+        "value": {
+          "title": "Code example"
+        }
+      },
       {
         "type": "code",
         "value": {
@@ -260,11 +447,17 @@
           "code": "interface IState { void Handle(); }\nclass PendingState : IState { public void Handle() { } }"
         }
       },
-
-      { "type": "section_heading", "value": { "title": "Quick summary" } },
+      {
+        "type": "section_heading",
+        "value": {
+          "title": "Quick summary"
+        }
+      },
       {
         "type": "callout",
-        "value": { "text": "Replace flags and conditionals with state objects." }
+        "value": {
+          "text": "Replace flags and conditionals with state objects."
+        }
       }
     ]
   }
