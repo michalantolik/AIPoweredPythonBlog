@@ -31,6 +31,8 @@ class BlogIndexPage(Page):
         FieldPanel("intro"),
     ]
 
+    POSTS_PER_PAGE = 6
+
     def get_posts_queryset(self):
         return (
             BlogPostPage.objects.child_of(self)
@@ -67,7 +69,16 @@ class BlogIndexPage(Page):
             if selected_category:
                 posts = posts.filter(category=selected_category)
 
-        context["posts"] = posts
+        paginator = Paginator(posts, self.POSTS_PER_PAGE)
+        page_number = request.GET.get("page")
+        page_obj = paginator.get_page(page_number)
+
+        query_params = request.GET.copy()
+        query_params.pop("page", None)
+
+        context["posts"] = page_obj.object_list
+        context["page_obj"] = page_obj
+        context["pagination_query_string"] = query_params.urlencode()
         context["categories"] = categories
         context["selected_category"] = selected_category
         context["sidebar_base_url"] = self.url

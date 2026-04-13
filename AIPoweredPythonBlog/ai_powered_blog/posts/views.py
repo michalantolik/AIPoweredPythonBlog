@@ -1,10 +1,19 @@
 from django.conf import settings
+from django.core.paginator import Paginator
 from django.db.models import Q
 from django.shortcuts import get_object_or_404, render
 
 from tags.models import Tag
 from .models import Category, Post
 from .selectors import get_sidebar_categories
+
+POSTS_PER_PAGE = 6
+
+
+def _build_pagination_query_string(request) -> str:
+    query_params = request.GET.copy()
+    query_params.pop("page", None)
+    return query_params.urlencode()
 
 
 def post_list(request):
@@ -46,12 +55,18 @@ def post_list(request):
 
         posts = posts.distinct()
 
+    paginator = Paginator(posts, POSTS_PER_PAGE)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+
     context = {
-        "posts": posts,
+        "posts": page_obj.object_list,
+        "page_obj": page_obj,
         "categories": get_sidebar_categories(),
         "selected_category": selected_category,
         "selected_tag": selected_tag,
         "search_query": search_query,
+        "pagination_query_string": _build_pagination_query_string(request),
     }
     return render(request, "posts/list.html", context)
 

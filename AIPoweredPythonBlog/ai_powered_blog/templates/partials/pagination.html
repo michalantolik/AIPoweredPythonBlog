@@ -1,0 +1,47 @@
+{% if page_obj and page_obj.paginator.num_pages > 1 %}
+    <nav class="pagination-nav" aria-label="Pagination">
+        <div class="pagination-summary">
+            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+        </div>
+
+        <div class="pagination-links">
+            {% if page_obj.has_previous %}
+                <a
+                    class="pagination-link"
+                    href="?{% if pagination_query_string %}{{ pagination_query_string }}&{% endif %}page=1"
+                >
+                    First
+                </a>
+
+                <a
+                    class="pagination-link"
+                    href="?{% if pagination_query_string %}{{ pagination_query_string }}&{% endif %}page={{ page_obj.previous_page_number }}"
+                >
+                    Previous
+                </a>
+            {% else %}
+                <span class="pagination-link disabled">First</span>
+                <span class="pagination-link disabled">Previous</span>
+            {% endif %}
+
+            {% if page_obj.has_next %}
+                <a
+                    class="pagination-link"
+                    href="?{% if pagination_query_string %}{{ pagination_query_string }}&{% endif %}page={{ page_obj.next_page_number }}"
+                >
+                    Next
+                </a>
+
+                <a
+                    class="pagination-link"
+                    href="?{% if pagination_query_string %}{{ pagination_query_string }}&{% endif %}page={{ page_obj.paginator.num_pages }}"
+                >
+                    Last
+                </a>
+            {% else %}
+                <span class="pagination-link disabled">Next</span>
+                <span class="pagination-link disabled">Last</span>
+            {% endif %}
+        </div>
+    </nav>
+{% endif %}
