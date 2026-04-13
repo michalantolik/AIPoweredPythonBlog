@@ -15,8 +15,8 @@
 
             {% for tag in categories|slice:":4" %}
                 <a
-                    href="{% url 'website:home' %}?category={{ tag.slug }}"
-                    class="{% if selected_category and selected_category.slug == tag.slug and request.path == '/' %}active{% endif %}"
+                    href="{{ sidebar_base_url }}?category={{ tag.slug }}"
+                    class="{% if selected_category and selected_category.slug == tag.slug %}active{% endif %}"
                 >
                     {{ tag.name }}
                 </a>
