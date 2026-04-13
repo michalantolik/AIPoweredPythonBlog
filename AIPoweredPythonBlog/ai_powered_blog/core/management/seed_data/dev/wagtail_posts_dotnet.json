@@ -442,5 +442,246 @@
         }
       }
     ]
-  }
+  },
+  {
+  "slug": "aspnet-core-configuration-options-explained",
+  "title": "Configuration and Options in ASP.NET Core (Complete Guide)",
+  "excerpt": "Learn how configuration works in ASP.NET Core, how to use appsettings.json, the Options pattern, and how to manage secrets and providers in real-world applications.",
+  "author_username": "Michał Antolik",
+  "category_slug": "dotnet-ecosystem",
+  "tag_slugs": ["dotnet", "configuration", "aspnet-core"],
+  "live": true,
+  "body": [
+    {
+      "type": "section_heading",
+      "value": { "title": "What is Configuration in ASP.NET Core?" }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Configuration in ASP.NET Core is the mechanism used to control application behavior without changing code. Instead of hardcoding values, you define them externally and load them at runtime.</p><p>This allows applications to behave differently across environments like development, staging, and production.</p>"
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Configuration is built on simple <strong>key-value pairs</strong>, but supports hierarchical structure using sections.</p>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": { "title": "How Configuration Works" }
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "code": "flowchart LR\nA[Configuration Sources] --> B[Configuration Providers]\nB --> C[Configuration System]\nC --> D[Application Code]"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Configuration values come from multiple sources such as JSON files, environment variables, and command line arguments. These are combined into a single configuration system available throughout the app.</p>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": { "title": "appsettings.json Basics" }
+    },
+    {
+      "type": "code",
+      "value": {
+        "language": "json",
+        "code": "{\n  \"Features\": {\n    \"HomePage\": {\n      \"EnableGreeting\": true,\n      \"EnableWeatherForecast\": false,\n      \"ForecastSectionTitle\": \"Weather Forecast\"\n    }\n  }\n}"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>The <strong>appsettings.json</strong> file is the default place to define configuration. It is automatically loaded at application startup.</p><p>You can structure it using nested sections for better organization.</p>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": { "title": "Accessing Configuration at Runtime" }
+    },
+    {
+      "type": "code",
+      "value": {
+        "language": "csharp",
+        "code": "public class HomeController\n{\n    private readonly IConfiguration _config;\n\n    public HomeController(IConfiguration config)\n    {\n        _config = config;\n    }\n\n    public void Example()\n    {\n        bool enabled = _config.GetValue<bool>(\"Features:HomePage:EnableGreeting\");\n    }\n}"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>You can inject <strong>IConfiguration</strong> anywhere and read values using keys. Nested sections are accessed using colon (<code>:</code>) separators.</p>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": { "title": "The Problem with IConfiguration" }
+    },
+    {
+      "type": "callout",
+      "value": {
+        "text": "Using IConfiguration directly leads to fragile code due to hardcoded strings and repeated key access."
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>As applications grow, accessing configuration using string keys becomes error-prone and difficult to maintain.</p>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": { "title": "The Options Pattern (Best Practice)" }
+    },
+    {
+      "type": "code",
+      "value": {
+        "language": "csharp",
+        "code": "public class HomePageOptions\n{\n    public bool EnableGreeting { get; set; }\n    public bool EnableWeatherForecast { get; set; }\n    public string ForecastSectionTitle { get; set; }\n}"
+      }
+    },
+    {
+      "type": "code",
+      "value": {
+        "language": "csharp",
+        "code": "builder.Services.Configure<HomePageOptions>(\n    builder.Configuration.GetSection(\"Features:HomePage\"));"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>The Options Pattern allows you to bind configuration into strongly typed classes. These can then be injected using dependency injection.</p>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": { "title": "Options Interfaces Explained" }
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Options Interfaces Explained",
+        "diagram": "flowchart LR\nA[IOptions] --> B[Singleton]\nC[IOptionsSnapshot] --> D[Per Request]\nE[IOptionsMonitor] --> F[Live Updates]",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p><strong>IOptions</strong> is simple and static.<br/><strong>IOptionsSnapshot</strong> updates per request.<br/><strong>IOptionsMonitor</strong> updates immediately and works with singletons.</p>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": { "title": "Configuration Reloading" }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>ASP.NET Core can reload configuration automatically when files change. This allows dynamic updates without restarting the application.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "language": "csharp",
+        "code": "public class MyService\n{\n    private readonly IOptionsMonitor<MyOptions> _options;\n\n    public MyService(IOptionsMonitor<MyOptions> options)\n    {\n        _options = options;\n    }\n\n    public void Use()\n    {\n        var value = _options.CurrentValue;\n    }\n}"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": { "title": "Configuration Providers" }
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Configuration Providers",
+        "diagram": "flowchart TD\nA[appsettings.json] --> D[Final Config]\nB[Environment Variables] --> D\nC[Command Line] --> D\nE[User Secrets] --> D",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>ASP.NET Core combines multiple configuration sources. Later providers override earlier ones.</p>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": { "title": "Provider Priority (Important)" }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Default order:</p><ul><li>appsettings.json</li><li>appsettings.{Environment}.json</li><li>User Secrets</li><li>Environment Variables</li><li>Command Line</li></ul><p>The last value wins.</p>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": { "title": "Environment Variables Example" }
+    },
+    {
+      "type": "code",
+      "value": {
+        "language": "bash",
+        "code": "Features__HomePage__EnableGreeting=true"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Use double underscore (<code>__</code>) instead of colon for environment variables.</p>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": { "title": "Handling Secrets Securely" }
+    },
+    {
+      "type": "callout",
+      "value": {
+        "text": "Never store secrets like API keys or passwords in appsettings.json."
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Use <strong>User Secrets</strong> for development and <strong>Azure Key Vault</strong> or <strong>AWS Parameter Store</strong> for production.</p>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": { "title": "User Secrets (Development)" }
+    },
+    {
+      "type": "code",
+      "value": {
+        "language": "bash",
+        "code": "dotnet user-secrets set \"ApiKey\" \"secret-value\""
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>User secrets are stored outside your project and are not committed to source control.</p>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": { "title": "Production Secrets" }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Use managed services like Azure Key Vault or AWS Parameter Store to securely store secrets in production environments.</p>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": { "title": "Custom Configuration Providers" }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>You can create your own configuration providers (e.g., database-backed configuration using Entity Framework).</p>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": { "title": "Key Takeaways" }
+    },
+    {
+      "type": "rich_text",
+      "value": "<ul><li>Configuration controls app behavior without code changes</li><li>Use appsettings.json for defaults</li><li>Use Options Pattern for clean architecture</li><li>Use IOptionsMonitor for live updates</li><li>Never store secrets in code or JSON</li><li>Combine multiple providers for flexibility</li></ul>"
+    }
+  ]
+}
 ]

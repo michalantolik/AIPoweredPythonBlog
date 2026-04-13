@@ -38,5 +38,6 @@
   { "slug": "testing", "name": "Testing" },
   { "slug": "web-development", "name": "Web Development" },
   { "slug": "error-handling", "name": "Error Handling" },
-  { "slug": "auth", "name": "Auth" }
+  { "slug": "auth", "name": "Auth" },
+  { "slug": "configuration", "name": "Configuration" }
 ]
