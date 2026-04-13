@@ -1,7 +1,11 @@
+from django.core.paginator import Paginator
 from django.shortcuts import render
 from wagtail.models import Site
 
 from cms.models import BlogIndexPage
+
+
+POSTS_PER_PAGE = 6
 
 
 def _get_blog_index_for_request(request):
@@ -26,6 +30,19 @@ def _get_blog_index_url(blog_index):
     return blog_index.url if blog_index else "/articles/"
 
 
+def _build_query_string(request, **updates):
+    query_params = request.GET.copy()
+    query_params.pop("page", None)
+
+    for key, value in updates.items():
+        if value in (None, ""):
+            query_params.pop(key, None)
+        else:
+            query_params[key] = value
+
+    return query_params.urlencode()
+
+
 def home(request):
     blog_index = _get_blog_index_for_request(request)
     blog_index_url = _get_blog_index_url(blog_index)
@@ -35,8 +52,11 @@ def home(request):
             "latest_posts": [],
             "categories": [],
             "selected_category": None,
-            "sidebar_base_url": blog_index_url,
+            "sidebar_base_url": "/",
             "blog_index_url": blog_index_url,
+            "pagination_query_string": "",
+            "page_obj": None,
+            "all_posts_query_string": "",
         }
         return render(request, "website/home.html", context)
 
@@ -51,14 +71,19 @@ def home(request):
         if selected_category:
             latest_posts = latest_posts.filter(category=selected_category)
 
-    latest_posts = latest_posts[:6]
+    paginator = Paginator(latest_posts, POSTS_PER_PAGE)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
 
     context = {
-        "latest_posts": latest_posts,
+        "latest_posts": page_obj.object_list,
+        "page_obj": page_obj,
         "categories": categories,
         "selected_category": selected_category,
-        "sidebar_base_url": blog_index_url,
+        "sidebar_base_url": "/",
         "blog_index_url": blog_index_url,
+        "pagination_query_string": _build_query_string(request),
+        "all_posts_query_string": _build_query_string(request, category=""),
     }
     return render(request, "website/home.html", context)
 

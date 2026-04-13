@@ -24,7 +24,7 @@
 
                 <div class="hero-pills">
                     {% for category in categories|slice:":4" %}
-                        <a href="{{ blog_index_url }}?category={{ category.slug }}" class="hero-pill">
+                        <a href="/?category={{ category.slug }}" class="hero-pill">
                             {{ category.name }}
                         </a>
                     {% endfor %}
@@ -54,10 +54,18 @@
                     <div class="section-header">
                         <div>
                             <div class="section-label">LATEST CONTENT</div>
-                            <h2 class="section-title-dark">Recent posts</h2>
-                            <p class="section-text-dark">
-                                Short previews in neat cards. Click any card title to open the full article page.
-                            </p>
+
+                            {% if selected_category %}
+                                <h2 class="section-title-dark">{{ selected_category.name }}</h2>
+                                <p class="section-text-dark">
+                                    Homepage posts filtered by category.
+                                </p>
+                            {% else %}
+                                <h2 class="section-title-dark">Recent posts</h2>
+                                <p class="section-text-dark">
+                                    Short previews in neat cards. Click any card title to open the full article page.
+                                </p>
+                            {% endif %}
                         </div>
 
                         <a class="search-placeholder" href="{{ blog_index_url }}">
@@ -72,7 +80,7 @@
                                     <div class="post-meta-row">
                                         <div class="chip-row">
                                             {% if post.category %}
-                                                <a class="mini-chip" href="{{ blog_index_url }}?category={{ post.category.slug }}">
+                                                <a class="mini-chip" href="/?category={{ post.category.slug }}">
                                                     {{ post.category.name }}
                                                 </a>
                                             {% endif %}
@@ -111,6 +119,8 @@
                                 </article>
                             {% endfor %}
                         </div>
+
+                        {% include "partials/pagination.html" %}
                     {% else %}
                         <div class="empty-box">
                             No published posts yet.
@@ -125,10 +135,18 @@
                 <div class="section-header">
                     <div>
                         <div class="section-label">LATEST CONTENT</div>
-                        <h2 class="section-title-dark">Recent posts</h2>
-                        <p class="section-text-dark">
-                            Short previews in neat cards. Click any card title to open the full article page.
-                        </p>
+
+                        {% if selected_category %}
+                            <h2 class="section-title-dark">{{ selected_category.name }}</h2>
+                            <p class="section-text-dark">
+                                Homepage posts filtered by category.
+                            </p>
+                        {% else %}
+                            <h2 class="section-title-dark">Recent posts</h2>
+                            <p class="section-text-dark">
+                                Short previews in neat cards. Click any card title to open the full article page.
+                            </p>
+                        {% endif %}
                     </div>
 
                     <a class="search-placeholder" href="{{ blog_index_url }}">
@@ -143,7 +161,7 @@
                                 <div class="post-meta-row">
                                     <div class="chip-row">
                                         {% if post.category %}
-                                            <a class="mini-chip" href="{{ blog_index_url }}?category={{ post.category.slug }}">
+                                            <a class="mini-chip" href="/?category={{ post.category.slug }}">
                                                 {{ post.category.name }}
                                             </a>
                                         {% endif %}
@@ -182,6 +200,8 @@
                             </article>
                         {% endfor %}
                     </div>
+
+                    {% include "partials/pagination.html" %}
                 {% else %}
                     <div class="empty-box">
                         No published posts yet.
