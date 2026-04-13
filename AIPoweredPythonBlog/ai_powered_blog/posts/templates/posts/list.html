@@ -35,7 +35,7 @@
                 <div class="hero-pills">
                     {% for category in categories|slice:":4" %}
                         <a
-                            href="{% url 'posts:list' %}?category={{ category.slug }}{% if LIVE_POST_FILTER_ENABLED and search_query %}&q={{ search_query|urlencode }}{% endif %}"
+                            href="{% url 'posts:list' %}?category={{ category.slug }}{% if selected_tag %}&tag={{ selected_tag.slug }}{% endif %}{% if LIVE_POST_FILTER_ENABLED and search_query %}&q={{ search_query|urlencode }}{% endif %}"
                             class="hero-pill"
                         >
                             {{ category.name }}

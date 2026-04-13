@@ -8,7 +8,7 @@
         <div class="sidebar-links">
             <a
                 class="sidebar-link-card {% if not selected_category %}active{% endif %}"
-                href="{{ sidebar_base_url }}"
+                href="{{ sidebar_base_url }}{% if all_posts_query_string %}?{{ all_posts_query_string }}{% endif %}"
             >
                 <div class="sidebar-link-left">
                     <span class="category-icon category-icon-generic"></span>
@@ -21,7 +21,7 @@
             {% for category in categories %}
                 <a
                     class="sidebar-link-card {% if selected_category and selected_category.slug == category.slug %}active{% endif %}"
-                    href="{{ sidebar_base_url }}?category={{ category.slug }}"
+                    href="{{ sidebar_base_url }}?category={{ category.slug }}{% if selected_tag %}&tag={{ selected_tag.slug }}{% endif %}{% if search_query %}&q={{ search_query|urlencode }}{% endif %}"
                 >
                     <div class="sidebar-link-left">
                         <span class="category-icon category-icon-generic"></span>

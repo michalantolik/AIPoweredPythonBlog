@@ -1,60 +1,232 @@
 {% if page_obj and page_obj.paginator.num_pages > 1 %}
-    <nav class="pagination-nav" aria-label="Pagination">
-        <div class="pagination-summary">
-            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
-        </div>
+<nav
+    aria-label="Pagination"
+    style="
+        margin-top: 32px;
+        padding-top: 20px;
+        border-top: 1px solid #d6dde8;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+    "
+>
+    <div
+        style="
+            font-size: 15px;
+            font-weight: 700;
+            color: #4b5b76;
+        "
+    >
+        Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+    </div>
 
-        <div class="pagination-links">
-            {% if page_obj.has_previous %}
-                <a
-                    class="pagination-link"
-                    href="?{% if pagination_query_string %}{{ pagination_query_string }}&{% endif %}page=1"
-                >
-                    First
-                </a>
+    <div
+        style="
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+        "
+    >
+        {% if page_obj.has_previous %}
+            <a
+                href="?{% if pagination_query_string %}{{ pagination_query_string }}&{% endif %}page=1"
+                style="
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    min-width: 74px;
+                    padding: 11px 16px;
+                    border-radius: 999px;
+                    border: 1px solid #c9d4e3;
+                    background: #ffffff;
+                    color: #11284b;
+                    font-weight: 700;
+                    text-decoration: none;
+                    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
+                "
+            >
+                First
+            </a>
 
-                <a
-                    class="pagination-link"
-                    href="?{% if pagination_query_string %}{{ pagination_query_string }}&{% endif %}page={{ page_obj.previous_page_number }}"
+            <a
+                href="?{% if pagination_query_string %}{{ pagination_query_string }}&{% endif %}page={{ page_obj.previous_page_number }}"
+                style="
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    min-width: 96px;
+                    padding: 11px 16px;
+                    border-radius: 999px;
+                    border: 1px solid #c9d4e3;
+                    background: #ffffff;
+                    color: #11284b;
+                    font-weight: 700;
+                    text-decoration: none;
+                    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
+                "
+            >
+                Previous
+            </a>
+        {% else %}
+            <span
+                style="
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    min-width: 74px;
+                    padding: 11px 16px;
+                    border-radius: 999px;
+                    border: 1px solid #e2e8f0;
+                    background: #f8fafc;
+                    color: #94a3b8;
+                    font-weight: 700;
+                    cursor: default;
+                "
+            >
+                First
+            </span>
+
+            <span
+                style="
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    min-width: 96px;
+                    padding: 11px 16px;
+                    border-radius: 999px;
+                    border: 1px solid #e2e8f0;
+                    background: #f8fafc;
+                    color: #94a3b8;
+                    font-weight: 700;
+                    cursor: default;
+                "
+            >
+                Previous
+            </span>
+        {% endif %}
+
+        {% for num in page_obj.paginator.page_range %}
+            {% if num == page_obj.number %}
+                <span
+                    aria-current="page"
+                    style="
+                        display: inline-flex;
+                        align-items: center;
+                        justify-content: center;
+                        min-width: 46px;
+                        padding: 11px 14px;
+                        border-radius: 999px;
+                        border: 1px solid #0f2d57;
+                        background: #0f2d57;
+                        color: #ffffff;
+                        font-weight: 800;
+                    "
                 >
-                    Previous
-                </a>
+                    {{ num }}
+                </span>
             {% else %}
-                <span class="pagination-link disabled">First</span>
-                <span class="pagination-link disabled">Previous</span>
-            {% endif %}
-
-            {% for num in page_obj.paginator.page_range %}
-                {% if num == page_obj.number %}
-                    <span class="pagination-link" aria-current="page">{{ num }}</span>
-                {% else %}
-                    <a
-                        class="pagination-link"
-                        href="?{% if pagination_query_string %}{{ pagination_query_string }}&{% endif %}page={{ num }}"
-                    >
-                        {{ num }}
-                    </a>
-                {% endif %}
-            {% endfor %}
-
-            {% if page_obj.has_next %}
                 <a
-                    class="pagination-link"
-                    href="?{% if pagination_query_string %}{{ pagination_query_string }}&{% endif %}page={{ page_obj.next_page_number }}"
+                    href="?{% if pagination_query_string %}{{ pagination_query_string }}&{% endif %}page={{ num }}"
+                    style="
+                        display: inline-flex;
+                        align-items: center;
+                        justify-content: center;
+                        min-width: 46px;
+                        padding: 11px 14px;
+                        border-radius: 999px;
+                        border: 1px solid #c9d4e3;
+                        background: #ffffff;
+                        color: #11284b;
+                        font-weight: 700;
+                        text-decoration: none;
+                        box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
+                    "
                 >
-                    Next
+                    {{ num }}
                 </a>
-
-                <a
-                    class="pagination-link"
-                    href="?{% if pagination_query_string %}{{ pagination_query_string }}&{% endif %}page={{ page_obj.paginator.num_pages }}"
-                >
-                    Last
-                </a>
-            {% else %}
-                <span class="pagination-link disabled">Next</span>
-                <span class="pagination-link disabled">Last</span>
             {% endif %}
-        </div>
-    </nav>
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+            <a
+                href="?{% if pagination_query_string %}{{ pagination_query_string }}&{% endif %}page={{ page_obj.next_page_number }}"
+                style="
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    min-width: 74px;
+                    padding: 11px 16px;
+                    border-radius: 999px;
+                    border: 1px solid #c9d4e3;
+                    background: #ffffff;
+                    color: #11284b;
+                    font-weight: 700;
+                    text-decoration: none;
+                    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
+                "
+            >
+                Next
+            </a>
+
+            <a
+                href="?{% if pagination_query_string %}{{ pagination_query_string }}&{% endif %}page={{ page_obj.paginator.num_pages }}"
+                style="
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    min-width: 74px;
+                    padding: 11px 16px;
+                    border-radius: 999px;
+                    border: 1px solid #c9d4e3;
+                    background: #ffffff;
+                    color: #11284b;
+                    font-weight: 700;
+                    text-decoration: none;
+                    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
+                "
+            >
+                Last
+            </a>
+        {% else %}
+            <span
+                style="
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    min-width: 74px;
+                    padding: 11px 16px;
+                    border-radius: 999px;
+                    border: 1px solid #e2e8f0;
+                    background: #f8fafc;
+                    color: #94a3b8;
+                    font-weight: 700;
+                    cursor: default;
+                "
+            >
+                Next
+            </span>
+
+            <span
+                style="
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    min-width: 74px;
+                    padding: 11px 16px;
+                    border-radius: 999px;
+                    border: 1px solid #e2e8f0;
+                    background: #f8fafc;
+                    color: #94a3b8;
+                    font-weight: 700;
+                    cursor: default;
+                "
+            >
+                Last
+            </span>
+        {% endif %}
+    </div>
+</nav>
 {% endif %}

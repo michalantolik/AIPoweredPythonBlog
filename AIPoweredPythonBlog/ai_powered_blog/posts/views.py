@@ -11,10 +11,27 @@ from .selectors import get_sidebar_categories
 POSTS_PER_PAGE = 6
 
 
-def _build_pagination_query_string(request) -> str:
+def _build_query_string(request, **updates) -> str:
     query_params = request.GET.copy()
     query_params.pop("page", None)
+
+    for key, value in updates.items():
+        if value in (None, ""):
+            query_params.pop(key, None)
+        else:
+            query_params[key] = value
+
     return query_params.urlencode()
+
+
+def _get_page_numbers(page_obj, radius=2):
+    current = page_obj.number
+    total = page_obj.paginator.num_pages
+
+    start = max(current - radius, 1)
+    end = min(current + radius, total)
+
+    return range(start, end + 1)
 
 
 def post_list(request):
@@ -63,13 +80,19 @@ def post_list(request):
     context = {
         "posts": page_obj.object_list,
         "page_obj": page_obj,
+        "page_numbers": _get_page_numbers(page_obj),
         "categories": get_sidebar_categories(),
         "selected_category": selected_category,
         "selected_tag": selected_tag,
         "search_query": search_query,
-        "pagination_query_string": _build_pagination_query_string(request),
+        "pagination_query_string": _build_query_string(request),
+        "pagination_base_url": reverse("posts:list"),
         "sidebar_base_url": reverse("posts:list"),
         "blog_index_url": "/articles/",
+        "all_posts_query_string": _build_query_string(
+            request,
+            category="",
+        ),
     }
     return render(request, "posts/list.html", context)
 
@@ -99,7 +122,10 @@ def post_detail(request, slug):
         "related_posts": related_posts,
         "categories": get_sidebar_categories(),
         "selected_category": None,
+        "selected_tag": None,
+        "search_query": "",
         "sidebar_base_url": reverse("posts:list"),
         "blog_index_url": "/articles/",
+        "all_posts_query_string": "",
     }
     return render(request, "posts/detail.html", context)
