@@ -22,8 +22,13 @@ def _get_blog_index_for_request(request):
     )
 
 
+def _get_blog_index_url(blog_index):
+    return blog_index.url if blog_index else "/articles/"
+
+
 def home(request):
     blog_index = _get_blog_index_for_request(request)
+    blog_index_url = _get_blog_index_url(blog_index)
 
     if blog_index is None:
         context = {
@@ -31,6 +36,7 @@ def home(request):
             "categories": [],
             "selected_category": None,
             "sidebar_base_url": request.path,
+            "blog_index_url": blog_index_url,
         }
         return render(request, "website/home.html", context)
 
@@ -52,16 +58,19 @@ def home(request):
         "categories": categories,
         "selected_category": selected_category,
         "sidebar_base_url": request.path,
+        "blog_index_url": blog_index_url,
     }
     return render(request, "website/home.html", context)
 
 
 def about(request):
     blog_index = _get_blog_index_for_request(request)
+    blog_index_url = _get_blog_index_url(blog_index)
 
     context = {
         "categories": blog_index.get_sidebar_categories() if blog_index else [],
         "selected_category": None,
         "sidebar_base_url": "/",
+        "blog_index_url": blog_index_url,
     }
     return render(request, "website/about.html", context)

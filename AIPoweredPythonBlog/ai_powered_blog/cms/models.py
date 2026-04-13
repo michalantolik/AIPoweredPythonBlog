@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.core.paginator import Paginator
 from django.db import models
 from django.db.models import Count, Q
 from modelcluster.fields import ParentalManyToManyField
@@ -82,6 +83,7 @@ class BlogIndexPage(Page):
         context["categories"] = categories
         context["selected_category"] = selected_category
         context["sidebar_base_url"] = self.url
+        context["blog_index_url"] = self.url
         return context
 
     class Meta:

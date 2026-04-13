@@ -2,6 +2,7 @@ from django.conf import settings
 from django.core.paginator import Paginator
 from django.db.models import Q
 from django.shortcuts import get_object_or_404, render
+from django.urls import reverse
 
 from tags.models import Tag
 from .models import Category, Post
@@ -67,6 +68,8 @@ def post_list(request):
         "selected_tag": selected_tag,
         "search_query": search_query,
         "pagination_query_string": _build_pagination_query_string(request),
+        "sidebar_base_url": reverse("posts:list"),
+        "blog_index_url": "/articles/",
     }
     return render(request, "posts/list.html", context)
 
@@ -95,5 +98,8 @@ def post_detail(request, slug):
         "post": post,
         "related_posts": related_posts,
         "categories": get_sidebar_categories(),
+        "selected_category": None,
+        "sidebar_base_url": reverse("posts:list"),
+        "blog_index_url": "/articles/",
     }
     return render(request, "posts/detail.html", context)

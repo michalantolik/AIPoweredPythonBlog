@@ -13,6 +13,10 @@
                 Home
             </a>
 
+            <a href="{{ blog_index_url|default:'/articles/' }}" class="{% if request.path == '/articles/' %}active{% endif %}">
+                Articles
+            </a>
+
             {% for tag in categories|slice:":4" %}
                 <a
                     href="{{ sidebar_base_url }}?category={{ tag.slug }}"
