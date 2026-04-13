@@ -24,7 +24,7 @@
 
                 <div class="hero-pills">
                     {% for category in categories|slice:":4" %}
-                        <a href="{{ sidebar_base_url }}?category={{ category.slug }}" class="hero-pill">
+                        <a href="{{ blog_index_url }}?category={{ category.slug }}" class="hero-pill">
                             {{ category.name }}
                         </a>
                     {% endfor %}
@@ -72,7 +72,7 @@
                                     <div class="post-meta-row">
                                         <div class="chip-row">
                                             {% if post.category %}
-                                                <a class="mini-chip" href="{{ sidebar_base_url }}?category={{ post.category.slug }}">
+                                                <a class="mini-chip" href="{{ blog_index_url }}?category={{ post.category.slug }}">
                                                     {{ post.category.name }}
                                                 </a>
                                             {% endif %}
@@ -143,7 +143,7 @@
                                 <div class="post-meta-row">
                                     <div class="chip-row">
                                         {% if post.category %}
-                                            <a class="mini-chip" href="{{ sidebar_base_url }}?category={{ post.category.slug }}">
+                                            <a class="mini-chip" href="{{ blog_index_url }}?category={{ post.category.slug }}">
                                                 {{ post.category.name }}
                                             </a>
                                         {% endif %}

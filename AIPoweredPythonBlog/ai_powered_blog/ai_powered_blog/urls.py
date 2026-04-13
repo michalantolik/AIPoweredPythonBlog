@@ -11,7 +11,6 @@ urlpatterns = [
     path("documents/", include("wagtail.documents.urls")),
     path("_plantuml/", include("cms.urls")),
     path("api/", include("api.urls")),
-    path("posts/", include("posts.urls")),
     path("", include("website.urls")),
     path("health/", health),
     path("", include("wagtail.urls")),

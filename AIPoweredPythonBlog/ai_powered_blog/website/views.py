@@ -35,7 +35,7 @@ def home(request):
             "latest_posts": [],
             "categories": [],
             "selected_category": None,
-            "sidebar_base_url": request.path,
+            "sidebar_base_url": blog_index_url,
             "blog_index_url": blog_index_url,
         }
         return render(request, "website/home.html", context)
@@ -57,7 +57,7 @@ def home(request):
         "latest_posts": latest_posts,
         "categories": categories,
         "selected_category": selected_category,
-        "sidebar_base_url": request.path,
+        "sidebar_base_url": blog_index_url,
         "blog_index_url": blog_index_url,
     }
     return render(request, "website/home.html", context)
@@ -70,7 +70,7 @@ def about(request):
     context = {
         "categories": blog_index.get_sidebar_categories() if blog_index else [],
         "selected_category": None,
-        "sidebar_base_url": "/",
+        "sidebar_base_url": blog_index_url,
         "blog_index_url": blog_index_url,
     }
     return render(request, "website/about.html", context)

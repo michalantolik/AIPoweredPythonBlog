@@ -29,7 +29,7 @@ def serialize_post_summary(post: Post) -> dict:
         "category": serialize_category(post.category),
         "tags": [serialize_tag(tag) for tag in post.tags.all()],
         "detail_url": f"/api/posts/{post.slug}/",
-        "web_url": f"/posts/{post.slug}/",
+        "web_url": f"/articles/{post.slug}/",
     }
 
 

@@ -19,7 +19,7 @@
 
             {% for tag in categories|slice:":4" %}
                 <a
-                    href="{{ sidebar_base_url }}?category={{ tag.slug }}"
+                    href="{{ blog_index_url|default:'/articles/' }}?category={{ tag.slug }}"
                     class="{% if selected_category and selected_category.slug == tag.slug %}active{% endif %}"
                 >
                     {{ tag.name }}
