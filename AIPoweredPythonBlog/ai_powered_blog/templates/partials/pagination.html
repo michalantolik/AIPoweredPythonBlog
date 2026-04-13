@@ -4,12 +4,12 @@
     {% pagination_items page_obj 1 1 as compact_pages %}
 
     <nav class="pagination" aria-label="Pagination">
-<!--        <div class="pagination__meta">-->
+        <div class="pagination__meta">
 <!--            <div class="pagination__eyebrow">Browse pages</div>-->
-<!--            <div class="pagination__summary">-->
-<!--                Showing {{ page_obj.start_index }}–{{ page_obj.end_index }} of {{ page_obj.paginator.count }} results-->
-<!--            </div>-->
-<!--        </div>-->
+            <div class="pagination__summary">
+                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+            </div>
+        </div>
 
         <div class="pagination__controls">
             {% if page_obj.has_previous %}
@@ -25,14 +25,16 @@
                     href="?{% if pagination_query_string %}{{ pagination_query_string }}&{% endif %}page={{ page_obj.previous_page_number }}"
                     aria-label="Go to previous page"
                 >
-                    Previous
+                    <span class="pagination__arrow" aria-hidden="true">←&nbsp;</span>
+                    <span>Previous</span>
                 </a>
             {% else %}
 <!--                <span class="pagination__link pagination__link&#45;&#45;edge pagination__link&#45;&#45;disabled" aria-disabled="true">-->
 <!--                    Recent-->
 <!--                </span>-->
                 <span class="pagination__link pagination__link--edge pagination__link--disabled" aria-disabled="true">
-                    Previous
+                    <span class="pagination__arrow" aria-hidden="true">←&nbsp;</span>
+                    <span>Previous</span>
                 </span>
             {% endif %}
 
@@ -62,7 +64,8 @@
                     href="?{% if pagination_query_string %}{{ pagination_query_string }}&{% endif %}page={{ page_obj.next_page_number }}"
                     aria-label="Go to next page"
                 >
-                    Next
+                    <span>Next</span>
+                    <span class="pagination__arrow" aria-hidden="true">&nbsp;→</span>
                 </a>
 <!--                <a-->
 <!--                    class="pagination__link pagination__link&#45;&#45;edge"-->
@@ -73,7 +76,8 @@
 <!--                </a>-->
             {% else %}
                 <span class="pagination__link pagination__link--edge pagination__link--disabled" aria-disabled="true">
-                    Next
+                    <span>Next</span>
+                    <span class="pagination__arrow" aria-hidden="true">&nbsp;→</span>
                 </span>
 <!--                <span class="pagination__link pagination__link&#45;&#45;edge pagination__link&#45;&#45;disabled" aria-disabled="true">-->
 <!--                    Last-->
