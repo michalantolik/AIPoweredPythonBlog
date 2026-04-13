@@ -1,232 +1,84 @@
+{% load pagination_tags %}
+
 {% if page_obj and page_obj.paginator.num_pages > 1 %}
-<nav
-    aria-label="Pagination"
-    style="
-        margin-top: 32px;
-        padding-top: 20px;
-        border-top: 1px solid #d6dde8;
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: space-between;
-        align-items: center;
-        gap: 16px;
-    "
->
-    <div
-        style="
-            font-size: 15px;
-            font-weight: 700;
-            color: #4b5b76;
-        "
-    >
-        Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
-    </div>
+    {% pagination_items page_obj 1 1 as compact_pages %}
 
-    <div
-        style="
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            align-items: center;
-        "
-    >
-        {% if page_obj.has_previous %}
-            <a
-                href="?{% if pagination_query_string %}{{ pagination_query_string }}&{% endif %}page=1"
-                style="
-                    display: inline-flex;
-                    align-items: center;
-                    justify-content: center;
-                    min-width: 74px;
-                    padding: 11px 16px;
-                    border-radius: 999px;
-                    border: 1px solid #c9d4e3;
-                    background: #ffffff;
-                    color: #11284b;
-                    font-weight: 700;
-                    text-decoration: none;
-                    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
-                "
-            >
-                First
-            </a>
+    <nav class="pagination" aria-label="Pagination">
+        <div class="pagination__meta">
+            <div class="pagination__eyebrow">Browse pages</div>
+            <div class="pagination__summary">
+                Showing {{ page_obj.start_index }}–{{ page_obj.end_index }} of {{ page_obj.paginator.count }} results
+            </div>
+        </div>
 
-            <a
-                href="?{% if pagination_query_string %}{{ pagination_query_string }}&{% endif %}page={{ page_obj.previous_page_number }}"
-                style="
-                    display: inline-flex;
-                    align-items: center;
-                    justify-content: center;
-                    min-width: 96px;
-                    padding: 11px 16px;
-                    border-radius: 999px;
-                    border: 1px solid #c9d4e3;
-                    background: #ffffff;
-                    color: #11284b;
-                    font-weight: 700;
-                    text-decoration: none;
-                    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
-                "
-            >
-                Previous
-            </a>
-        {% else %}
-            <span
-                style="
-                    display: inline-flex;
-                    align-items: center;
-                    justify-content: center;
-                    min-width: 74px;
-                    padding: 11px 16px;
-                    border-radius: 999px;
-                    border: 1px solid #e2e8f0;
-                    background: #f8fafc;
-                    color: #94a3b8;
-                    font-weight: 700;
-                    cursor: default;
-                "
-            >
-                First
-            </span>
-
-            <span
-                style="
-                    display: inline-flex;
-                    align-items: center;
-                    justify-content: center;
-                    min-width: 96px;
-                    padding: 11px 16px;
-                    border-radius: 999px;
-                    border: 1px solid #e2e8f0;
-                    background: #f8fafc;
-                    color: #94a3b8;
-                    font-weight: 700;
-                    cursor: default;
-                "
-            >
-                Previous
-            </span>
-        {% endif %}
-
-        {% for num in page_obj.paginator.page_range %}
-            {% if num == page_obj.number %}
-                <span
-                    aria-current="page"
-                    style="
-                        display: inline-flex;
-                        align-items: center;
-                        justify-content: center;
-                        min-width: 46px;
-                        padding: 11px 14px;
-                        border-radius: 999px;
-                        border: 1px solid #0f2d57;
-                        background: #0f2d57;
-                        color: #ffffff;
-                        font-weight: 800;
-                    "
-                >
-                    {{ num }}
-                </span>
-            {% else %}
+        <div class="pagination__controls">
+            {% if page_obj.has_previous %}
                 <a
-                    href="?{% if pagination_query_string %}{{ pagination_query_string }}&{% endif %}page={{ num }}"
-                    style="
-                        display: inline-flex;
-                        align-items: center;
-                        justify-content: center;
-                        min-width: 46px;
-                        padding: 11px 14px;
-                        border-radius: 999px;
-                        border: 1px solid #c9d4e3;
-                        background: #ffffff;
-                        color: #11284b;
-                        font-weight: 700;
-                        text-decoration: none;
-                        box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
-                    "
+                    class="pagination__link pagination__link--edge"
+                    href="?{% if pagination_query_string %}{{ pagination_query_string }}&{% endif %}page=1"
+                    aria-label="Go to first page"
                 >
-                    {{ num }}
+                    First
                 </a>
+                <a
+                    class="pagination__link pagination__link--edge"
+                    href="?{% if pagination_query_string %}{{ pagination_query_string }}&{% endif %}page={{ page_obj.previous_page_number }}"
+                    aria-label="Go to previous page"
+                >
+                    Previous
+                </a>
+            {% else %}
+                <span class="pagination__link pagination__link--edge pagination__link--disabled" aria-disabled="true">
+                    First
+                </span>
+                <span class="pagination__link pagination__link--edge pagination__link--disabled" aria-disabled="true">
+                    Previous
+                </span>
             {% endif %}
-        {% endfor %}
 
-        {% if page_obj.has_next %}
-            <a
-                href="?{% if pagination_query_string %}{{ pagination_query_string }}&{% endif %}page={{ page_obj.next_page_number }}"
-                style="
-                    display: inline-flex;
-                    align-items: center;
-                    justify-content: center;
-                    min-width: 74px;
-                    padding: 11px 16px;
-                    border-radius: 999px;
-                    border: 1px solid #c9d4e3;
-                    background: #ffffff;
-                    color: #11284b;
-                    font-weight: 700;
-                    text-decoration: none;
-                    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
-                "
-            >
-                Next
-            </a>
+            <div class="pagination__numbers" aria-label="Page numbers">
+                {% for item in compact_pages %}
+                    {% if item == "…" %}
+                        <span class="pagination__ellipsis" aria-hidden="true">…</span>
+                    {% elif item == page_obj.number %}
+                        <span class="pagination__link pagination__link--number pagination__link--current" aria-current="page">
+                            {{ item }}
+                        </span>
+                    {% else %}
+                        <a
+                            class="pagination__link pagination__link--number"
+                            href="?{% if pagination_query_string %}{{ pagination_query_string }}&{% endif %}page={{ item }}"
+                            aria-label="Go to page {{ item }}"
+                        >
+                            {{ item }}
+                        </a>
+                    {% endif %}
+                {% endfor %}
+            </div>
 
-            <a
-                href="?{% if pagination_query_string %}{{ pagination_query_string }}&{% endif %}page={{ page_obj.paginator.num_pages }}"
-                style="
-                    display: inline-flex;
-                    align-items: center;
-                    justify-content: center;
-                    min-width: 74px;
-                    padding: 11px 16px;
-                    border-radius: 999px;
-                    border: 1px solid #c9d4e3;
-                    background: #ffffff;
-                    color: #11284b;
-                    font-weight: 700;
-                    text-decoration: none;
-                    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
-                "
-            >
-                Last
-            </a>
-        {% else %}
-            <span
-                style="
-                    display: inline-flex;
-                    align-items: center;
-                    justify-content: center;
-                    min-width: 74px;
-                    padding: 11px 16px;
-                    border-radius: 999px;
-                    border: 1px solid #e2e8f0;
-                    background: #f8fafc;
-                    color: #94a3b8;
-                    font-weight: 700;
-                    cursor: default;
-                "
-            >
-                Next
-            </span>
-
-            <span
-                style="
-                    display: inline-flex;
-                    align-items: center;
-                    justify-content: center;
-                    min-width: 74px;
-                    padding: 11px 16px;
-                    border-radius: 999px;
-                    border: 1px solid #e2e8f0;
-                    background: #f8fafc;
-                    color: #94a3b8;
-                    font-weight: 700;
-                    cursor: default;
-                "
-            >
-                Last
-            </span>
-        {% endif %}
-    </div>
-</nav>
+            {% if page_obj.has_next %}
+                <a
+                    class="pagination__link pagination__link--edge pagination__link--primary"
+                    href="?{% if pagination_query_string %}{{ pagination_query_string }}&{% endif %}page={{ page_obj.next_page_number }}"
+                    aria-label="Go to next page"
+                >
+                    Next
+                </a>
+                <a
+                    class="pagination__link pagination__link--edge"
+                    href="?{% if pagination_query_string %}{{ pagination_query_string }}&{% endif %}page={{ page_obj.paginator.num_pages }}"
+                    aria-label="Go to last page"
+                >
+                    Last
+                </a>
+            {% else %}
+                <span class="pagination__link pagination__link--edge pagination__link--disabled" aria-disabled="true">
+                    Next
+                </span>
+                <span class="pagination__link pagination__link--edge pagination__link--disabled" aria-disabled="true">
+                    Last
+                </span>
+            {% endif %}
+        </div>
+    </nav>
 {% endif %}
