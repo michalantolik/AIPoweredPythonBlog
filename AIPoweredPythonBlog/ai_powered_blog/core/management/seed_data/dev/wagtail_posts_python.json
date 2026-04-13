@@ -1,7 +1,7 @@
 [
   {
-    "slug": "01-python-big-picture-real-world-guide",
-    "title": "01. Python Big Picture for Real Projects",
+    "slug": "python-big-picture-real-world-guide",
+    "title": "Python Big Picture for Real Projects",
     "excerpt": "Why Python became a practical choice across automation, web work, data tasks, and internal tools.",
     "author_username": "Michał Antolik",
     "category_slug": "python-ecosystem",
@@ -57,8 +57,8 @@
     ]
   },
   {
-    "slug": "02-python-fundamentals-that-make-programs-work",
-    "title": "02. Python Fundamentals That Make Programs Work",
+    "slug": "python-fundamentals-that-make-programs-work",
+    "title": "Python Fundamentals That Make Programs Work",
     "excerpt": "A practical guide to variables, data types, input, control flow, JSON, packages, and small programs that build real intuition.",
     "author_username": "Michał Antolik",
     "category_slug": "python-ecosystem",
@@ -114,8 +114,8 @@
     ]
   },
   {
-    "slug": "03-classes-and-oop-in-python-explained-simply",
-    "title": "03. Classes and Object-Oriented Programming in Python",
+    "slug": "classes-and-oop-in-python-explained-simply",
+    "title": "Classes and Object-Oriented Programming in Python",
     "excerpt": "How classes help group data and behavior, and how to use properties, inheritance, and data classes without making code heavy.",
     "author_username": "Michał Antolik",
     "category_slug": "python-ecosystem",
@@ -171,8 +171,8 @@
     ]
   },
   {
-    "slug": "04-working-with-files-in-python-without-chaos",
-    "title": "04. Working with Files in Python Without Chaos",
+    "slug": "working-with-files-in-python-without-chaos",
+    "title": "Working with Files in Python Without Chaos",
     "excerpt": "A practical guide to finding files, traversing folders, copying and moving data, and reading common formats safely.",
     "author_username": "Michał Antolik",
     "category_slug": "python-ecosystem",
@@ -228,8 +228,8 @@
     ]
   },
   {
-    "slug": "05-working-with-databases-in-python-practical-guide",
-    "title": "05. Working with Databases in Python Practical Guide",
+    "slug": "working-with-databases-in-python-practical-guide",
+    "title": "Working with Databases in Python Practical Guide",
     "excerpt": "How to think about SQLite, database servers, parameterized queries, and the trade-offs between low-level and higher-level database access.",
     "author_username": "Michał Antolik",
     "category_slug": "python-ecosystem",
@@ -285,8 +285,8 @@
     ]
   },
   {
-    "slug": "06-python-best-practices-that-age-well",
-    "title": "06. Python Best Practices That Age Well",
+    "slug": "python-best-practices-that-age-well",
+    "title": "Python Best Practices That Age Well",
     "excerpt": "How style, formatting, documentation, and type hints make Python code easier to read, safer to change, and simpler to maintain.",
     "author_username": "Michał Antolik",
     "category_slug": "python-ecosystem",
@@ -342,8 +342,8 @@
     ]
   },
   {
-    "slug": "07-python-environments-and-package-management-made-practical",
-    "title": "07. Python Environments and Package Management Made Practical",
+    "slug": "python-environments-and-package-management-made-practical",
+    "title": "Python Environments and Package Management Made Practical",
     "excerpt": "How pip, virtual environments, pipenv, poetry, and pipx solve different dependency problems in real projects.",
     "author_username": "Michał Antolik",
     "category_slug": "python-ecosystem",
@@ -399,8 +399,8 @@
     ]
   },
   {
-    "slug": "08-testing-python-code-that-stays-useful",
-    "title": "08. Testing Python Code That Stays Useful",
+    "slug": "testing-python-code-that-stays-useful",
+    "title": "Testing Python Code That Stays Useful",
     "excerpt": "How to design tests around behavior, keep them fast, and use unittest and pytest without turning tests into noise.",
     "author_username": "Michał Antolik",
     "category_slug": "python-ecosystem",
@@ -456,8 +456,8 @@
     ]
   },
   {
-    "slug": "09-python-regex-for-real-text-problems",
-    "title": "09. Python Regex for Real Text Problems",
+    "slug": "python-regex-for-real-text-problems",
+    "title": "Python Regex for Real Text Problems",
     "excerpt": "A practical guide to searching, validating, parsing, and cleaning text with regex without turning patterns into unreadable puzzles.",
     "author_username": "Michał Antolik",
     "category_slug": "python-ecosystem",
@@ -513,8 +513,8 @@
     ]
   },
   {
-    "slug": "10-building-a-rest-api-with-fastapi-and-clean-boundaries",
-    "title": "10. Building a REST API with FastAPI and Clean Boundaries",
+    "slug": "building-a-rest-api-with-fastapi-and-clean-boundaries",
+    "title": "Building a REST API with FastAPI and Clean Boundaries",
     "excerpt": "How to structure a realistic Python API project with FastAPI, SQLAlchemy, tests, configuration, and clean data boundaries.",
     "author_username": "Michał Antolik",
     "category_slug": "python-ecosystem",

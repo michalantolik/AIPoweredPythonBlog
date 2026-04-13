@@ -472,7 +472,9 @@
     {
       "type": "mermaid",
       "value": {
-        "code": "flowchart LR\nA[Configuration Sources] --> B[Configuration Providers]\nB --> C[Configuration System]\nC --> D[Application Code]"
+        "caption": "How Configuration Works",
+        "diagram": "flowchart LR\nA[Configuration Sources] --> B[Configuration Providers]\nB --> C[Configuration System]\nC --> D[Application Code]",
+        "width": "wide"
       }
     },
     {
