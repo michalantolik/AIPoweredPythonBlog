@@ -44,5 +44,7 @@
   { "slug": "rest", "name": "REST" },
   { "slug": "api-design", "name": "API Design" },
   { "slug": "webapi", "name": "Web API" },
-  { "slug": "blazor", "name": "Blazor" }
+  { "slug": "blazor", "name": "Blazor" },
+  { "slug": "swagger", "name": "Swagger" },
+  { "slug": "postman", "name": "Postman" }
 ]

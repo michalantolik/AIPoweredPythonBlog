@@ -836,5 +836,272 @@
     }
 
   ]
+},
+  {
+  "slug": "aspnet-core-api-debugging-error-handling",
+  "title": "Debugging and Error Handling in ASP.NET Core Web APIs",
+  "excerpt": "Learn how to properly debug and handle errors in ASP.NET Core Web APIs using Swagger, Postman, filters, and global exception handling strategies.",
+  "author_username": "Michał Antolik",
+  "category_slug": "apis-integration",
+  "tag_slugs": ["aspnet-core", "webapi", "debugging", "error-handling", "swagger", "postman"],
+  "live": true,
+  "published_at": "2026-04-14T10:00:00Z",
+  "body": [
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Overview",
+        "title": "Why debugging and error handling matter"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>In modern web APIs, error handling is not just a technical detail — it directly impacts developer experience. APIs must not expose internal exceptions, but instead return structured, meaningful responses with proper status codes.</p><p>A well-designed API should be easy to debug, easy to test, and predictable in how it communicates failures.</p>"
+    },
+    {
+      "type": "callout",
+      "value": {
+        "tone": "info",
+        "title": "Key principle",
+        "text": "Never expose raw exceptions to clients. Always return structured, meaningful error responses."
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Architecture",
+        "title": "Typical API request lifecycle"
+      }
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Request processing and error flow",
+        "diagram": "flowchart LR\n Client --> Controller\n Controller --> Service\n Service --> Database\n Database --> Service\n Service --> Controller\n Controller --> Response\n\n Controller -->|Exception| ErrorHandler\n ErrorHandler --> Response",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Errors can occur at any stage — controller, service, or database. Without proper handling, these errors propagate and expose internal details. A proper error handling strategy intercepts these failures and transforms them into consistent responses.</p>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Tooling",
+        "title": "Documenting and testing APIs with Swagger"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Swagger provides automatic API documentation and a UI for testing endpoints. It removes the need to manually remember endpoints and payload structures.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Enable Swagger in ASP.NET Core",
+        "language": "csharp",
+        "code": "builder.Services.AddSwaggerGen();\n\nif (app.Environment.IsDevelopment())\n{\n    app.UseSwagger();\n    app.UseSwaggerUI();\n}",
+        "show_line_numbers": true,
+        "width": "content"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Swagger can be extended using metadata and XML comments, making it a powerful documentation tool for teams.</p>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Debugging",
+        "title": "Testing APIs using Swagger UI and Postman"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Swagger UI allows quick testing of endpoints directly from the browser, while Postman provides advanced testing capabilities such as collections, automation, and scripting.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Debugging workflow",
+        "diagram": "sequenceDiagram\n Developer->>SwaggerUI: Test endpoint\n Developer->>Postman: Advanced testing\n Postman->>API: Send request\n API-->>Postman: Response\n Postman->>Developer: Debug result",
+        "width": "wide"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Configuration",
+        "title": "Handling multiple environments"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>ASP.NET Core supports multiple environments such as Development and Production. Each environment can have different configurations, especially for error handling and security.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Environment-based configuration",
+        "language": "csharp",
+        "code": "if (app.Environment.IsDevelopment())\n{\n    app.UseSwagger();\n}\nelse\n{\n    app.UseExceptionHandler(\"/error\");\n}",
+        "show_line_numbers": true,
+        "width": "content"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Error handling",
+        "title": "Custom error handler endpoint"
+      }
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Error handler controller",
+        "language": "csharp",
+        "code": "[Route(\"error\")]\n[AllowAnonymous]\npublic IActionResult HandleError()\n{\n    return Problem();\n}",
+        "show_line_numbers": true,
+        "width": "content"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>This endpoint ensures all unhandled exceptions are converted into a structured <strong>ProblemDetails</strong> response.</p>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Advanced",
+        "title": "Using filters for fine-grained error handling"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Filters allow you to intercept requests at different stages of execution. Exception filters are particularly useful for handling specific exceptions.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "ASP.NET Core filter pipeline",
+        "diagram": "flowchart LR\n Authorization --> Resource --> Action --> Exception --> Result",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Custom exception filter",
+        "language": "csharp",
+        "code": "if (context.Exception is ExternalDependencyException ex)\n{\n    context.Result = new ObjectResult(new\n    {\n        errorCode = ex.ErrorCode,\n        message = ex.Message\n    })\n    {\n        StatusCode = ex.StatusCode\n    };\n\n    context.ExceptionHandled = true;\n}",
+        "show_line_numbers": true,
+        "width": "content"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Standardization",
+        "title": "Using ProblemDetails for consistent responses"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>ASP.NET Core provides the <strong>ProblemDetails</strong> standard for error responses. It ensures consistent structure across all API errors.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "ProblemDetails example",
+        "language": "json",
+        "code": "{\n  \"type\": \"https://example.com/errors/internal\",\n  \"title\": \"Internal Server Error\",\n  \"status\": 500,\n  \"traceId\": \"abc-123\"\n}",
+        "show_line_numbers": false,
+        "width": "content"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Global handling",
+        "title": "Centralized exception middleware"
+      }
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Global exception middleware",
+        "language": "csharp",
+        "code": "app.UseExceptionHandler(appError =>\n{\n    appError.Run(async context =>\n    {\n        context.Response.StatusCode = 500;\n        context.Response.ContentType = \"application/json\";\n\n        await context.Response.WriteAsync(\"{ \\\"message\\\": \\\"Something went wrong\\\" }\");\n    });\n});",
+        "show_line_numbers": true,
+        "width": "content"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Design",
+        "title": "Custom exceptions for domain-level errors"
+      }
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Custom exception interface",
+        "language": "csharp",
+        "code": "public interface IAppException\n{\n    int? StatusCode { get; }\n    string ErrorCode { get; }\n    string Message { get; }\n}",
+        "show_line_numbers": true,
+        "width": "content"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Using a shared interface allows different parts of your system to throw consistent, structured exceptions.</p>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Observability",
+        "title": "Logging errors globally"
+      }
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Logging exception",
+        "language": "csharp",
+        "code": "logger.LogError(exception, \"Unhandled error occurred\");",
+        "show_line_numbers": true,
+        "width": "content"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Logging ensures that even if clients receive sanitized messages, developers still have full visibility into failures.</p>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Summary",
+        "title": "Building production-ready APIs"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>To build robust ASP.NET Core APIs:</p><ul><li>Use Swagger for documentation and testing</li><li>Use Postman for advanced debugging</li><li>Handle errors globally</li><li>Standardize responses using ProblemDetails</li><li>Use custom exceptions for domain logic</li><li>Log everything important</li></ul><p>Combining these techniques results in APIs that are easier to maintain, debug, and integrate with.</p>"
+    }
+  ]
 }
 ]
