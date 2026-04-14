@@ -1103,5 +1103,761 @@
       "value": "<p>To build robust ASP.NET Core APIs:</p><ul><li>Use Swagger for documentation and testing</li><li>Use Postman for advanced debugging</li><li>Handle errors globally</li><li>Standardize responses using ProblemDetails</li><li>Use custom exceptions for domain logic</li><li>Log everything important</li></ul><p>Combining these techniques results in APIs that are easier to maintain, debug, and integrate with.</p>"
     }
   ]
+},
+  {
+  "slug": "aspnet-core-api-authentication-authorization-complete-guide",
+  "title": "Authentication and Authorization in ASP.NET Core Web API — Complete Guide",
+  "excerpt": "Learn how to secure ASP.NET Core Web APIs using API keys, cookies, tokens, OAuth2, OpenID Connect, and authorization policies with practical architecture diagrams and examples.",
+  "author_username": "Michał Antolik",
+  "category_slug": "apis-integration",
+  "tag_slugs": ["aspnet-core", "security", "oauth2", "jwt", "authentication", "authorization"],
+  "live": true,
+  "published_at": "2026-04-14T10:00:00Z",
+  "body": [
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Foundations",
+        "title": "Why API Security Matters"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>APIs are the heart of modern applications. They expose data and business logic, making them critical assets that must be protected. Securing an API means answering two fundamental questions:</p><ul><li><strong>Who are you?</strong> (Authentication)</li><li><strong>What are you allowed to do?</strong> (Authorization)</li></ul><p>This guide walks through all major approaches available in ASP.NET Core, from simple API keys to modern OAuth2 and OpenID Connect.</p>"
+    },
+
+    {
+      "type": "callout",
+      "value": {
+        "title": "Key concept",
+        "text": "Authentication proves identity. Authorization defines permissions.",
+        "tone": "success"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Architecture",
+        "title": "Typical API Architecture"
+      }
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Frontend calling API",
+        "diagram": "flowchart LR\n    A[Browser] --> B[Frontend App]\n    B --> C[ASP.NET Core API]\n    C --> D[(Database)]\n    D --> C\n    C --> B\n    B --> A",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>A typical setup consists of a frontend application (MVC, Blazor, SPA) that communicates with an ASP.NET Core Web API. The API handles data and business logic.</p>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Basic Security",
+        "title": "API Key Authentication"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>The simplest way to protect an API is using an API key. The client sends a secret value in an HTTP header, and the API validates it.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Checking API key in middleware",
+        "language": "csharp",
+        "code": "if (!context.Request.Headers.TryGetValue(\"XApiKey\", out var key) || key != configKey)\n{\n    context.Response.StatusCode = 401;\n    await context.Response.WriteAsync(\"Invalid API Key\");\n    return;\n}",
+        "show_line_numbers": true,
+        "width": "content"
+      }
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Important limitation",
+        "text": "API keys do not identify users and are hard to rotate or revoke. Use them only for simple machine-to-machine scenarios.",
+        "tone": "warning"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "User-Based Auth",
+        "title": "Cookie Authentication"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Cookies are used when users log into a web application. After authentication, an identity cookie is issued and automatically sent with each request.</p><p>This works well when frontend and backend share the same domain.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Cookie authentication flow",
+        "diagram": "sequenceDiagram\n    Browser->>Frontend: Request protected page\n    Frontend->>User: Show login\n    User->>Frontend: Credentials\n    Frontend->>Browser: Set identity cookie\n    Browser->>Frontend: Request with cookie\n    Frontend->>API: Forward request\n    API->>Frontend: Response",
+        "width": "wide"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Modern Auth",
+        "title": "Token Authentication (Bearer Tokens)"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Tokens replace cookies when applications are not browser-based. A token is issued after login and sent in the Authorization header.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Adding Bearer token",
+        "language": "csharp",
+        "code": "httpClient.DefaultRequestHeaders.Authorization =\n    new AuthenticationHeaderValue(\"Bearer\", token);",
+        "show_line_numbers": true,
+        "width": "content"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Industry Standard",
+        "title": "OAuth2 and Identity Providers"
+      }
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "OAuth2 architecture",
+        "diagram": "flowchart LR\n    A[Client App] --> B[Identity Provider]\n    B -->|Access Token| A\n    A --> C[API]\n    C --> A",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>OAuth2 introduces a central Identity Provider (IdP) that issues tokens. This enables secure, scalable architectures with multiple applications.</p>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Flows",
+        "title": "Client Credentials Flow (Machine-to-Machine)"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>This flow is used when no user is involved. A client authenticates using a Client ID and Secret to obtain an access token.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Client Credentials Flow",
+        "diagram": "sequenceDiagram\n    Client->>Identity Provider: ClientId + Secret\n    Identity Provider->>Client: Access Token\n    Client->>API: Request + Token\n    API->>Client: Response",
+        "width": "wide"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "User Flow",
+        "title": "Authorization Code Flow (with OpenID Connect)"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>When users are involved, the Authorization Code Flow is used. The frontend redirects the user to the Identity Provider for login, and receives tokens after successful authentication.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Authorization Code Flow",
+        "diagram": "sequenceDiagram\n    Browser->>Frontend: Request\n    Frontend->>Identity Provider: Redirect to login\n    Identity Provider->>Browser: Login page\n    Browser->>Identity Provider: Credentials\n    Identity Provider->>Frontend: Authorization Code\n    Frontend->>Identity Provider: Exchange code\n    Identity Provider->>Frontend: Access + Identity Token\n    Frontend->>API: Request with token",
+        "width": "wide"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "JWT",
+        "title": "Anatomy of an Access Token"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>JWT tokens contain three parts: header, payload, and signature. They are Base64 encoded and can be inspected.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Typical JWT payload",
+        "language": "json",
+        "code": "{\n  \"iss\": \"https://identity\",\n  \"exp\": 1710000000,\n  \"scope\": [\"api\"],\n  \"client_id\": \"app\"\n}",
+        "show_line_numbers": true,
+        "width": "content"
+      }
+    },
+
+    {
+      "type": "callout",
+      "value": {
+        "title": "Security insight",
+        "text": "JWTs are not encrypted by default — always use HTTPS to protect them.",
+        "tone": "warning"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Authorization",
+        "title": "Using Claims and Policies"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Once authenticated, APIs use claims inside the token to make authorization decisions. ASP.NET Core provides policies for centralized authorization logic.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Authorization policy",
+        "language": "csharp",
+        "code": "builder.Services.AddAuthorization(options =>\n{\n    options.AddPolicy(\"ApiScope\", policy =>\n        policy.RequireClaim(\"scope\", \"api\"));\n});",
+        "show_line_numbers": true,
+        "width": "content"
+      }
+    },
+
+    {
+      "type": "code",
+      "value": {
+        "caption": "Using policy",
+        "language": "csharp",
+        "code": "[Authorize(Policy = \"ApiScope\")]\npublic IActionResult Get() => Ok();",
+        "show_line_numbers": true,
+        "width": "content"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Advanced",
+        "title": "Authorization Strategies"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>In real-world systems, multiple applications and APIs interact. Authorization should be based on scopes rather than user roles alone, because not all flows include users.</p><ul><li>Use <strong>scopes</strong> for API-level access</li><li>Use <strong>roles</strong> when users are present</li><li>Use <strong>policies</strong> to centralize logic</li></ul>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Architecture",
+        "title": "Authorization API Pattern"
+      }
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Authorization API pattern",
+        "diagram": "flowchart LR\n    A[Client] --> B[Backend API]\n    B --> C[Authorization API]\n    C --> B\n    B --> A",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>For complex systems, a dedicated Authorization API can provide user permissions dynamically instead of embedding everything in tokens.</p>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Summary",
+        "title": "Choosing the Right Approach"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<ul><li><strong>API Keys</strong> → simple, limited security</li><li><strong>Cookies</strong> → browser-based apps</li><li><strong>Tokens</strong> → flexible, scalable</li><li><strong>OAuth2 + OpenID Connect</strong> → enterprise-grade solution</li></ul><p>For modern distributed systems, OAuth2 with JWT tokens and centralized identity providers is the recommended approach.</p>"
+    }
+
+  ]
+},
+  {
+  "slug": "aspnet-core-logging-and-monitoring-fundamentals",
+  "title": "Logging and Monitoring in ASP.NET Core: From Basics to Production-Ready Observability",
+  "excerpt": "Learn how logging, monitoring, and traceability work in ASP.NET Core. Understand log levels, filters, structured logging, and how to build production-ready observability into your applications.",
+  "author_username": "Michał Antolik",
+  "category_slug": "apis-integration",
+  "tag_slugs": ["aspnet-core", "logging", "monitoring", "observability", "dotnet"],
+  "live": true,
+  "published_at": "2026-04-14T10:00:00Z",
+  "body": [
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Foundations",
+        "title": "Why Logging and Monitoring Matter"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Good logging and monitoring can dramatically reduce the time needed to diagnose and fix issues. In many cases, the difference between a quick fix and hours of debugging comes down to how well your application logs information.</p><p>Logging is not just about writing messages — it is about making your system observable, understandable, and supportable in real-world conditions.</p>"
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Key Insight",
+        "text": "Well-designed logging can turn production debugging from guesswork into a deterministic process.",
+        "tone": "success"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Architecture",
+        "title": "How Logging Works in ASP.NET Core"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>ASP.NET Core provides built-in logging through the <strong>Microsoft.Extensions.Logging</strong> framework. This system is based on three main concepts:</p><ul><li>Loggers (ILogger)</li><li>Providers (destinations)</li><li>Configuration (levels and filters)</li></ul>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Logging architecture in ASP.NET Core",
+        "diagram": "flowchart LR\n    A[Application Code] --> B[ILogger]\n    B --> C[Logging Framework]\n    C --> D[Console]\n    C --> E[Debug Output]\n    C --> F[File / External Systems]",
+        "width": "wide"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Getting Started",
+        "title": "Default Logging Behavior"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>When you create a new ASP.NET Core application, logging is already configured by default. The framework automatically logs to:</p><ul><li>Console</li><li>Debug output</li><li>Event source</li></ul><p>This is initialized through <code>WebApplication.CreateBuilder()</code>, which wires up logging providers and default filters.</p>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Implementation",
+        "title": "Writing Log Entries with ILogger"
+      }
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Injecting ILogger into a controller",
+        "language": "csharp",
+        "code": "public class ProductController\n{\n    private readonly ILogger<ProductController> _logger;\n\n    public ProductController(ILogger<ProductController> logger)\n    {\n        _logger = logger;\n    }\n\n    public IActionResult Get(string category)\n    {\n        _logger.LogInformation(\"Getting products for {category}\", category);\n        return Ok();\n    }\n}",
+        "show_line_numbers": true,
+        "width": "content"
+      }
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Important",
+        "text": "Use message templates instead of string interpolation — this enables structured logging and better querying.",
+        "tone": "warning"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Concept",
+        "title": "Structured Logging with Message Templates"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Instead of interpolating strings, ASP.NET Core logging uses message templates:</p><p><code>\"Getting products for {category}\"</code></p><p>This allows logging systems to store structured data (e.g., category separately), enabling powerful filtering and querying later.</p>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Core Concept",
+        "title": "Log Levels Explained"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>ASP.NET Core defines six log levels:</p><ul><li><strong>Trace</strong> – very detailed diagnostics</li><li><strong>Debug</strong> – debugging information</li><li><strong>Information</strong> – normal application flow</li><li><strong>Warning</strong> – unexpected but non-breaking issues</li><li><strong>Error</strong> – failures in specific operations</li><li><strong>Critical</strong> – system-wide failures</li></ul>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Log level hierarchy",
+        "diagram": "flowchart TB\n    Trace --> Debug --> Information --> Warning --> Error --> Critical",
+        "width": "content"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Noise Control",
+        "title": "Using Filters to Control Logging"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Filters determine which logs are written. They are based on:</p><ul><li>Log level</li><li>Category (usually class name)</li><li>Provider</li></ul><p>Example configuration:</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "appsettings.json logging configuration",
+        "language": "json",
+        "code": "{\n  \"Logging\": {\n    \"LogLevel\": {\n      \"Default\": \"Information\",\n      \"Microsoft.AspNetCore\": \"Warning\",\n      \"MyApp\": \"Debug\"\n    }\n  }\n}",
+        "show_line_numbers": true,
+        "width": "content"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Advanced",
+        "title": "Log Categories"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Each log entry has a category, usually derived from the class name:</p><p><code>ILogger&lt;ProductController&gt;</code> → <code>Namespace.ProductController</code></p><p>You can also define custom categories using <code>ILoggerFactory</code>.</p>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Monitoring",
+        "title": "Health Checks and Application Monitoring"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Monitoring ensures your application is running correctly. ASP.NET Core supports health checks to evaluate system status.</p><p>These checks can validate:</p><ul><li>Database connectivity</li><li>External APIs</li><li>System resources</li></ul>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Health check flow",
+        "diagram": "flowchart LR\n    A[Monitoring System] --> B[Health Endpoint]\n    B --> C[Database]\n    B --> D[External API]\n    B --> E[Application]\n    C --> B\n    D --> B\n    E --> B\n    B --> A",
+        "width": "wide"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Production",
+        "title": "Exception Handling Best Practices"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Proper exception handling is critical for both security and supportability.</p><ul><li>Log full exception details internally</li><li>Do NOT expose stack traces to users</li><li>Use global exception handling</li><li>Provide user-friendly error messages</li></ul>"
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Security Warning",
+        "text": "Never expose exception details in production — logs are for developers, not users.",
+        "tone": "warning"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Distributed Systems",
+        "title": "Traceability and OpenTelemetry"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>In modern applications, especially microservices, a single request can flow through multiple systems. Traceability allows you to follow that journey.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Distributed request tracing",
+        "diagram": "sequenceDiagram\n    participant UI\n    participant API\n    participant ServiceA\n    participant ServiceB\n\n    UI->>API: Request\n    API->>ServiceA: Call\n    ServiceA->>ServiceB: Call\n    ServiceB-->>ServiceA: Response\n    ServiceA-->>API: Response\n    API-->>UI: Response",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Using tools like OpenTelemetry, you can correlate logs, traces, and metrics across services.</p>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Summary",
+        "title": "Key Takeaways"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<ul><li>Logging is essential for support and debugging</li><li>Use structured logging with message templates</li><li>Control noise with levels and filters</li><li>Monitor application health proactively</li><li>Handle exceptions globally and securely</li><li>Use tracing for distributed systems</li></ul>"
+    }
+  ]
+},
+  {
+  "slug": "aspnet-core-logging-and-monitoring-fundamentals",
+  "title": "Logging and Monitoring in ASP.NET Core: From Basics to Production-Ready Observability",
+  "excerpt": "Learn how logging, monitoring, and traceability work in ASP.NET Core. Understand log levels, filters, structured logging, and how to build production-ready observability into your applications.",
+  "author_username": "Michał Antolik",
+  "category_slug": "apis-integration",
+  "tag_slugs": ["aspnet-core", "logging", "monitoring", "observability", "dotnet"],
+  "live": true,
+  "published_at": "2026-04-14T10:00:00Z",
+  "body": [
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Foundations",
+        "title": "Why Logging and Monitoring Matter"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Good logging and monitoring can dramatically reduce the time needed to diagnose and fix issues. In many cases, the difference between a quick fix and hours of debugging comes down to how well your application logs information.</p><p>Logging is not just about writing messages — it is about making your system observable, understandable, and supportable in real-world conditions.</p>"
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Key Insight",
+        "text": "Well-designed logging can turn production debugging from guesswork into a deterministic process.",
+        "tone": "success"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Architecture",
+        "title": "How Logging Works in ASP.NET Core"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>ASP.NET Core provides built-in logging through the <strong>Microsoft.Extensions.Logging</strong> framework. This system is based on three main concepts:</p><ul><li>Loggers (ILogger)</li><li>Providers (destinations)</li><li>Configuration (levels and filters)</li></ul>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Logging architecture in ASP.NET Core",
+        "diagram": "flowchart LR\n    A[Application Code] --> B[ILogger]\n    B --> C[Logging Framework]\n    C --> D[Console]\n    C --> E[Debug Output]\n    C --> F[File / External Systems]",
+        "width": "wide"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Getting Started",
+        "title": "Default Logging Behavior"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>When you create a new ASP.NET Core application, logging is already configured by default. The framework automatically logs to:</p><ul><li>Console</li><li>Debug output</li><li>Event source</li></ul><p>This is initialized through <code>WebApplication.CreateBuilder()</code>, which wires up logging providers and default filters.</p>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Implementation",
+        "title": "Writing Log Entries with ILogger"
+      }
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Injecting ILogger into a controller",
+        "language": "csharp",
+        "code": "public class ProductController\n{\n    private readonly ILogger<ProductController> _logger;\n\n    public ProductController(ILogger<ProductController> logger)\n    {\n        _logger = logger;\n    }\n\n    public IActionResult Get(string category)\n    {\n        _logger.LogInformation(\"Getting products for {category}\", category);\n        return Ok();\n    }\n}",
+        "show_line_numbers": true,
+        "width": "content"
+      }
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Important",
+        "text": "Use message templates instead of string interpolation — this enables structured logging and better querying.",
+        "tone": "warning"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Concept",
+        "title": "Structured Logging with Message Templates"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Instead of interpolating strings, ASP.NET Core logging uses message templates:</p><p><code>\"Getting products for {category}\"</code></p><p>This allows logging systems to store structured data (e.g., category separately), enabling powerful filtering and querying later.</p>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Core Concept",
+        "title": "Log Levels Explained"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>ASP.NET Core defines six log levels:</p><ul><li><strong>Trace</strong> – very detailed diagnostics</li><li><strong>Debug</strong> – debugging information</li><li><strong>Information</strong> – normal application flow</li><li><strong>Warning</strong> – unexpected but non-breaking issues</li><li><strong>Error</strong> – failures in specific operations</li><li><strong>Critical</strong> – system-wide failures</li></ul>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Log level hierarchy",
+        "diagram": "flowchart TB\n    Trace --> Debug --> Information --> Warning --> Error --> Critical",
+        "width": "content"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Noise Control",
+        "title": "Using Filters to Control Logging"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Filters determine which logs are written. They are based on:</p><ul><li>Log level</li><li>Category (usually class name)</li><li>Provider</li></ul><p>Example configuration:</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "appsettings.json logging configuration",
+        "language": "json",
+        "code": "{\n  \"Logging\": {\n    \"LogLevel\": {\n      \"Default\": \"Information\",\n      \"Microsoft.AspNetCore\": \"Warning\",\n      \"MyApp\": \"Debug\"\n    }\n  }\n}",
+        "show_line_numbers": true,
+        "width": "content"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Advanced",
+        "title": "Log Categories"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Each log entry has a category, usually derived from the class name:</p><p><code>ILogger&lt;ProductController&gt;</code> → <code>Namespace.ProductController</code></p><p>You can also define custom categories using <code>ILoggerFactory</code>.</p>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Monitoring",
+        "title": "Health Checks and Application Monitoring"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Monitoring ensures your application is running correctly. ASP.NET Core supports health checks to evaluate system status.</p><p>These checks can validate:</p><ul><li>Database connectivity</li><li>External APIs</li><li>System resources</li></ul>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Health check flow",
+        "diagram": "flowchart LR\n    A[Monitoring System] --> B[Health Endpoint]\n    B --> C[Database]\n    B --> D[External API]\n    B --> E[Application]\n    C --> B\n    D --> B\n    E --> B\n    B --> A",
+        "width": "wide"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Production",
+        "title": "Exception Handling Best Practices"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Proper exception handling is critical for both security and supportability.</p><ul><li>Log full exception details internally</li><li>Do NOT expose stack traces to users</li><li>Use global exception handling</li><li>Provide user-friendly error messages</li></ul>"
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Security Warning",
+        "text": "Never expose exception details in production — logs are for developers, not users.",
+        "tone": "warning"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Distributed Systems",
+        "title": "Traceability and OpenTelemetry"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>In modern applications, especially microservices, a single request can flow through multiple systems. Traceability allows you to follow that journey.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Distributed request tracing",
+        "diagram": "sequenceDiagram\n    participant UI\n    participant API\n    participant ServiceA\n    participant ServiceB\n\n    UI->>API: Request\n    API->>ServiceA: Call\n    ServiceA->>ServiceB: Call\n    ServiceB-->>ServiceA: Response\n    ServiceA-->>API: Response\n    API-->>UI: Response",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Using tools like OpenTelemetry, you can correlate logs, traces, and metrics across services.</p>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Summary",
+        "title": "Key Takeaways"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<ul><li>Logging is essential for support and debugging</li><li>Use structured logging with message templates</li><li>Control noise with levels and filters</li><li>Monitor application health proactively</li><li>Handle exceptions globally and securely</li><li>Use tracing for distributed systems</li></ul>"
+    }
+  ]
 }
 ]

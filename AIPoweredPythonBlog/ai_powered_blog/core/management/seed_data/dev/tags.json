@@ -46,5 +46,11 @@
   { "slug": "webapi", "name": "Web API" },
   { "slug": "blazor", "name": "Blazor" },
   { "slug": "swagger", "name": "Swagger" },
-  { "slug": "postman", "name": "Postman" }
+  { "slug": "postman", "name": "Postman" },
+  { "slug": "oauth2", "name": "OAuth 2" },
+  { "slug": "jwt", "name": "JWT" },
+  { "slug": "authentication", "name": "Authentication" },
+  { "slug": "authorization", "name": "Authorization" },
+  { "slug": "monitoring", "name": "Monitoring" },
+  { "slug": "observability", "name": "Observability" }
 ]
