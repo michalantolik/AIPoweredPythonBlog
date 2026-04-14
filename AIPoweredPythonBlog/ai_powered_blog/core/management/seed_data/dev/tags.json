@@ -63,6 +63,8 @@
   { "slug": "ai", "name": "AI" },
   { "slug": "generative-ai", "name": "Generative AI" },
   { "slug": "cloud", "name": "Cloud" },
-  { "slug": "machine-learning", "name": "Machine Learning" }
-
+  { "slug": "machine-learning", "name": "Machine Learning" },
+  { "slug": "avd", "name": "AVD" },
+  { "slug": "virtual-desktop", "name": "Virtual Desktop" },
+  { "slug": "certification", "name": "Certification" }
 ]

@@ -828,5 +828,179 @@
     }
 
   ]
+},
+  {
+  "slug": "azure-ai-services-landscape-and-generative-ai-apps",
+  "title": "Azure Virtual Desktop (AVD): Architecture, Concepts, and AZ-140 Exam Guide",
+  "excerpt": "Learn the core concepts of Azure Virtual Desktop, including host pools, session hosts, application groups, workspaces, supporting infrastructure, and the AZ-140 exam focus areas. This guide explains how AVD works, what you must manage yourself, and which skills matter most for real-world deployments.",
+  "author_username": "Michał Antolik",
+  "category_slug": "cloud-aws-azure",
+  "tag_slugs": ["azure", "avd", "virtual-desktop", "certification"],
+  "live": true,
+  "body": [
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Big picture",
+        "title": "What is Azure Virtual Desktop?"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Azure Virtual Desktop (AVD) is a managed service that enables organizations to deliver virtual desktops and applications from the cloud. Instead of maintaining complex on-premises VDI infrastructure, AVD provides a cloud-based control plane while allowing you to manage the compute resources that actually run user sessions.</p><p>Despite being a managed service, AVD is not a \"set it and forget it\" solution. It requires knowledge across multiple domains including networking, identity, storage, security, and user environment management.</p>"
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Key Insight",
+        "text": "Azure Virtual Desktop abstracts the control plane, but you are still responsible for designing, deploying, and maintaining the infrastructure that runs user workloads.",
+        "tone": "info"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Mental model",
+        "title": "How Azure Virtual Desktop Works"
+      }
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "AVD high-level architecture",
+        "diagram": "flowchart LR\n Users --> AVD_Control_Plane\n AVD_Control_Plane --> Host_Pools\n Host_Pools --> Session_Hosts\n Session_Hosts --> Applications\n Applications --> User_Experience",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>At a high level, Azure Virtual Desktop separates responsibilities into two major layers:</p><ul><li><strong>Control Plane (managed by Microsoft)</strong> – handles brokering, gateway, authentication, and session management.</li><li><strong>Resource Plane (managed by you)</strong> – includes virtual machines, storage, networking, and applications.</li></ul>"
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Core components",
+        "title": "Key AVD Building Blocks"
+      }
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Relationships between AVD components",
+        "diagram": "flowchart TD\n Workspace --> AppGroup\n AppGroup --> HostPool\n HostPool --> SessionHost\n Users --> AppGroup",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Understanding the relationships between AVD components is critical:</p><ul><li><strong>Session Hosts</strong> – Virtual machines where user sessions run.</li><li><strong>Host Pools</strong> – Logical group of session hosts.</li><li><strong>Application Groups</strong> – Define what users can access (apps or desktops).</li><li><strong>Workspaces</strong> – Organize application groups for user access.</li></ul><p>Each layer builds on the one below it, forming a structured and scalable environment.</p>"
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Important Rule",
+        "text": "A session host belongs to exactly one host pool, and an application group belongs to exactly one host pool.",
+        "tone": "warning"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Deployment models",
+        "title": "Pooled vs Personal Desktops"
+      }
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Desktop assignment models",
+        "diagram": "flowchart LR\n Users -->|Shared| Pooled_Desktop\n Users -->|Dedicated| Personal_Desktop",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>AVD supports two primary deployment models:</p><ul><li><strong>Pooled desktops</strong> – Multiple users share session hosts. Cost-efficient but less personalized.</li><li><strong>Personal desktops</strong> – Dedicated VM per user. More control but higher cost.</li></ul><p>The choice depends on your business requirements, cost constraints, and user expectations.</p>"
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Supporting services",
+        "title": "Infrastructure You Must Manage"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Even though AVD simplifies many aspects of VDI, you are still responsible for critical infrastructure:</p><ul><li><strong>Identity</strong> – Azure Active Directory (required), optionally Active Directory or Azure AD DS.</li><li><strong>Networking</strong> – Virtual networks, subnets, NSGs, VPN or ExpressRoute.</li><li><strong>Storage</strong> – User profiles (typically FSLogix with Azure Files or NetApp Files).</li><li><strong>Compute</strong> – Virtual machines for session hosts.</li></ul>"
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Reality Check",
+        "text": "AVD reduces infrastructure complexity, but it does not eliminate the need for strong architecture decisions.",
+        "tone": "info"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Certification",
+        "title": "AZ-140 Exam Overview"
+      }
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "AZ-140 exam skill distribution",
+        "diagram": "flowchart TD\n A[Infrastructure 40-45%]\n B[Identity & Security 15-20%]\n C[User Environment 20-25%]\n D[Monitoring 10-15%]\n A --> B\n B --> C\n C --> D",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>The AZ-140 exam focuses on four major areas:</p><ul><li><strong>Plan and implement AVD infrastructure (40–45%)</strong></li><li><strong>Identity and security (15–20%)</strong></li><li><strong>User environments and applications (20–25%)</strong></li><li><strong>Monitoring and maintenance (10–15%)</strong></li></ul><p>The majority of the exam focuses on infrastructure and deployment decisions.</p>"
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Prerequisites",
+        "title": "Knowledge You Should Have Before AVD"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Azure Virtual Desktop is not an entry-level topic. To work effectively with AVD, you should already understand:</p><ul><li>Azure infrastructure (IaaS)</li><li>Virtual machines and networking</li><li>Identity systems (Azure AD, Active Directory)</li><li>Windows environments (Windows 10/11, Windows Server)</li><li>Automation tools (PowerShell, Azure CLI)</li></ul><p>Familiarity with ARM templates or Bicep is also highly beneficial.</p>"
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Hands-on",
+        "title": "Recommended Lab Setup"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>The best way to learn AVD is through hands-on experience. A basic lab environment should include:</p><ul><li>Azure subscription</li><li>Azure AD tenant with admin access</li><li>Custom domain</li><li>Virtual network with subnets</li><li>Domain controller (VM)</li><li>Session host VMs</li></ul><p>You can extend this environment with additional components such as Azure Bastion, storage accounts for FSLogix, and security services.</p>"
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Tip",
+        "text": "To reduce costs, stop or deallocate virtual machines when not actively using your lab environment.",
+        "tone": "info"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Summary",
+        "title": "What You Should Remember"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<ul><li>Azure Virtual Desktop is a managed VDI platform, not a fully hands-off service.</li><li>The control plane is managed by Microsoft, but infrastructure is your responsibility.</li><li>Core components include host pools, session hosts, app groups, and workspaces.</li><li>Success depends heavily on identity, networking, and storage design.</li><li>The AZ-140 exam focuses primarily on real-world deployment and management skills.</li></ul>"
+    }
+  ]
 }
 ]
