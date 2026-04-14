@@ -409,5 +409,424 @@
     }
 
   ]
+},
+  {
+  "slug": "azure-compute-fundamentals-vms-app-service-functions",
+  "title": "Azure Compute Fundamentals: VMs, App Service, and Serverless Explained",
+  "excerpt": "Understand Azure Virtual Machines, App Service, and Azure Functions. Learn how compute works in Azure, when to use each model, and how to design scalable cloud applications.",
+  "author_username": "Michał Antolik",
+  "category_slug": "cloud-aws-azure",
+  "tag_slugs": ["azure", "compute", "virtual-machines", "serverless", "app-service"],
+  "live": true,
+  "body": [
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Big picture",
+        "title": "Understanding Azure Compute"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Compute is the foundation of cloud computing. It is where your applications run, process data, and respond to user requests. In Azure, compute comes in three main flavors: Virtual Machines (IaaS), App Service (PaaS), and Azure Functions (serverless).</p><p>Each model offers a different balance between control and convenience. Understanding when to use each is essential for designing scalable and cost-efficient cloud systems.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Azure Compute Spectrum",
+        "diagram": "flowchart LR\n A[Virtual Machines (IaaS)] --> B[App Service (PaaS)] --> C[Azure Functions (Serverless)]\n A -->|Full control| A1[You manage OS & infrastructure]\n B -->|Balanced| B1[Platform manages infrastructure]\n C -->|Minimal management| C1[Azure manages everything]",
+        "width": "wide"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Core engine",
+        "title": "What Are Azure Virtual Machines?"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Azure Virtual Machines (VMs) are the backbone of cloud compute. They provide the raw processing power required to run applications, handle requests, and execute workloads.</p><p>Think of VMs as fully customizable servers in the cloud. You choose the operating system, configuration, and scale. Azure simply provides the infrastructure.</p>"
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "In one sentence",
+        "text": "Virtual Machines give you full control over computing resources in the cloud.",
+        "tone": "success"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Flexibility",
+        "title": "VM Operating Systems and Configurations"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Azure supports a wide range of operating systems:</p><ul><li><strong>Windows</strong> – ideal for .NET, IIS, and SQL Server</li><li><strong>Linux</strong> – Ubuntu, Debian, CentOS, Red Hat for open-source workloads</li><li><strong>Custom images</strong> – bring your own disk for legacy or specialized systems</li></ul><p>Each VM size defines CPU, RAM, and storage performance. Choosing the right configuration is critical for performance and cost optimization.</p>"
+    },
+
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "VM Configuration Model",
+        "diagram": "flowchart TD\n VM[Virtual Machine]\n VM --> CPU[CPU / vCores]\n VM --> RAM[Memory]\n VM --> Disk[Storage + IOPS]\n VM --> OS[Operating System]",
+        "width": "wide"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Performance",
+        "title": "Types of Virtual Machines"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Azure provides different VM categories optimized for specific workloads:</p><ul><li><strong>General-purpose</strong> – balanced CPU and memory</li><li><strong>Compute-optimized</strong> – heavy processing workloads</li><li><strong>Memory-optimized</strong> – in-memory databases and caching</li><li><strong>Storage-optimized</strong> – high disk throughput</li><li><strong>GPU-optimized</strong> – AI, ML, and graphics workloads</li></ul>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Cost",
+        "title": "Managing VM Costs"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Azure VMs use a pay-as-you-go model. One powerful cost-saving option is <strong>Spot VMs</strong>, which use unused Azure capacity at deep discounts.</p><p>The trade-off is that these VMs can be reclaimed at any time, making them suitable only for non-critical workloads.</p>"
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Best use cases for Spot VMs",
+        "text": "Batch processing, development/testing, and stateless workloads.",
+        "tone": "info"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Reliability",
+        "title": "Regions, Availability Zones, and Resource Groups"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>When deploying a VM, you must choose:</p><ul><li><strong>Region</strong> – physical location of the VM</li><li><strong>Availability Zones</strong> – separate data centers for fault tolerance</li><li><strong>Resource Group</strong> – logical grouping of related resources</li></ul>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "High Availability with Availability Zones",
+        "diagram": "flowchart LR\n User --> AZ1[Data Center 1]\n User --> AZ2[Data Center 2]\n AZ1 --> App\n AZ2 --> App",
+        "width": "wide"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Lifecycle",
+        "title": "Managing Virtual Machines"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>VMs have a lifecycle:</p><ul><li><strong>Running</strong> – fully operational</li><li><strong>Stopped</strong> – still billed (resources allocated)</li><li><strong>Deallocated</strong> – not billed (resources released)</li></ul><p>Automation is key. Azure CLI and ARM templates allow you to manage VMs programmatically and reduce human error.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "VM Lifecycle",
+        "diagram": "flowchart LR\n Create --> Running\n Running --> Stop\n Running --> Deallocate\n Stop --> Running\n Deallocate --> Running",
+        "width": "wide"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Automation",
+        "title": "Infrastructure as Code with ARM"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Azure Resource Manager (ARM) allows you to define infrastructure using JSON templates. These templates describe all required resources such as networks, disks, and virtual machines.</p><p>Deployments are <strong>idempotent</strong>, meaning only changes are applied without affecting unchanged resources.</p>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "PaaS",
+        "title": "Building Apps with Azure App Service"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Azure App Service is a Platform as a Service (PaaS) offering that allows you to build and deploy web apps without managing infrastructure.</p><p>It supports multiple languages including .NET, Java, Node.js, Python, and PHP.</p>"
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Why App Service?",
+        "text": "Focus on code, not servers.",
+        "tone": "success"
+      }
+    },
+
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "App Service Architecture",
+        "diagram": "flowchart LR\n User --> LoadBalancer\n LoadBalancer --> AppService\n AppService --> Database",
+        "width": "wide"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Serverless",
+        "title": "Introduction to Azure Functions"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Azure Functions enable serverless computing. You write code, and Azure handles infrastructure, scaling, and execution.</p><p>You only pay for execution time, making it highly cost-efficient.</p>"
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "In one sentence",
+        "text": "Azure Functions run code only when triggered, with zero infrastructure management.",
+        "tone": "success"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Core concept",
+        "title": "Triggers and Bindings"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Functions are event-driven:</p><ul><li><strong>Trigger</strong> – starts execution (HTTP, timer, storage event)</li><li><strong>Bindings</strong> – connect to input/output services</li></ul>"
+    },
+
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Azure Function Flow",
+        "diagram": "flowchart LR\n User --> Trigger\n Trigger --> Function\n Function --> Output[Database / Storage / API]",
+        "width": "wide"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Example",
+        "title": "Real-World Serverless Workflow"
+      }
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Image Processing Pipeline",
+        "diagram": "flowchart LR\n Upload[Upload Image] --> BlobStorage\n BlobStorage --> Trigger\n Trigger --> Function[Resize Image]\n Function --> ThumbnailStorage\n ThumbnailStorage --> Website",
+        "width": "wide"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Choosing the Right Compute Model"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<ul><li><strong>VMs</strong> – maximum control (IaaS)</li><li><strong>App Service</strong> – managed platform (PaaS)</li><li><strong>Functions</strong> – event-driven serverless</li></ul><p>The right choice depends on how much control you need versus how much infrastructure you want Azure to manage for you.</p>"
+    }
+
+  ]
+},
+  {
+  "slug": "azure-ai-services-landscape-and-generative-ai-apps",
+  "title": "Azure AI Services Landscape & Building Generative AI Apps",
+  "excerpt": "Learn how Azure AI Services, Azure AI Search, and Azure AI Foundry work together to build modern AI and generative applications.",
+  "author_username": "Michał Antolik",
+  "category_slug": "cloud-aws-azure",
+  "tag_slugs": ["azure", "ai", "generative-ai", "cloud", "machine-learning"],
+  "live": true,
+  "published_at": "2026-04-15T10:00:00Z",
+  "body": [
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Understanding the Azure AI Landscape"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Azure provides a comprehensive ecosystem for building AI-powered applications. Instead of a single tool, it offers a layered approach that supports everything from ready-to-use APIs to full machine learning platforms.</p><p>The Azure AI landscape can be divided into three main categories:</p><ul><li><b>Azure AI Services (AI as a Service)</b> – prebuilt APIs for rapid development</li><li><b>Azure Machine Learning</b> – full ML lifecycle platform</li><li><b>Copilots</b> – AI assistants integrated into tools and workflows</li></ul><p>In practice, most developers start with Azure AI Services because they allow you to quickly build intelligent applications without deep ML expertise.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Azure AI Ecosystem Overview",
+        "diagram": "flowchart LR\n    A[Azure AI] --> B[AI Services]\n    A --> C[Azure ML]\n    A --> D[Copilots]\n\n    B --> B1[Speech]\n    B --> B2[Vision]\n    B --> B3[Language]\n    B --> B4[OpenAI]\n\n    C --> C1[Training]\n    C --> C2[Deployment]\n    C --> C3[MLOps]\n\n    D --> D1[Copilot for Azure]\n    D --> D2[M365 Copilot]",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Key Azure AI Services You Should Know"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Azure AI Services provide ready-to-use capabilities that can be integrated via SDKs or REST APIs. These services significantly reduce development time.</p><p>Some of the most important services include:</p><ul><li><b>Azure OpenAI</b> – access to GPT models and generative AI</li><li><b>Azure AI Speech</b> – speech-to-text, text-to-speech, translation</li><li><b>Azure AI Vision</b> – image and video analysis</li><li><b>Azure AI Language</b> – NLP tasks like sentiment analysis and summarization</li><li><b>Azure AI Document Intelligence</b> – structured data extraction from documents</li><li><b>Azure AI Search</b> – intelligent search over structured and unstructured data</li></ul><p>Each of these services can be used independently or combined into more advanced solutions.</p>"
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Azure AI Search – Turning Data into Searchable Knowledge"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Azure AI Search is one of the most powerful services for building AI-powered applications. It allows you to extract, index, and search data from multiple sources.</p><p>The typical workflow involves:</p><ol><li>Connecting a data source (e.g., Azure Blob Storage)</li><li>Extracting data using AI enrichment (e.g., OCR)</li><li>Creating an index</li><li>Querying the data using search queries</li></ol>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Azure AI Search Data Flow",
+        "diagram": "flowchart LR\n    A[Data Source\nBlob Storage] --> B[Indexer]\n    B --> C[AI Enrichment\nOCR, NLP]\n    C --> D[Index]\n    D --> E[Search Queries]",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>This approach allows you to search across documents like PDFs, Excel files, or text files. For example, you can query invoices and retrieve relevant data instantly.</p>"
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Example: Search Query"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Once the data is indexed, you can query it using simple search expressions:</p>"
+    },
+    {
+      "type": "rich_text",
+      "value": "<pre><code>GET /indexes/invoices/docs?search=Microsoft\n\nResponse:\n{\n  \"value\": [\n    { \"file\": \"invoice1.pdf\", \"content\": \"Invoice for Microsoft...\" }\n  ]\n}</code></pre>"
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Building Generative AI Apps with Azure AI Foundry"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Azure AI Foundry is a platform designed to simplify the creation of generative AI applications. It provides tools for integrating AI models, managing data, and building applications.</p><p>The two key concepts in Azure AI Foundry are:</p><ul><li><b>Hub</b> – a shared container for projects and resources</li><li><b>Project</b> – an isolated workspace for building AI solutions</li></ul>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Azure AI Foundry Structure",
+        "diagram": "flowchart LR\n    A[Hub] --> B[Project 1]\n    A --> C[Project 2]\n\n    B --> D[Models]\n    B --> E[Datasets]\n    C --> F[Models]\n    C --> G[Datasets]",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Retrieval-Augmented Generation (RAG)"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>When building generative AI applications, one key challenge is accessing private data. This is solved using a technique called <b>Retrieval-Augmented Generation (RAG)</b>.</p><p>Instead of relying only on the model’s knowledge, the system retrieves relevant data and sends it along with the user’s query.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "RAG Architecture with Azure",
+        "diagram": "flowchart LR\n    A[User Question] --> B[Azure OpenAI]\n    B --> C[Azure AI Search]\n    C --> D[Vector Index]\n    D --> B\n    B --> E[Final Answer]",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>This approach allows models to answer questions based on your own data, such as invoices, documents, or internal knowledge bases.</p>"
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Example: Connecting AI Search to GPT"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<pre><code>// Pseudo flow\n1. User asks question\n2. Azure AI Search retrieves relevant documents\n3. Documents are passed to GPT model\n4. GPT generates contextual answer</code></pre>"
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Microsoft Copilot for Azure"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Microsoft Copilot for Azure is an AI-powered assistant designed to improve productivity in cloud environments. It helps developers and IT teams manage, optimize, and troubleshoot Azure resources.</p><p>Key capabilities include:</p><ul><li>Generating Azure CLI and PowerShell scripts</li><li>Analyzing cloud costs and usage</li><li>Identifying security issues</li><li>Troubleshooting infrastructure problems</li></ul>"
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Practical Use Cases"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<ul><li><b>Chatbots</b> powered by Azure OpenAI</li><li><b>Document processing</b> using Document Intelligence</li><li><b>Search applications</b> using AI Search</li><li><b>Voice assistants</b> using Speech services</li><li><b>AI copilots</b> integrated into business workflows</li></ul>"
+    },
+
+    {
+      "type": "callout",
+      "value": {
+        "text": "Azure AI becomes most powerful when services are combined — for example, Azure AI Search + OpenAI enables production-ready generative AI applications.",
+        "type": "info"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Summary"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Azure AI provides a complete ecosystem for building intelligent applications. From prebuilt AI services to advanced generative AI platforms, developers can quickly create scalable and secure solutions.</p><p>By combining services like Azure OpenAI, Azure AI Search, and Azure AI Foundry, you can build modern AI applications that leverage both public and private data.</p>"
+    }
+
+  ]
 }
 ]
