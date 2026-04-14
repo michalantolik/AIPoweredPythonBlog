@@ -830,7 +830,7 @@
   ]
 },
   {
-  "slug": "azure-ai-services-landscape-and-generative-ai-apps",
+  "slug": "azure-virtual-desktop-avd-architecture-concepts-exam-guide",
   "title": "Azure Virtual Desktop (AVD): Architecture, Concepts, and AZ-140 Exam Guide",
   "excerpt": "Learn the core concepts of Azure Virtual Desktop, including host pools, session hosts, application groups, workspaces, supporting infrastructure, and the AZ-140 exam focus areas. This guide explains how AVD works, what you must manage yourself, and which skills matter most for real-world deployments.",
   "author_username": "Michał Antolik",
@@ -1001,6 +1001,525 @@
       "type": "rich_text",
       "value": "<ul><li>Azure Virtual Desktop is a managed VDI platform, not a fully hands-off service.</li><li>The control plane is managed by Microsoft, but infrastructure is your responsibility.</li><li>Core components include host pools, session hosts, app groups, and workspaces.</li><li>Success depends heavily on identity, networking, and storage design.</li><li>The AZ-140 exam focuses primarily on real-world deployment and management skills.</li></ul>"
     }
+  ]
+},
+  {
+  "slug": "azure-virtual-desktop-plan-an-avd-architecture",
+  "title": "Azure Virtual Desktop: How to Plan an AVD Architecture",
+  "excerpt": "A practical, standalone guide to planning Azure Virtual Desktop: assessment, personas, networking, host pools, VM sizing, identity, FSLogix, licensing, and client access.",
+  "author_username": "Michał Antolik",
+  "category_slug": "cloud-aws-azure",
+  "tag_slugs": [
+    "azure",
+    "cloud",
+    "architecture",
+    "virtual-machines"
+  ],
+  "live": true,
+  "published_at": "2026-04-15T12:00:00+02:00",
+  "body": [
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Start here",
+        "title": "Why AVD planning matters before you deploy anything"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Azure Virtual Desktop (AVD) is not just a set of virtual machines in Azure. It is a full virtual desktop platform where Microsoft manages the <b>control plane</b>, while you still design and operate the parts that define cost, performance, security, and user experience.</p><p>That split is the key idea for this whole topic. Microsoft handles the service components such as brokerage and gateway behavior. You still need to plan <b>networking</b>, <b>host pools</b>, <b>session host sizing</b>, <b>identity</b>, <b>user profiles</b>, <b>client connectivity</b>, and <b>cost structure</b>.</p><p>If you skip the design phase, the most common result is predictable: users complain about performance, admins struggle with maintenance, and finance asks why the platform costs more than expected.</p>"
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Core principle",
+        "text": "AVD reduces control-plane complexity, but it does not remove architecture responsibility. The quality of your design still determines the quality of the environment.",
+        "tone": "success"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Mental model",
+        "title": "What Microsoft manages vs what you manage"
+      }
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "The shared-responsibility view of Azure Virtual Desktop",
+        "diagram": "flowchart LR\n    A[Microsoft-managed AVD control plane] --> A1[Web access]\n    A --> A2[Gateway]\n    A --> A3[Broker]\n    A --> A4[Diagnostics services]\n\n    B[Customer-managed AVD architecture] --> B1[Virtual networks]\n    B --> B2[Session hosts and host pools]\n    B --> B3[Identity and domain services]\n    B --> B4[Profile storage]\n    B --> B5[Client rollout and policies]\n    B --> B6[Cost and scaling decisions]",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>That distinction explains why planning matters so much. In a traditional VDI platform, you would also need to design the control plane. In AVD, Microsoft removes that burden. But the workloads, users, applications, and network paths are still your problem to solve well.</p>"
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Assessment first",
+        "title": "Start with user personas, not VM sizes"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>The best AVD design starts with the <b>current environment</b>. Before choosing regions or VM types, identify groups of users with similar needs. These groups become your <b>personas</b>.</p><p>Each persona should answer questions like:</p><ul><li>Do users need a <b>personal</b> desktop or a <b>pooled</b> shared desktop?</li><li>How CPU-intensive are their daily tasks?</li><li>Do they need high memory, strong disk performance, or a GPU?</li><li>Where are they connecting from geographically?</li><li>Do they need special applications, customizations, or isolation?</li><li>Should costs be tracked separately by business unit or department?</li></ul><p>This is the foundation for host pool design. A good persona is not job-title-only. It is a technical and operational grouping of users with similar requirements.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "A simple persona matrix you can build during assessment",
+        "language": "yaml",
+        "code": "personas:\n  - name: Task workers\n    pool_type: pooled\n    usage: light\n    apps: browser, microsoft_365\n    location: regional offices\n    gpu: false\n\n  - name: Analysts\n    pool_type: pooled\n    usage: heavy\n    apps: microsoft_365, finance_apps\n    location: headquarters\n    gpu: false\n\n  - name: Designers\n    pool_type: personal\n    usage: power\n    apps: adobe, rendering_tools\n    location: mixed\n    gpu: true",
+        "show_line_numbers": true,
+        "width": "content"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Applications drive architecture",
+        "title": "How application analysis changes the design"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Once personas are defined, examine their application sets. This affects image strategy, host pool type, and even Azure region placement.</p><ul><li><b>Browser-only apps</b> simplify image management.</li><li><b>Native apps</b> usually mean custom images and more testing.</li><li><b>Microsoft 365 apps</b> are common enough that they often become part of the baseline image.</li><li><b>Apps that dislike server-like environments</b> may fail on multi-session Windows and push you toward personal desktops.</li><li><b>Chatty client-server apps</b> can perform badly if the session host is far from the back-end database.</li></ul><p>This is where many architectures go wrong. Teams focus on end-user-to-Azure latency but ignore session-host-to-application latency. Both matter.</p>"
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Practical warning",
+        "text": "If a legacy app depends on frequent roundtrips to an on-prem database, moving only the desktop to Azure may hurt performance instead of improving it.",
+        "tone": "warning"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Connectivity",
+        "title": "Understand reverse connect before designing the network"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Modern AVD connectivity uses <b>reverse connect</b>. Instead of exposing RDP over port 3389 directly to the session host, the client connects to the AVD service, and the session host establishes the service-side path needed for the session.</p><p>This improves security and simplifies public connectivity because you are no longer designing a classic “open RDP to the host” model.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "How reverse connect changes the session flow",
+        "diagram": "sequenceDiagram\n    participant User as AVD Client\n    participant AAD as Azure AD\n    participant CP as AVD Control Plane\n    participant Host as Session Host\n\n    User->>AAD: Authenticate\n    User->>CP: Get feed and available resources\n    User->>CP: Request session\n    CP->>Host: Broker target host\n    Host->>CP: Establish reverse connection\n    User->>Host: Complete session across brokered path",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>The takeaway is simple: you still need to plan connectivity carefully, but AVD does not require you to expose traditional inbound RDP in the normal design.</p>"
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Performance path",
+        "title": "When RDP Shortpath helps"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>AVD can also use <b>RDP Shortpath</b>, which creates a direct <b>UDP</b>-based path between client and session host. This reduces dependency on the gateway path and can improve reliability, latency, and user experience.</p><p>Shortpath is especially relevant when you want:</p><ul><li>lower roundtrip time for interactive workloads,</li><li>better behavior on congested networks,</li><li><b>QoS</b> support,</li><li>more control over session traffic performance.</li></ul><p>The tradeoff is that you need proper network line-of-sight between clients and hosts. That requirement changes the network design.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Two common AVD transport options",
+        "diagram": "flowchart TD\n    A[Client] --> B[Reverse connect through AVD gateway]\n    A --> C[RDP Shortpath over direct UDP path]\n    B --> D[Good default security and simpler public access]\n    C --> E[Lower latency, QoS support, direct connectivity required]",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Important caveat",
+        "text": "Shortpath is attractive for performance, but it is not free. You must design routing, ports, and reachability between clients and session hosts.",
+        "tone": "info"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Private connectivity",
+        "title": "Where Azure Private Link fits"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Azure Private Link can be used with AVD when clients or hosts must reach service endpoints privately instead of over public endpoints. The typical reasons are <b>security</b>, <b>compliance</b>, or environments where public endpoint access is restricted.</p><p>It can be used for feed-related endpoints and host-pool-related connectivity. But it adds complexity, requires private DNS planning, and changes the traffic model. It should be used because you have a clear requirement, not just because it sounds more secure.</p><p>One especially important design note: <b>clients using Private Link endpoints cannot use RDP Shortpath in that path</b>. So the more private you make the design, the more careful you need to be about the performance tradeoffs.</p>"
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Bandwidth and latency",
+        "title": "How to think about network requirements"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Bandwidth planning in AVD is workload-sensitive. Light tasks such as editing documents consume far less bandwidth than high-motion video, conferencing, or graphics-heavy work. User input itself is tiny. Remote graphics is usually the dominant factor.</p><p>That means your planning questions should be concrete:</p><ul><li>Where are users connecting from?</li><li>How many concurrent users exist per site?</li><li>What type of WAN or internet link do they have?</li><li>Will they use video meetings, screen sharing, or media-heavy apps?</li><li>Do they transfer large files through the session?</li></ul><p>Latency matters just as much as raw bandwidth. As a rule of thumb, user experience is generally acceptable under about <b>150 ms</b> roundtrip, becomes noticeably weaker as you move into the <b>150–200 ms</b> range, and is often poor beyond that for interactive work.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "A useful planning checklist for each user location",
+        "language": "text",
+        "code": "Location: Warsaw office\nUsers total: 220\nConcurrent peak: 140\nConnection type: MPLS + internet backup\nExpected workloads: Office, browser apps, Teams, finance app\nRecommended actions:\n- test latency to candidate Azure regions\n- estimate bandwidth for peak concurrency\n- decide whether QoS is needed\n- verify app latency to back-end systems\n- determine if RDP Shortpath is possible",
+        "show_line_numbers": true,
+        "width": "content"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Host pools",
+        "title": "Choose pooled vs personal the right way"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Host pools are the groups of machines users connect to. In practice, the most important architectural decision is whether each persona belongs in a <b>pooled</b> or <b>personal</b> host pool.</p><ul><li><b>Pooled</b> means multiple users share session hosts. This is usually the most cost-effective option.</li><li><b>Personal</b> means one user gets a dedicated machine. This is more expensive but useful when users need isolation, customization, special applications, or guaranteed performance.</li></ul><p>Most organizations should expect pooled desktops to be the default, with personal desktops reserved for exceptions.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "A simple decision flow for host pool type",
+        "diagram": "flowchart TD\n    A[New persona] --> B{Needs dedicated customization or isolation?}\n    B -->|Yes| C[Personal host pool]\n    B -->|No| D{Apps support multi-session?}\n    D -->|No| C\n    D -->|Yes| E{Workload is share-friendly?}\n    E -->|Yes| F[Pooled host pool]\n    E -->|No| C",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>For pooled pools, you also need to choose a <b>load-balancing strategy</b>. <b>Breadth-first</b> spreads users across hosts for a better general user experience. <b>Depth-first</b> fills one host before moving to the next, which can help reduce cost in scaled-down scenarios.</p>"
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Operating systems",
+        "title": "What OS should session hosts run?"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Host pools should use a consistent image. Your OS choice follows directly from the host pool design and application requirements.</p><ul><li><b>Windows 10/11 Enterprise multi-session</b> is usually the default for pooled AVD.</li><li><b>Windows 10/11 single-session</b> fits personal desktops.</li><li><b>Windows Server</b> is possible, but usually less attractive unless you have a specific reason and licensing model.</li></ul><p>Windows multi-session is important because it gives you client-like Windows behavior with multi-user support. But do not assume every application will like it. Some apps detect it as server-style behavior and may need vendor validation.</p>"
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Sizing",
+        "title": "Right-size VMs around workload and density"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>VM sizing is a balance between performance and cost. For personal desktops, start from the equivalent of the user’s current physical device and then adjust. For pooled desktops, think in terms of <b>density</b>: how many users can share one VM while still getting a good experience?</p><p>A practical way to reason about it is by workload class:</p><ul><li><b>Light users</b>: high density, lower CPU demand</li><li><b>Medium users</b>: balanced density</li><li><b>Heavy users</b>: lower density, more CPU and memory</li><li><b>Power users</b>: very low density, sometimes personal desktops, sometimes GPU</li></ul><p>In general, many smaller hosts are often better than a few giant hosts. Smaller hosts are easier to scale, easier to drain for maintenance, and reduce the blast radius of change.</p>"
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "What to optimize for",
+        "text": "The cheapest AVD design on paper is often the most expensive design in real life because poor performance creates support load, rework, and user dissatisfaction.",
+        "tone": "danger"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Identity",
+        "title": "Your identity model affects everything else"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>AVD can work with several identity approaches:</p><ul><li><b>Hybrid identity</b>: Azure AD plus traditional Active Directory Domain Services</li><li><b>Azure AD DS</b>: managed domain services integrated with Azure AD</li><li><b>Cloud-only</b>: Azure AD joined session hosts with Azure AD identities</li><li><b>Federated third-party identity</b>: when the provider is integrated with Azure AD</li></ul><p>The most traditional model is still hybrid identity because it works well with domain join, policies, and many enterprise patterns. But cloud-only designs are increasingly viable, especially for greenfield or pilot scenarios.</p><p>The identity choice is not a side issue. It directly affects domain join, profile storage options, authentication paths, and management tooling.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Identity choices for AVD at a glance",
+        "diagram": "flowchart LR\n    A[Azure AD] --> B[Cloud-only AVD]\n    A --> C[Azure AD DS]\n    D[Active Directory DS] --> E[Hybrid identity]\n    D --> C\n    E --> F[Session hosts domain-joined to AD DS]\n    B --> G[Session hosts Azure AD joined]",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Profiles",
+        "title": "Why FSLogix is the default answer for user profiles"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>User profiles are one of the hardest parts of VDI if you use old approaches such as classic roaming profiles alone. AVD planning usually centers on <b>FSLogix</b>, which stores the user profile inside a virtual disk and mounts it when the user signs in.</p><p>This is a major simplification. Instead of copying profile data around from machine to machine, the profile container follows the user. That gives a more consistent experience, especially in pooled environments.</p><p>For AVD design work, the important question is usually not “should I use FSLogix?” but rather “what storage platform should back FSLogix, and how will authentication work?”</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "How FSLogix profile containers behave",
+        "diagram": "flowchart LR\n    U[User signs in] --> A[FSLogix locates profile container]\n    A --> B[Virtual disk is attached]\n    B --> C[Profile appears as local user profile]\n    C --> D[User works normally]\n    D --> E[Container is detached at sign-out]",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Storage choices",
+        "title": "FSLogix storage options in Azure"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>There are three practical storage back ends for FSLogix in Azure:</p><ul><li><b>Windows file servers on Azure VMs</b> for maximum control, but with more admin effort</li><li><b>Azure Files</b>, especially Premium, for managed file shares and simpler operations</li><li><b>Azure NetApp Files</b> when you need very high throughput and premium performance</li></ul><p>The performance requirement is real here. FSLogix depends on storage throughput and responsiveness. A profile solution that is technically correct but underpowered will still feel broken to users.</p><p>Authentication also matters. Traditional file servers and Azure NetApp Files usually fit naturally with domain-based identity. Azure Files supports more identity combinations, which makes it especially useful in newer Azure AD-centric designs.</p>"
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Licensing and endpoint strategy",
+        "title": "Do not leave licensing and client rollout to the end"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>AVD planning also includes two operational topics that are easy to underestimate:</p><ul><li><b>Licensing</b>: internal users usually rely on eligible per-user Microsoft licensing or server/RDS licensing, while external-user scenarios can use dedicated per-user AVD access pricing.</li><li><b>Client software</b>: users need an AVD-compatible client, whether on Windows, macOS, iOS, Android, Linux, or through the web client.</li></ul><p>That means the architecture plan should include not only the Azure resources, but also the rollout path for the client application and the licensing model for the users who will actually consume the service.</p>"
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Reference design",
+        "title": "A practical AVD planning blueprint"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>If you want a simple blueprint to start from, this is a strong default:</p><ol><li>Build personas from real user and application data.</li><li>Prefer <b>pooled</b> host pools for most users and reserve personal pools for exceptions.</li><li>Place host pools in regions with acceptable user latency and reasonable app back-end proximity.</li><li>Use Windows multi-session for pooled hosts unless application constraints block it.</li><li>Back user profiles with FSLogix on a storage platform sized for performance, not just capacity.</li><li>Choose an identity model early because it affects storage, join state, and operations.</li><li>Use tagging, resource-group structure, and subscription planning to support scale, RBAC, and cost reporting.</li><li>Validate everything in a pilot because AVD sizing is never final on day one.</li></ol>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "One-page architecture summary",
+        "language": "text",
+        "code": "Users -> AVD Client -> AVD Control Plane -> Host Pools -> Apps and Data\n\nDesign pillars:\n- user personas\n- application compatibility\n- network latency and bandwidth\n- pooled vs personal desktops\n- Windows multi-session where possible\n- VM density and scaling strategy\n- identity and domain approach\n- FSLogix storage performance\n- client rollout and licensing\n- cost tracking and operational boundaries",
+        "show_line_numbers": true,
+        "width": "content"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Final takeaway",
+        "title": "The best AVD architecture is iterative, not accidental"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Planning AVD is really the work of translating business usage into technical design. You are deciding how users work, where applications live, how identities flow, what network paths sessions take, and how much performance you are willing to buy.</p><p>The good news is that Azure makes bad assumptions easier to fix than in old on-prem VDI projects. But that flexibility should not tempt you to skip planning. It should encourage you to design carefully, pilot early, measure real usage, and then refine the platform based on evidence.</p><p>That is what good AVD architecture looks like: not guessing, but making deliberate tradeoffs across user experience, security, cost, and operational simplicity.</p>"
+    }
+  ]
+},
+  {
+  "slug": "aws-well-architected-framework-foundations",
+  "title": "AWS Well-Architected Framework: Foundations for Scalable and Secure Cloud Systems",
+  "excerpt": "Learn how to design scalable, secure, and cost-efficient cloud systems using AWS best practices and the Well-Architected Framework.",
+  "author_username": "Michał Antolik",
+  "category_slug": "cloud-aws-azure",
+  "tag_slugs": ["aws", "architecture", "cloud"],
+  "published_at": "2026-04-15T10:00:00Z",
+  "body": [
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Foundations",
+        "title": "What Are AWS Best Practices?"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>When building systems in the cloud, success is not just about making things work — it's about making them secure, scalable, reliable, and cost-efficient from day one.</p><p>AWS best practices are like a proven recipe. Instead of guessing how to design your system, you follow guidelines developed from real-world experience across thousands of companies.</p><p>AWS provides these guidelines through the <strong>Well-Architected Framework</strong>, which acts as a checklist for building high-quality cloud systems.</p>"
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Why it matters",
+        "text": "Without best practices, systems often fail under load, expose sensitive data, or become unnecessarily expensive.",
+        "tone": "warning"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Core Concept",
+        "title": "The Six Pillars of the Well-Architected Framework"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>The AWS Well-Architected Framework is built on six pillars. Each pillar represents a key area of system design.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "AWS Well-Architected Framework pillars",
+        "diagram": "flowchart LR\n    A[Operational Excellence]\n    B[Security]\n    C[Reliability]\n    D[Performance Efficiency]\n    E[Cost Optimization]\n    F[Sustainability]\n    A --> B --> C --> D --> E --> F",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p><strong>Operational Excellence</strong> focuses on automation, monitoring, and continuous improvement.</p><p><strong>Security</strong> ensures your data and systems are protected from unauthorized access.</p><p><strong>Reliability</strong> ensures your application continues working even when failures occur.</p><p><strong>Performance Efficiency</strong> ensures you use the right resources at the right time.</p><p><strong>Cost Optimization</strong> prevents overspending by matching resources to actual demand.</p><p><strong>Sustainability</strong> focuses on reducing environmental impact through efficient resource usage.</p>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Architecture Basics",
+        "title": "Core AWS Networking Concepts"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Before designing systems, it's important to understand the basic building blocks of AWS infrastructure.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Basic AWS infrastructure layout",
+        "diagram": "flowchart TD\n    Region --> AZ1[Availability Zone 1]\n    Region --> AZ2[Availability Zone 2]\n    AZ1 --> PublicSubnet\n    AZ1 --> PrivateSubnet\n    AZ2 --> PublicSubnet2\n    AZ2 --> PrivateSubnet2",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p><strong>Region</strong> is a geographic location where AWS operates data centers.</p><p><strong>Availability Zones (AZs)</strong> are isolated data centers within a region.</p><p><strong>VPC (Virtual Private Cloud)</strong> is your private network inside AWS.</p><p><strong>Subnets</strong> divide your VPC into smaller segments, such as public and private areas.</p>"
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Common mistake",
+        "text": "Placing a database in a public subnet exposes it to the internet and creates a major security risk.",
+        "tone": "warning"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Scalability",
+        "title": "High Availability and Scaling Patterns"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Modern systems must handle unpredictable traffic. Two key concepts make this possible: scalability and high availability.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Load balancing and auto scaling",
+        "diagram": "flowchart LR\n    Users --> LB[Load Balancer]\n    LB --> S1[Server 1]\n    LB --> S2[Server 2]\n    LB --> S3[Server 3]\n    S1 --> DB[(Database)]\n    S2 --> DB\n    S3 --> DB",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p><strong>Load Balancers</strong> distribute incoming traffic across multiple servers.</p><p><strong>Auto Scaling</strong> automatically adds or removes servers based on demand.</p><p><strong>Multi-AZ deployments</strong> ensure your system continues working even if one data center fails.</p>"
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Key insight",
+        "text": "A single server is a single point of failure. Always design for redundancy.",
+        "tone": "info"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Automation",
+        "title": "Infrastructure as Code (IaC)"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Infrastructure as Code allows you to define your cloud infrastructure using code instead of manual setup.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Example: Terraform EC2 instance",
+        "code": "resource \"aws_instance\" \"example\" {\n  ami           = \"ami-1234567890\"\n  instance_type = \"t3.micro\"\n}",
+        "language": "hcl",
+        "show_line_numbers": true,
+        "width": "content"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Popular IaC tools include:</p><ul><li>AWS CloudFormation</li><li>Terraform</li><li>AWS CDK</li><li>OpenTofu</li></ul><p>Using IaC ensures repeatability, reduces human error, and makes scaling across regions much easier.</p>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Security",
+        "title": "Shared Responsibility Model"
+      }
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Shared responsibility model",
+        "diagram": "flowchart LR\n    AWS[AWS Responsibility]\n    Customer[Customer Responsibility]\n    AWS --> Infra[Physical infrastructure]\n    AWS --> Network[Global network]\n    Customer --> OS[Operating system]\n    Customer --> Config[Security configuration]\n    Customer --> Data[Data protection]",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>In AWS, security is shared between AWS and the customer.</p><p><strong>AWS is responsible for security of the cloud</strong> — data centers, hardware, and networking.</p><p><strong>You are responsible for security in the cloud</strong> — configurations, access control, and data protection.</p>"
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Critical mistake",
+        "text": "Assuming AWS handles everything can lead to serious security breaches.",
+        "tone": "warning"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Tools",
+        "title": "AWS Well-Architected Tool"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>The AWS Well-Architected Tool helps you evaluate your system against best practices.</p><p>It asks structured questions across all six pillars and provides improvement recommendations.</p><p>The tool is free to use and available directly in the AWS Console.</p>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Summary",
+        "title": "Putting It All Together"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Designing cloud systems requires a combination of architecture, automation, and security awareness.</p><p>To build robust systems:</p><ul><li>Design networks using VPCs and subnets</li><li>Use load balancing and auto scaling</li><li>Automate infrastructure with IaC</li><li>Apply security best practices</li><li>Continuously review using the Well-Architected Tool</li></ul><p>These principles apply whether you're building an e-commerce platform, API, or data system.</p>"
+    }
+
   ]
 }
 ]
