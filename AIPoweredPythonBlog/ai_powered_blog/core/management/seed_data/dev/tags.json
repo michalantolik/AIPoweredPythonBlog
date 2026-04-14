@@ -39,5 +39,7 @@
   { "slug": "web-development", "name": "Web Development" },
   { "slug": "error-handling", "name": "Error Handling" },
   { "slug": "auth", "name": "Auth" },
-  { "slug": "configuration", "name": "Configuration" }
+  { "slug": "configuration", "name": "Configuration" },
+  { "slug": "rest", "name": "REST" },
+  { "slug": "api-design", "name": "API Design" }
 ]

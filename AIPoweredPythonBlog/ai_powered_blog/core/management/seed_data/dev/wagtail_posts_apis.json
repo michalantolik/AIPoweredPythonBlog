@@ -153,5 +153,275 @@
         "value": "<p>A good REST API is built around resources, uses HTTP methods consistently, returns meaningful status codes, and keeps naming predictable.</p><p>Once these basics are clear, topics like authentication, versioning, pagination, and API security become much easier to understand.</p>"
       }
     ]
-  }
+  },
+  {
+  "slug": "designing-restful-web-apis-complete-guide",
+  "title": "Designing RESTful Web APIs — A Practical Guide from Fundamentals to Production",
+  "excerpt": "Learn how to design RESTful APIs that scale, evolve, and remain maintainable. Covers HTTP fundamentals, resources, verbs, paging, caching, versioning, and security.",
+  "author_username": "Michał Antolik",
+  "category_slug": "apis-integration",
+  "tag_slugs": ["rest", "http", "api-design", "backend", "architecture"],
+  "live": true,
+  "published_at": "2026-04-14T10:00:00Z",
+  "body": [
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Foundation",
+        "title": "Why API Design Comes Before Implementation"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>One of the biggest mistakes developers make is starting to build an API before designing it. Unlike internal code, APIs become contracts. Once clients depend on them, changing them becomes difficult or even impossible.</p><p>A well-designed API is long-lasting, predictable, and easy to evolve. This is why design must come first — not code.</p>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Basics",
+        "title": "How HTTP Actually Works"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>REST APIs are built on top of HTTP, so understanding HTTP is essential. Every request consists of:</p><ul><li><b>Verb</b> (what to do)</li><li><b>Headers</b> (metadata)</li><li><b>Body</b> (data)</li></ul><p>Every response contains:</p><ul><li><b>Status code</b></li><li><b>Headers</b></li><li><b>Body</b></li></ul>"
+    },
+
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Basic HTTP request-response flow",
+        "diagram": "flowchart LR\nClient -->|Request: GET /customers| Server\nServer -->|Response: 200 OK + JSON| Client",
+        "width": "wide"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Core Concept",
+        "title": "What REST Really Means"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>REST (Representational State Transfer) is an architectural style based on:</p><ul><li>Client-server separation</li><li>Stateless communication</li><li>Cacheable responses</li><li>Uniform interface</li></ul><p>In practice, REST is about designing intuitive, predictable APIs — not strictly following theory.</p>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Design",
+        "title": "Designing Resources and URIs"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>In REST, everything is a <b>resource</b>. Resources are represented via URIs:</p><ul><li><code>/customers</code> → collection</li><li><code>/customers/1</code> → single resource</li></ul><p>Query strings should be used only for optional behavior like filtering or paging.</p>"
+    },
+
+    {
+      "type": "code",
+      "value": {
+        "caption": "Example resource endpoints",
+        "language": "http",
+        "code": "GET /api/customers\nGET /api/customers/1\nGET /api/customers?page=2&pageSize=25",
+        "show_line_numbers": false,
+        "width": "content"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Operations",
+        "title": "HTTP Verbs and Their Meaning"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>REST uses HTTP verbs to describe actions:</p><ul><li><b>GET</b> → retrieve</li><li><b>POST</b> → create</li><li><b>PUT</b> → update (full)</li><li><b>PATCH</b> → update (partial)</li><li><b>DELETE</b> → remove</li></ul>"
+    },
+
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "REST operations on resources",
+        "diagram": "flowchart TD\nCollection[/customers/] -->|POST| NewCustomer\nCollection -->|GET| ListCustomers\nItem[/customers/{id}/] -->|GET| GetCustomer\nItem -->|PUT| UpdateCustomer\nItem -->|DELETE| DeleteCustomer",
+        "width": "wide"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Concept",
+        "title": "Idempotency Explained"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Idempotency means repeating the same request produces the same result.</p><ul><li>GET, PUT, DELETE → idempotent</li><li>POST → NOT idempotent</li></ul><p>This is critical for reliability in distributed systems.</p>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Structure",
+        "title": "Designing Response Models"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Responses should be:</p><ul><li>Consistent</li><li>Technology-agnostic</li><li>Client-friendly</li></ul><p>Use JSON conventions like camelCase and avoid leaking database structure.</p>"
+    },
+
+    {
+      "type": "code",
+      "value": {
+        "caption": "Example response",
+        "language": "json",
+        "code": "{\n  \"id\": 1,\n  \"companyName\": \"Wilder Minds\",\n  \"contact\": \"Shawn\",\n  \"phoneNumber\": \"123-456-7890\"\n}",
+        "show_line_numbers": false,
+        "width": "content"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Advanced",
+        "title": "Associations and Resource Navigation"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>REST APIs should express relationships via URIs:</p><ul><li><code>/customers/1/invoices</code></li><li><code>/projects/22/tickets</code></li></ul><p>This makes APIs intuitive and self-explanatory.</p>"
+    },
+
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Resource relationships",
+        "diagram": "flowchart LR\nCustomer --> Invoices\nCustomer --> Projects\nProject --> Tickets",
+        "width": "wide"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Performance",
+        "title": "Paging Large Data Sets"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Never return unbounded collections. Always support paging.</p><p>Use query strings like <code>?page=1&pageSize=25</code>.</p>"
+    },
+
+    {
+      "type": "code",
+      "value": {
+        "caption": "Paged response example",
+        "language": "json",
+        "code": "{\n  \"total\": 100,\n  \"page\": 1,\n  \"pageSize\": 25,\n  \"nextPage\": \"/api/tickets?page=2\",\n  \"results\": [ ... ]\n}",
+        "show_line_numbers": false,
+        "width": "content"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Reliability",
+        "title": "Error Handling Strategy"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Errors should be meaningful and structured.</p><p>Use status codes + error body:</p>"
+    },
+
+    {
+      "type": "code",
+      "value": {
+        "caption": "Error response",
+        "language": "json",
+        "code": "{\n  \"error\": \"ValidationFailed\",\n  \"details\": {\n    \"companyName\": \"Must be at least 5 characters\"\n  }\n}",
+        "show_line_numbers": false,
+        "width": "content"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Optimization",
+        "title": "Caching with ETags"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Use HTTP caching to reduce load.</p><p>ETags allow clients to ask: “Has this changed?”</p>"
+    },
+
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "ETag caching flow",
+        "diagram": "sequenceDiagram\nClient->>Server: GET /resource\nServer-->>Client: 200 OK + ETag\nClient->>Server: GET + If-None-Match\nServer-->>Client: 304 Not Modified",
+        "width": "wide"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Evolution",
+        "title": "API Versioning Strategies"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>APIs must evolve without breaking clients.</p><ul><li>Query string: <code>?v=1</code></li><li>Header: <code>X-Version</code></li><li>Content type: <code>application/vnd.api.v1+json</code></li></ul><p>Consistency is more important than the method you choose.</p>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Security",
+        "title": "Securing Your API"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Security must be part of design, not an afterthought.</p><ul><li>Use HTTPS</li><li>Implement authentication</li><li>Apply authorization rules</li></ul>"
+    },
+
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Token authentication flow",
+        "diagram": "sequenceDiagram\nClient->>Server: Login (credentials)\nServer-->>Client: JWT Token\nClient->>Server: Request + Token\nServer-->>Client: Response",
+        "width": "wide"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Summary",
+        "title": "Key Takeaways"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<ul><li>Design APIs before implementing</li><li>Think in resources, not database tables</li><li>Use HTTP correctly (verbs, status codes)</li><li>Plan for paging, caching, and versioning</li><li>Secure your API from day one</li></ul><p>Great APIs are not accidental — they are designed.</p>"
+    }
+
+  ]
+}
 ]
