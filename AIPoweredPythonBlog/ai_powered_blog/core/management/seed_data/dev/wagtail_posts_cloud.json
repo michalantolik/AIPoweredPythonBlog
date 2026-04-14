@@ -229,5 +229,185 @@
         "value": "<p>AWS is not static. Its infrastructure keeps growing with more regions, more availability zones, more local zones, and more edge capacity.</p><p>As AWS improves its network backbone and expands its physical footprint, customers benefit from better performance, lower latency, more redundancy, and better price-performance over time.</p><p>That is one of the major advantages of public cloud at scale: the provider keeps investing in infrastructure, and customers benefit from that investment.</p>"
       }
     ]
-  }
+  },
+  {
+  "slug": "building-bots-with-microsoft-bot-framework-fundamentals",
+  "title": "Building Bots with Microsoft Bot Framework v4 — Complete Beginner Guide",
+  "excerpt": "Learn how bots work under the hood, how the Microsoft Bot Framework structures communication, and how to build your first intelligent chatbot with activities, turns, and state.",
+  "author_username": "Michał Antolik",
+  "category_slug": "cloud-aws-azure",
+  "tag_slugs": ["bots", "azure", "chatbots", "dotnet"],
+  "live": true,
+  "published_at": "2026-04-14T10:00:00Z",
+  "body": [
+
+    {
+      "type": "section_heading",
+      "value": "What Is a Bot?"
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>A bot is an application that performs automated tasks without human intervention. The most common example is a chatbot, which communicates with users through text or voice.</p><p>Modern bots power systems like customer support chats, virtual assistants, and automated services across platforms like Slack or Facebook Messenger.</p>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": "Why Bots Matter Today"
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Communication has evolved rapidly — from email to mobile apps to conversational interfaces. Bots represent the next step: instant, automated, and scalable interaction.</p><p>Companies invest heavily in bots because they reduce cost, improve response time, and operate 24/7.</p>"
+    },
+    {
+      "type": "callout",
+      "value": {
+        "text": "Bots are becoming a core interface for interacting with digital services.",
+        "type": "info"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": "High-Level Bot Architecture"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "How a bot communicates with users",
+        "diagram": "flowchart LR\nUser --> Channel\nChannel --> AzureBotService\nAzureBotService --> Bot\nBot --> AzureBotService\nAzureBotService --> Channel\nChannel --> User",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>A bot does not talk directly to the user. Instead, communication flows through a channel (like Messenger or Slack) and a middleware service (Azure Bot Service).</p><p>This abstraction allows a single bot to work across multiple platforms.</p>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": "What Is an Activity?"
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>An activity is the fundamental unit of communication in the Bot Framework. Every message, event, or interaction is represented as an activity.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Activity types in a conversation",
+        "diagram": "flowchart TD\nA[Activity] --> B[Message]\nA --> C[Typing]\nA --> D[Conversation Update]\nA --> E[Reaction]\nA --> F[Event]",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "callout",
+      "value": {
+        "text": "Everything in a bot conversation is an activity — not just messages.",
+        "type": "info"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": "The Turn-Based Model"
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Bot communication works in turns. Each turn consists of a request from the user and a response from the bot.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Single conversation turn",
+        "diagram": "sequenceDiagram\nUser->>Bot: Activity (message)\nBot->>User: Response activity",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>This model simplifies processing and ensures that each interaction is handled independently.</p>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": "Turn Context (The Payload)"
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>The turn context contains everything needed to process a request:</p><ul><li>The activity (incoming message)</li><li>Metadata (user, channel, conversation)</li><li>Methods to respond</li></ul>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": "Bot Code Example (Echo Bot)"
+    },
+    {
+      "type": "rich_text",
+      "value": "<pre><code>protected override async Task OnMessageActivityAsync(ITurnContext&lt;IMessageActivity&gt; turnContext, CancellationToken cancellationToken)\n{\n    await turnContext.SendActivityAsync($\"Echo: {turnContext.Activity.Text}\", cancellationToken);\n}</code></pre><p>This simple bot echoes back whatever the user says.</p>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": "Understanding State (Bot Memory)"
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>By default, bots are stateless — they forget everything after each turn. To build meaningful conversations, we need state.</p><p>State allows bots to remember user data, preferences, and conversation progress.</p>"
+    },
+
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "State architecture",
+        "diagram": "flowchart TD\nStorage --> StateManagement\nStateManagement --> UserState\nStateManagement --> ConversationState\nStateManagement --> PrivateConversationState",
+        "width": "wide"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": "Types of State"
+    },
+    {
+      "type": "rich_text",
+      "value": "<ul><li><strong>User State</strong> — data per user (name, preferences)</li><li><strong>Conversation State</strong> — data per conversation</li><li><strong>Private Conversation State</strong> — per user within a conversation</li></ul>"
+    },
+
+    {
+      "type": "callout",
+      "value": {
+        "text": "State is what transforms a simple bot into an intelligent assistant.",
+        "type": "info"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": "Bot Framework Components"
+    },
+    {
+      "type": "rich_text",
+      "value": "<ul><li>Bot Framework SDK — core logic</li><li>Bot Framework Emulator — local testing</li><li>Azure Bot Service — deployment and integration</li></ul>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": "Why Use Microsoft Bot Framework?"
+    },
+    {
+      "type": "rich_text",
+      "value": "<ul><li>Multi-channel support with one codebase</li><li>Built-in activity model</li><li>State management</li><li>Integration with AI (LUIS)</li><li>Scalable cloud deployment</li></ul>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": "Final Thoughts"
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>The Microsoft Bot Framework provides a powerful abstraction over complex communication systems. By understanding activities, turns, and state, you can build scalable conversational applications that work across multiple platforms.</p><p>This foundation is essential before moving into advanced topics like dialogs, natural language understanding, and deployment.</p>"
+    }
+
+  ]
+}
 ]

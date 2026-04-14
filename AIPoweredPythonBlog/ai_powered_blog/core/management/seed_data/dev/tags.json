@@ -53,5 +53,7 @@
   { "slug": "authorization", "name": "Authorization" },
   { "slug": "monitoring", "name": "Monitoring" },
   { "slug": "observability", "name": "Observability" },
-  { "slug": "openapi", "name": "Open API" }
+  { "slug": "openapi", "name": "Open API" },
+  { "slug": "bots", "name": "Bots" },
+  { "slug": "chatbots", "name": "Chatbots" }
 ]
