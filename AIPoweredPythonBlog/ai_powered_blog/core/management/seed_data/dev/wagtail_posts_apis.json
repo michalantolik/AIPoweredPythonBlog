@@ -1859,5 +1859,310 @@
       "value": "<ul><li>Logging is essential for support and debugging</li><li>Use structured logging with message templates</li><li>Control noise with levels and filters</li><li>Monitor application health proactively</li><li>Handle exceptions globally and securely</li><li>Use tracing for distributed systems</li></ul>"
     }
   ]
+},
+  {
+  "slug": "aspnet-core-openapi-swagger-guide",
+  "title": "Documenting ASP.NET Core APIs with OpenAPI (Swagger) — Complete Guide",
+  "excerpt": "Learn how to document ASP.NET Core Web APIs using OpenAPI (Swagger), including setup, customization, versioning, authentication, and advanced scenarios like vendor-specific media types.",
+  "author_username": "Michał Antolik",
+  "category_slug": "apis-integration",
+  "tag_slugs": ["aspnet", "api", "swagger", "openapi"],
+  "live": true,
+  "published_at": "2026-01-01T10:00:00Z",
+  "body": [
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Foundations",
+        "title": "Why API Documentation Matters"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>API documentation is not optional — it is a critical part of building scalable systems. Without proper documentation, teams waste time asking the same questions, duplicate functionality, or misuse endpoints.</p><p>A well-documented API ensures:</p><ul><li>Faster onboarding for developers</li><li>Reduced support overhead</li><li>Better adoption across teams</li><li>Clear contract between backend and consumers</li></ul>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Core Concept",
+        "title": "What is OpenAPI (Swagger)?"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>OpenAPI is a standard specification for describing REST APIs in a machine-readable format (JSON or YAML). It defines endpoints, parameters, responses, and schemas.</p><p>Swagger is a set of tools built around this specification.</p>"
+    },
+
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "OpenAPI Ecosystem",
+        "diagram": "graph TD\nAPI[ASP.NET Core API] --> Generator[Swashbuckle]\nGenerator --> Spec[OpenAPI JSON]\nSpec --> UI[Swagger UI]\nSpec --> Client[Client SDK Generator]\nSpec --> Tests[Automated Tests]"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Setup",
+        "title": "Adding Swagger to ASP.NET Core"
+      }
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Basic Swagger configuration",
+        "language": "csharp",
+        "code": "builder.Services.AddSwaggerGen(options =>\n{\n    options.SwaggerDoc(\"v1\", new OpenApiInfo\n    {\n        Title = \"Library API\",\n        Version = \"v1\",\n        Description = \"API for managing authors and books\"\n    });\n});\n\nvar app = builder.Build();\n\napp.UseSwagger();\napp.UseSwaggerUI(options =>\n{\n    options.SwaggerEndpoint(\"/swagger/v1/swagger.json\", \"Library API v1\");\n});",
+        "show_line_numbers": true,
+        "width": "content"
+      }
+    },
+
+    {
+      "type": "callout",
+      "value": {
+        "text": "Swagger consists of two separate parts: the OpenAPI specification (JSON) and the UI that renders it. They are independent.",
+        "type": "info"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Understanding",
+        "title": "How the Specification is Generated"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>The OpenAPI specification is generated automatically by inspecting your controllers using ApiExplorer. It analyzes:</p><ul><li>Routes and HTTP methods</li><li>Parameters</li><li>Return types</li><li>Attributes and metadata</li></ul>"
+    },
+
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Swagger Generation Flow",
+        "diagram": "graph LR\nControllers --> ApiExplorer\nApiExplorer --> Swashbuckle\nSwashbuckle --> OpenAPI\nOpenAPI --> SwaggerUI"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Improvement",
+        "title": "Enhancing Documentation with XML Comments"
+      }
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "XML comments example",
+        "language": "csharp",
+        "code": "/// <summary>\n/// Gets a specific author\n/// </summary>\n/// <param name=\"authorId\">The ID of the author</param>\n/// <returns>An author object</returns>\n[HttpGet(\"{authorId}\")]\npublic ActionResult<Author> GetAuthor(Guid authorId)\n{\n    ...\n}",
+        "show_line_numbers": true,
+        "width": "content"
+      }
+    },
+
+    {
+      "type": "rich_text",
+      "value": "<p>These comments are included in Swagger when XML documentation is enabled and configured in the project.</p>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Validation",
+        "title": "Using Data Annotations"
+      }
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Validation attributes",
+        "language": "csharp",
+        "code": "public class AuthorForUpdate\n{\n    [Required]\n    [MaxLength(150)]\n    public string FirstName { get; set; }\n\n    [Required]\n    [MaxLength(150)]\n    public string LastName { get; set; }\n}",
+        "show_line_numbers": true,
+        "width": "content"
+      }
+    },
+
+    {
+      "type": "rich_text",
+      "value": "<p>Swagger automatically reflects validation rules like required fields and max length in the documentation UI.</p>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Correctness",
+        "title": "Documenting Response Types"
+      }
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "ProducesResponseType example",
+        "language": "csharp",
+        "code": "[ProducesResponseType(StatusCodes.Status200OK)]\n[ProducesResponseType(StatusCodes.Status404NotFound)]\n[ProducesResponseType(StatusCodes.Status400BadRequest)]\npublic ActionResult<Book> GetBook(Guid id)\n{\n    ...\n}",
+        "show_line_numbers": true,
+        "width": "content"
+      }
+    },
+
+    {
+      "type": "callout",
+      "value": {
+        "text": "Always explicitly define response codes. Default Swagger generation is often incomplete.",
+        "type": "warning"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "HTTP",
+        "title": "Content Negotiation"
+      }
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Content Negotiation",
+        "diagram": "graph TD\nClient -->|Accept: application/json| API\nClient -->|Accept: application/xml| API\nAPI --> JSON\nAPI --> XML"
+      }
+    },
+
+    {
+      "type": "code",
+      "value": {
+        "caption": "Restrict response types",
+        "language": "csharp",
+        "code": "[Produces(\"application/json\", \"application/xml\")]\n[Consumes(\"application/json\", \"application/xml\")]\npublic IActionResult CreateBook(BookForCreation book)\n{\n    ...\n}",
+        "show_line_numbers": true,
+        "width": "content"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Advanced",
+        "title": "Vendor-Specific Media Types"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Standard media types like <code>application/json</code> only describe format, not structure. Vendor-specific media types allow you to define multiple representations.</p>"
+    },
+
+    {
+      "type": "code",
+      "value": {
+        "caption": "Example media types",
+        "language": "text",
+        "code": "application/vnd.company.book+json\napplication/vnd.company.book.v2+json",
+        "show_line_numbers": false,
+        "width": "content"
+      }
+    },
+
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Multiple Representations",
+        "diagram": "graph TD\nRequest -->|v1| BookV1\nRequest -->|v2| BookV2"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Architecture",
+        "title": "API Versioning"
+      }
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Versioning setup",
+        "language": "csharp",
+        "code": "builder.Services.AddApiVersioning(options =>\n{\n    options.ReportApiVersions = true;\n});",
+        "show_line_numbers": true,
+        "width": "content"
+      }
+    },
+
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "API Versioning",
+        "diagram": "graph TD\nClient -->|v1| APIv1\nClient -->|v2| APIv2"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Security",
+        "title": "Documenting Authentication"
+      }
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Basic authentication in Swagger",
+        "language": "csharp",
+        "code": "options.AddSecurityDefinition(\"basicAuth\", new OpenApiSecurityScheme\n{\n    Type = SecuritySchemeType.Http,\n    Scheme = \"basic\"\n});",
+        "show_line_numbers": true,
+        "width": "content"
+      }
+    },
+
+    {
+      "type": "rich_text",
+      "value": "<p>Authentication must be part of your API documentation so consumers know how to interact with protected endpoints.</p>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Customization",
+        "title": "Improving Swagger UI"
+      }
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "UI customization",
+        "language": "csharp",
+        "code": "app.UseSwaggerUI(options =>\n{\n    options.DisplayRequestDuration();\n    options.EnableDeepLinking();\n    options.DefaultModelExpandDepth(2);\n});",
+        "show_line_numbers": true,
+        "width": "content"
+      }
+    },
+
+    {
+      "type": "callout",
+      "value": {
+        "text": "Swagger UI can be fully customized using CSS, JavaScript, or even a custom HTML index page.",
+        "type": "info"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Summary",
+        "title": "Key Takeaways"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<ul><li>OpenAPI is a standard for describing APIs</li><li>Swagger tools generate UI and clients from the spec</li><li>Swashbuckle automates spec generation in ASP.NET Core</li><li>Always explicitly define responses and media types</li><li>Support versioning and authentication in documentation</li><li>Advanced APIs require customization beyond defaults</li></ul>"
+    }
+  ]
 }
 ]
