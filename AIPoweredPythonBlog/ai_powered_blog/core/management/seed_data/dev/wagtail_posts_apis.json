@@ -423,5 +423,418 @@
     }
 
   ]
+},
+  {
+  "slug": "aspnet-core-big-picture",
+  "title": "ASP.NET Core — Big Picture Explained",
+  "excerpt": "Understand what ASP.NET Core is, how it works, and how to build modern web applications using MVC, Blazor, APIs, and more.",
+  "author_username": "Michał Antolik",
+  "category_slug": "apis-integration",
+  "tag_slugs": ["aspnet", "webapi", "blazor", "architecture"],
+  "live": true,
+  "published_at": "2026-04-14T10:00:00Z",
+  "body": [
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Introduction",
+        "title": "What is ASP.NET Core?"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>ASP.NET Core is a modern, cross-platform web application framework built by Microsoft. It allows developers to build both frontend and backend applications using C# and .NET.</p><p>It is not just for websites — it is a complete platform for building full web systems including APIs, real-time apps, and modern client-side applications.</p>"
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Key idea",
+        "text": "ASP.NET Core is a unified platform for building web applications, APIs, and real-time systems using .NET.",
+        "tone": "success"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Core concept",
+        "title": "Website vs Web Application"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>A <b>website</b> typically serves static content such as HTML and CSS files.</p><p>A <b>web application</b> introduces dynamic behavior — for example fetching data from a database and rendering it on the page.</p><ul><li>Static site → fixed HTML</li><li>Web app → dynamic data + logic</li></ul>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Static vs dynamic web application",
+        "diagram": "flowchart LR\n    A[Browser] --> B[Static HTML]\n    A --> C[Web Application]\n    C --> D[(Database)]\n    D --> C\n    C --> A",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Architecture",
+        "title": "Frontend vs Backend"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Modern applications separate responsibilities into two layers:</p><ul><li><b>Frontend</b> → UI, user interaction</li><li><b>Backend</b> → business logic, data access</li></ul><p>This separation improves maintainability, scalability, and reusability.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Frontend and backend separation",
+        "diagram": "flowchart LR\n    A[Browser UI] --> B[Backend API]\n    B --> C[(Database)]\n    C --> B\n    B --> A",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Why separation matters",
+        "text": "A backend API can be reused by web, mobile, and desktop applications.",
+        "tone": "info"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Frontend styles",
+        "title": "Ways to build UI in ASP.NET Core"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>ASP.NET Core provides multiple ways to build frontend applications:</p><ul><li><b>MVC</b> → structured pattern (Model-View-Controller)</li><li><b>Razor Pages</b> → simpler page-based approach</li><li><b>Blazor</b> → modern component-based UI</li></ul>"
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Rendering model",
+        "title": "Server-rendered applications"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>In server-rendered applications, the server generates HTML and sends it to the browser for each request.</p><p>Every interaction (click, form submit) triggers a new request.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Server-rendered flow",
+        "diagram": "sequenceDiagram\n    Browser->>Server: Request page\n    Server->>Database: Fetch data\n    Database-->>Server: Data\n    Server-->>Browser: HTML response",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Modern UI",
+        "title": "Client-rendered applications (Blazor)"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Client-rendered applications shift processing to the browser.</p><p>The server sends application logic once, and the browser handles UI updates.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Client-rendered SPA flow",
+        "diagram": "sequenceDiagram\n    Browser->>Server: Initial request\n    Server-->>Browser: App + runtime\n    Browser->>API: Fetch data\n    API-->>Browser: JSON\n    Browser: Render UI",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Key difference",
+        "text": "Server-rendered = HTML per request. Client-rendered = UI handled in browser.",
+        "tone": "success"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Backend",
+        "title": "What is a Web API?"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>A Web API is a backend application that exposes data via HTTP.</p><ul><li>GET → retrieve data</li><li>POST → create data</li><li>PUT → update data</li></ul>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "REST API interaction",
+        "diagram": "flowchart LR\n    A[Client] -->|GET /products| B[API]\n    B --> C[(Database)]\n    C --> B\n    B --> A",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Example API endpoint",
+        "language": "csharp",
+        "code": "[HttpGet]\npublic IActionResult GetAll()\n{\n    var products = _repo.GetAll();\n    return Ok(products);\n}",
+        "show_line_numbers": true,
+        "width": "content"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Core engine",
+        "title": "Middleware and Request Pipeline"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>ASP.NET Core processes requests using a pipeline of middleware.</p><p>Each middleware can inspect or modify the request and response.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Request pipeline",
+        "diagram": "flowchart LR\n    A[Request] --> B[Routing]\n    B --> C[Authorization]\n    C --> D[Controller]\n    D --> E[Response]",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Core concept",
+        "title": "Dependency Injection"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Dependency Injection (DI) allows you to register services and request them anywhere in your application.</p><p>This makes code modular, testable, and maintainable.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Registering a service",
+        "language": "csharp",
+        "code": "builder.Services.AddSingleton<IProductRepository, ProductRepository>();",
+        "show_line_numbers": false,
+        "width": "content"
+      }
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Why DI matters",
+        "text": "You don’t create dependencies manually — the framework injects them for you.",
+        "tone": "info"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Summary",
+        "title": "What ASP.NET Core gives you"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<ul><li>Multiple frontend approaches (MVC, Razor Pages, Blazor)</li><li>Powerful backend APIs (REST, gRPC)</li><li>Built-in dependency injection</li><li>Flexible middleware pipeline</li><li>Cross-platform performance</li></ul>"
+    }
+  ]
+},
+  {
+  "slug": "aspnet-core-web-api-fundamentals-introduction",
+  "title": "ASP.NET Core Web API Fundamentals: From Zero to First API",
+  "excerpt": "Learn the fundamentals of building APIs with ASP.NET Core, including architecture, middleware, routing, and real-world API design concepts.",
+  "author_username": "Michał Antolik",
+  "category_slug": "apis-integration",
+  "tag_slugs": ["aspnet-core", "webapi", "dotnet", "backend", "architecture"],
+  "live": true,
+  "published_at": "2026-04-14T10:00:00Z",
+  "body": [
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Big Picture",
+        "title": "What is ASP.NET Core?"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p><strong>ASP.NET Core</strong> is a cross-platform, high-performance, open-source framework for building modern web applications and APIs. It allows developers to create scalable, cloud-ready applications that run on Windows, Linux, and macOS.</p><p>It is commonly used for building REST APIs that communicate with databases, external services, and frontend applications.</p>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Architecture",
+        "title": "How an API Works Internally"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>At a high level, an ASP.NET Core API processes incoming HTTP requests through a pipeline of components called <strong>middleware</strong>. Each component can inspect, modify, or stop the request before passing it further.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "diagram": "graph TD\nClient --> Request\nRequest --> Middleware1\nMiddleware1 --> Middleware2\nMiddleware2 --> Controller\nController --> Response\nResponse --> Client"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>This pipeline is one of the most important concepts in ASP.NET Core. It defines how your application responds to every request.</p>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Core Concept",
+        "title": "The Request Pipeline and Middleware"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Middleware are small components executed in sequence. Each middleware can:</p><ul><li>Handle the request</li><li>Modify the request or response</li><li>Stop the pipeline early</li></ul><p>The order of middleware is critical. For example, authentication must run before protected endpoints.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "diagram": "sequenceDiagram\nClient->>Middleware1: HTTP Request\nMiddleware1->>Middleware2: Forward\nMiddleware2->>Controller: Execute action\nController-->>Middleware2: Result\nMiddleware2-->>Middleware1: Response\nMiddleware1-->>Client: Final Response"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Entry Point",
+        "title": "Program.cs and Application Startup"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>The application starts in <strong>Program.cs</strong>, which configures services and builds the application pipeline.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "language": "csharp",
+        "code": "var builder = WebApplication.CreateBuilder(args);\n\nbuilder.Services.AddControllers();\n\nvar app = builder.Build();\n\napp.MapControllers();\n\napp.Run();"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>This file defines:</p><ul><li>Services (Dependency Injection)</li><li>Middleware pipeline</li><li>Application startup behavior</li></ul>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Architecture Pattern",
+        "title": "Understanding the MVC Pattern in APIs"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>ASP.NET Core APIs are typically built using the <strong>MVC pattern</strong> (Model-View-Controller).</p><p>In APIs, the concept of \"View\" is different — it usually represents JSON output instead of HTML.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "diagram": "graph TD\nClient --> Controller\nController --> Model\nModel --> Controller\nController --> JSON_Response\nJSON_Response --> Client"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p><strong>Controller</strong>: Handles requests<br/><strong>Model</strong>: Represents data<br/><strong>View</strong>: JSON response</p>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Routing",
+        "title": "How Requests Reach Your Code"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Routing maps HTTP requests to controller actions. In ASP.NET Core, this is typically done using attribute routing.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "language": "csharp",
+        "code": "[ApiController]\n[Route(\"api/cities\")]\npublic class CitiesController : ControllerBase\n{\n    [HttpGet]\n    public IActionResult GetCities()\n    {\n        return Ok();\n    }\n}"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>This means a GET request to <code>/api/cities</code> will trigger the <code>GetCities</code> method.</p>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "HTTP",
+        "title": "Understanding HTTP Methods"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>APIs rely on HTTP methods to define operations:</p><ul><li><strong>GET</strong> – retrieve data</li><li><strong>POST</strong> – create data</li><li><strong>PUT</strong> – update data</li><li><strong>DELETE</strong> – remove data</li></ul>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Critical Concept",
+        "title": "Why HTTP Status Codes Matter"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Status codes tell the client whether a request succeeded or failed. They are essential for proper API behavior.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "diagram": "graph TD\nRequest --> API\nAPI -->|200 OK| Success\nAPI -->|404 Not Found| MissingResource\nAPI -->|400 Bad Request| ClientError\nAPI -->|500 Internal Server Error| ServerError"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Returning incorrect status codes can break client applications and make debugging difficult.</p>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Development Tools",
+        "title": "Testing APIs with Postman"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Tools like Postman allow you to send HTTP requests and inspect responses. This is essential when testing APIs beyond simple browser GET requests.</p>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Summary",
+        "title": "Key Takeaways"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<ul><li>ASP.NET Core is a powerful framework for building APIs</li><li>The request pipeline is built using middleware</li><li>MVC is the standard pattern for API design</li><li>Routing connects URLs to controller actions</li><li>Status codes are critical for communication</li></ul>"
+    }
+
+  ]
 }
 ]

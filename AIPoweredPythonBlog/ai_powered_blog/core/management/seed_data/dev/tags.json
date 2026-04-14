@@ -1,5 +1,6 @@
 [
   { "slug": "dotnet", "name": ".NET" },
+  { "slug": "aspnet", "name": "ASP.NET" },
   { "slug": "aspnet-core", "name": "ASP.NET Core" },
   { "slug": "entity-framework", "name": "Entity Framework" },
   { "slug": "python", "name": "Python" },
@@ -41,5 +42,7 @@
   { "slug": "auth", "name": "Auth" },
   { "slug": "configuration", "name": "Configuration" },
   { "slug": "rest", "name": "REST" },
-  { "slug": "api-design", "name": "API Design" }
+  { "slug": "api-design", "name": "API Design" },
+  { "slug": "webapi", "name": "Web API" },
+  { "slug": "blazor", "name": "Blazor" }
 ]
