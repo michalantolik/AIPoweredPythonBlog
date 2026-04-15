@@ -1,132 +1,182 @@
 [
   {
-    "slug": "docker-image-layering-for-faster-feedback",
-    "title": "Docker Image Layering for Faster Feedback",
-    "excerpt": "DEV Wagtail seed article for docker image layering for faster feedback in the containers-kubernetes category.",
-    "author_username": "Michał Antolik",
-    "category_slug": "containers-kubernetes",
-    "tag_slugs": [
-      "docker",
-      "kubernetes"
-    ],
-    "live": true,
-    "published_at": "2026-01-13T09:00:00+01:00",
-    "body": [
-      {
-        "type": "section_heading",
-        "value": {
-          "eyebrow": "Foundations",
-          "title": "Docker Image Layering for Faster Feedback"
-        }
-      },
-      {
-        "type": "rich_text",
-        "value": "<p>This seeded article belongs to the <b>containers-kubernetes</b> category and is meant to populate the Wagtail DEV blog with realistic technical content. It follows the same StreamField structure as the existing sample data, so the seeder can call <b>to_python(...)</b> and validate the payload before saving the page.</p><p>The goal is not only to test page creation, but also to exercise sidebar category filtering, tag chips, publish timestamps, and rich article rendering under <b>/articles/</b>. Keeping three posts per category makes the local dataset feel balanced and makes sorting by <b>sort_order</b> easy to verify.</p>"
-      },
-      {
-        "type": "code",
-        "value": {
-          "caption": "Seeder-oriented example",
-          "language": "dockerfile",
-          "code": "FROM python:3.12-slim\nWORKDIR /app\nCOPY requirements.txt .\nRUN pip install -r requirements.txt",
-          "show_line_numbers": true,
-          "width": "content"
-        }
-      },
-      {
-        "type": "callout",
-        "value": {
-          "title": "Why this helps locally",
-          "text": "A seeded technical post like this proves that category filters, tag relationships, and body block rendering all work together.",
-          "tone": "info"
-        }
+  "slug": "kubernetes-core-concepts-for-developers",
+  "title": "Kubernetes Core Concepts for Developers",
+  "excerpt": "Learn Kubernetes from a developer perspective: pods, clusters, deployments, and why it matters beyond DevOps.",
+  "author_username": "Michał Antolik",
+  "category_slug": "containers-kubernetes",
+  "tag_slugs": ["kubernetes", "containers", "devops"],
+  "live": true,
+  "published_at": "2026-04-15T10:00:00Z",
+  "body": [
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Foundations",
+        "title": "What is Kubernetes?"
       }
-    ]
-  },
-  {
-    "slug": "kubernetes-probes-that-reflect-real-readiness",
-    "title": "Kubernetes Probes That Reflect Real Readiness",
-    "excerpt": "DEV Wagtail seed article for kubernetes probes that reflect real readiness in the containers-kubernetes category.",
-    "author_username": "Michał Antolik",
-    "category_slug": "containers-kubernetes",
-    "tag_slugs": [
-      "docker",
-      "kubernetes"
-    ],
-    "live": true,
-    "published_at": "2026-01-14T09:00:00+01:00",
-    "body": [
-      {
-        "type": "section_heading",
-        "value": {
-          "eyebrow": "Practical design",
-          "title": "Kubernetes Probes That Reflect Real Readiness"
-        }
-      },
-      {
-        "type": "rich_text",
-        "value": "<p>This seeded article belongs to the <b>containers-kubernetes</b> category and is meant to populate the Wagtail DEV blog with realistic technical content. It follows the same StreamField structure as the existing sample data, so the seeder can call <b>to_python(...)</b> and validate the payload before saving the page.</p><p>The goal is not only to test page creation, but also to exercise sidebar category filtering, tag chips, publish timestamps, and rich article rendering under <b>/articles/</b>. Keeping three posts per category makes the local dataset feel balanced and makes sorting by <b>sort_order</b> easy to verify.</p>"
-      },
-      {
-        "type": "callout",
-        "value": {
-          "title": "Operational reminder",
-          "text": "Keep the JSON shape stable. Each post should provide slug, title, excerpt, author, category, tags, publish status, publish time, and a StreamField body array.",
-          "tone": "warning"
-        }
-      },
-      {
-        "type": "code",
-        "value": {
-          "caption": "Representative snippet",
-          "language": "yaml",
-          "code": "livenessProbe:\n  httpGet:\n    path: /health/live\n    port: 8000",
-          "show_line_numbers": true,
-          "width": "content"
-        }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Kubernetes (K8s) is an open-source platform designed to automate the deployment, scaling, and management of containerized applications.</p><p>Instead of manually managing containers across multiple machines, Kubernetes acts as an orchestration layer that ensures your application is always running in the desired state.</p>"
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Key Idea",
+        "text": "Kubernetes is like a conductor of an orchestra — it ensures all containers (musicians) work together correctly.",
+        "tone": "info"
       }
-    ]
-  },
-  {
-    "slug": "container-debugging-with-logs-shells-and-events",
-    "title": "Container Debugging with Logs, Shells, and Events",
-    "excerpt": "DEV Wagtail seed article for container debugging with logs, shells, and events in the containers-kubernetes category.",
-    "author_username": "Michał Antolik",
-    "category_slug": "containers-kubernetes",
-    "tag_slugs": [
-      "docker",
-      "kubernetes"
-    ],
-    "live": true,
-    "published_at": "2026-01-15T09:00:00+01:00",
-    "body": [
-      {
-        "type": "section_heading",
-        "value": {
-          "eyebrow": "Operational view",
-          "title": "Container Debugging with Logs, Shells, and Events"
-        }
-      },
-      {
-        "type": "rich_text",
-        "value": "<p>This seeded article belongs to the <b>containers-kubernetes</b> category and is meant to populate the Wagtail DEV blog with realistic technical content. It follows the same StreamField structure as the existing sample data, so the seeder can call <b>to_python(...)</b> and validate the payload before saving the page.</p><p>The goal is not only to test page creation, but also to exercise sidebar category filtering, tag chips, publish timestamps, and rich article rendering under <b>/articles/</b>. Keeping three posts per category makes the local dataset feel balanced and makes sorting by <b>sort_order</b> easy to verify.</p>"
-      },
-      {
-        "type": "mermaid",
-        "value": {
-          "caption": "Simple flow",
-          "diagram": "flowchart TD\n    A[Seed JSON] --> B[Read file]\n    B --> C[Validate StreamField blocks]\n    C --> D[Create or update BlogPostPage]\n    D --> E[Publish revision]",
-          "width": "wide"
-        }
-      },
-      {
-        "type": "callout",
-        "value": {
-          "title": "Design takeaway",
-          "text": "The most useful DEV content is content that looks real enough to validate templates, but simple enough to maintain as source-controlled seed data.",
-          "tone": "success"
-        }
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Kubernetes as a container orchestrator",
+        "diagram": "flowchart LR\n    Dev[Developer] --> K8s[Kubernetes Cluster]\n    K8s --> Node1[Worker Node]\n    K8s --> Node2[Worker Node]\n    Node1 --> Pod1[Pod]\n    Node2 --> Pod2[Pod]",
+        "width": "wide"
       }
-    ]
-  }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Motivation",
+        "title": "Why Developers Should Care"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Many developers assume Kubernetes is only for DevOps teams. However, understanding Kubernetes provides major advantages:</p><ul><li>Run production-like environments locally</li><li>Test scalability and resilience</li><li>Debug real deployment issues</li><li>Work effectively with DevOps teams</li></ul>"
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Real Benefit",
+        "text": "With Kubernetes, your app can scale, heal itself, and deploy without downtime — automatically.",
+        "tone": "success"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Architecture",
+        "title": "Kubernetes Cluster Overview"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>A Kubernetes cluster consists of two main components:</p><ul><li><strong>Master Node</strong> – controls the system</li><li><strong>Worker Nodes</strong> – run your applications</li></ul><p>The master node receives instructions and schedules workloads across worker nodes.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Cluster architecture",
+        "diagram": "flowchart TB\n    User --> API[kubectl / API Server]\n    API --> Master[Master Node]\n    Master --> Worker1[Worker Node]\n    Master --> Worker2[Worker Node]\n    Worker1 --> Pod1\n    Worker2 --> Pod2",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Core Concept",
+        "title": "What is a Pod?"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>A Pod is the smallest deployable unit in Kubernetes. It acts as a wrapper around one or more containers.</p><p>In most cases, a Pod contains a single container, but multiple tightly coupled containers can share the same Pod.</p>"
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Important",
+        "text": "Pods are ephemeral — if one dies, Kubernetes replaces it instead of restarting it.",
+        "tone": "warning"
+      }
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Pod structure",
+        "diagram": "flowchart LR\n    Pod --> Container1\n    Pod --> Container2",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Operations",
+        "title": "Basic kubectl Commands"
+      }
+    },
+    {
+      "type": "code",
+      "value": {
+        "language": "bash",
+        "code": "kubectl get pods\nkubectl run my-nginx --image=nginx:alpine\nkubectl port-forward my-nginx 8080:80\nkubectl delete pod my-nginx",
+        "caption": "Essential kubectl commands"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>kubectl is the main CLI tool used to interact with Kubernetes. It communicates with the cluster's API server and allows you to manage resources.</p>"
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Benefits",
+        "title": "Key Features of Kubernetes"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<ul><li><strong>Self-healing</strong> – replaces failed containers automatically</li><li><strong>Scaling</strong> – increase or decrease instances easily</li><li><strong>Zero-downtime deployments</strong> – update apps without downtime</li><li><strong>Service discovery</strong> – automatic networking between components</li><li><strong>Configuration management</strong> – using ConfigMaps and Secrets</li></ul>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Self-healing example",
+        "diagram": "flowchart LR\n    Pod1[Running Pod] --> Crash[Crash]\n    Crash --> K8s[Kubernetes]\n    K8s --> NewPod[New Pod Created]",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Workflow",
+        "title": "Declarative vs Imperative Approach"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Kubernetes supports two approaches:</p><ul><li><strong>Imperative</strong> – run commands directly using kubectl</li><li><strong>Declarative</strong> – define desired state in YAML files</li></ul>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "language": "yaml",
+        "code": "apiVersion: v1\nkind: Pod\nmetadata:\n  name: my-nginx\nspec:\n  containers:\n    - name: nginx\n      image: nginx:alpine",
+        "caption": "Example Pod YAML definition"
+      }
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Best Practice",
+        "text": "Always prefer declarative YAML files for production environments.",
+        "tone": "info"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Summary",
+        "title": "What You Should Remember"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Kubernetes is not just a DevOps tool — it is a core platform for modern application development.</p><ul><li>Pods are the foundation</li><li>Clusters manage distributed workloads</li><li>kubectl is your control interface</li><li>YAML defines desired state</li></ul><p>Understanding these concepts allows you to build scalable, resilient applications.</p>"
+    }
+  ]
+}
 ]
