@@ -2182,5 +2182,498 @@
       "value": "<p>Containers become truly powerful in production when the platform can understand enough about what is happening inside them to manage them intelligently. That means the application must expose the right integration points.</p><p>Externalized configuration makes images portable. Console logging makes logs visible to the platform. Health and readiness checks make self-healing and safer rollouts possible. Reverse proxies and ingress controllers make multi-application hosting, HTTPS, and traffic routing manageable.</p><p>These patterns are not tied to one language. They work across Go, Node.js, Java, .NET, Linux containers, Windows containers, Docker Compose, Docker Swarm, and Kubernetes. Once you build them into your images and deployment model, your applications stop behaving like black boxes and start behaving like first-class citizens of the platform.</p><p>That is the real path from <em>containerized</em> to <em>production-ready</em>.</p>"
     }
   ]
+},
+  {
+  "slug": "troubleshooting-docker-logs-inspect-builds-volumes-networking",
+  "title": "Troubleshooting Docker: Logs, Inspect, Filesystems, Build Cache, Volumes, Registries, and Networking",
+  "excerpt": "A practical guide to troubleshooting Docker by working from first principles: read logs, inspect containers, verify files and permissions, understand build cache behavior, clean unused resources, decode exit codes, and systematically resolve ports, DNS, registry, certificate, volume, and network errors.",
+  "author_username": "Michał Antolik",
+  "category_slug": "devops-automation",
+  "tag_slugs": ["docker", "containers", "devops", "debugging", "logging", "monitoring", "configuration", "linux"],
+  "published_at": "2026-04-15T10:00:00Z",
+  "live": true,
+  "body": [
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Foundations",
+        "title": "Docker Troubleshooting Starts with Observation, Not Guesswork"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>When Docker workflows fail, the fastest path to a fix is rarely trial and error. The right approach is to narrow the problem systematically: inspect logs, inspect the container itself, verify file paths and permissions, confirm runtime configuration, and only then move deeper into builds, registries, mounts, or networking.</p><p>Most Docker issues fall into a few repeatable categories: runtime crashes, bad image builds, missing files, invalid mounts, registry authentication problems, and network misconfiguration. Once you know where to look first, troubleshooting becomes much more predictable.</p>"
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Core Principle",
+        "text": "Treat Docker errors as evidence. Logs, inspect output, exit codes, port bindings, mounted volumes, and network metadata usually tell you exactly where the failure lives.",
+        "tone": "info"
+      }
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "A practical troubleshooting flow",
+        "diagram": "flowchart TD\n    A[Error appears] --> B[Check container logs]\n    B --> C{Enough information?}\n    C -- Yes --> D[Fix app, command, config, or path]\n    C -- No --> E[Inspect container metadata]\n    E --> F[Verify image, command, mounts, ports, network]\n    F --> G{Build problem?}\n    G -- Yes --> H[Inspect Dockerfile and build cache]\n    G -- No --> I{Connectivity problem?}\n    I -- Yes --> J[Check ports, DNS, IPs, certificates, networks]\n    I -- No --> K[Prune unused resources and retry cleanly]",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "First Step",
+        "title": "Read the Logs Before You Change Anything"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Container logs should be your first stop for nearly every Docker issue. They show what the process inside the container wrote to standard output and standard error, which is often where application crashes, missing file errors, startup failures, and framework exceptions appear.</p><p>The most useful options are the ones that narrow output to what matters now: tailing recent lines, following live logs, showing timestamps, and filtering by time range.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Common ways to read container logs",
+        "language": "bash",
+        "code": "docker logs my-container\n\ndocker logs --tail 100 my-container\n\ndocker logs -f my-container\n\ndocker logs --timestamps my-container\n\ndocker logs --since 10m my-container\n\ndocker logs --until 2026-04-15T09:30:00Z my-container",
+        "show_line_numbers": false,
+        "width": "content"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>If the logs immediately show a missing dependency, bad command, stack trace, or permissions error, you may already have the answer. If the logs are vague, move to inspection next rather than guessing.</p>"
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Inspection",
+        "title": "Use docker inspect to See What the Container Is Actually Running"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>The <code>docker inspect</code> command reveals runtime truth: the image in use, the startup command, restart count, log path, mounted volumes, network settings, port bindings, and host interaction details. This is one of the most important tools for understanding why a container behaves differently than expected.</p><p>Instead of staring at the full JSON every time, query only the fields you need with <code>--format</code>.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Useful inspect queries",
+        "language": "bash",
+        "code": "docker inspect my-container\n\ndocker inspect --format '{{ .Id }}' my-container\n\ndocker inspect --format '{{ .Config.Image }}' my-container\n\ndocker inspect --format '{{ .LogPath }}' my-container\n\ndocker inspect --format '{{ json .Config }}' my-container\n\ndocker inspect --format '{{ json .NetworkSettings }}' my-container\n\ndocker inspect --format '{{ json .HostConfig }}' my-container",
+        "show_line_numbers": false,
+        "width": "content"
+      }
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "What to Check First in Inspect Output",
+        "text": "Verify the image name, command, log path, mounted volumes, network mode, port bindings, restart count, and any runtime environment configuration. These fields expose most common misconfigurations quickly.",
+        "tone": "success"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Filesystems",
+        "title": "Verify Files, Paths, and Permissions Inside the Container"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Many Docker errors are really file system errors in disguise. A script may not exist at the path you think it does. A binary may be missing from the image. A file copied during build may have Windows line endings. A command may exist, but the current user cannot execute it.</p><p>The cleanest way to verify this is to open a shell inside the running container and inspect the file system directly.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Open a shell and inspect the container file system",
+        "language": "bash",
+        "code": "docker exec -it my-container /bin/bash\n\n# or, for smaller images\ndocker exec -it my-container /bin/sh\n\n# once inside\npwd\nls -la\nwhoami\ncat /etc/os-release",
+        "show_line_numbers": false,
+        "width": "content"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>If the container is not running, you can still inspect its contents by exporting it to a TAR archive or copying files from it. This is useful when startup fails so early that an interactive shell is not possible.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Inspect files from a non-running container",
+        "language": "bash",
+        "code": "docker export my-container -o my-container.tar\n\ntar -tvf my-container.tar\n\ndocker cp my-container:/app ./container-app-copy",
+        "show_line_numbers": false,
+        "width": "content"
+      }
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Common File Mistakes",
+        "text": "Watch for wrong paths, using /bin/bash on images that only include /bin/sh, invalid line endings in shell scripts, and running scripts as a user that lacks execute permissions.",
+        "tone": "warning"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Housekeeping",
+        "title": "Keep Docker Clean or You Will Debug Ghosts"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Stopped containers, dangling images, unused networks, and abandoned volumes can create confusion. A failed experiment from yesterday can become a misleading conflict today. Cleaning resources regularly reduces the number of false leads when troubleshooting.</p><p>The <code>prune</code> family of commands removes unused Docker objects. Used carefully, they help restore a predictable environment.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Useful prune commands",
+        "language": "bash",
+        "code": "docker image prune\n\ndocker image prune -a -f\n\ndocker container prune -f\n\ndocker network prune -f\n\ndocker volume prune -f\n\ndocker system prune -f\n\ndocker system prune --volumes -f",
+        "show_line_numbers": false,
+        "width": "content"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Images, containers, and networks can also be filtered in some prune commands by label or age. That makes cleanup safer in active environments, especially when not everything should be removed.</p>"
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Builds",
+        "title": "Understand Build Cache Before You Diagnose a Broken Image"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Docker caches image build layers to speed up rebuilds. That is efficient, but it also means you need to understand when Docker is reusing an earlier layer versus rebuilding one. A confusing build result is often explained by cache behavior, not by randomness.</p><p>For <code>COPY</code> and <code>ADD</code>, Docker uses a hash of files, directories, and permissions. If that hash changes, the step is rebuilt. Every following step is rebuilt as well because the previous layer changed.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "How cache invalidation flows through a Dockerfile",
+        "diagram": "flowchart TD\n    A[FROM python:3.12] --> B[WORKDIR /app]\n    B --> C[COPY requirements.txt .]\n    C --> D[RUN pip install -r requirements.txt]\n    D --> E[COPY . .]\n    E --> F[CMD python app.py]\n    X[Change requirements.txt] --> C\n    C --> Y[Cache miss]\n    Y --> D\n    D --> E\n    E --> F",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Build commands that control cache behavior",
+        "language": "bash",
+        "code": "docker build -t my-image .\n\ndocker build --no-cache -t my-image .\n\ndocker build --pull -t my-image .\n\ndocker build --cache-from my-registry/app:latest -t my-image .",
+        "show_line_numbers": false,
+        "width": "content"
+      }
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Troubleshooting Build Rule",
+        "text": "When a build behaves unexpectedly, verify the order of Dockerfile instructions first. Dockerfile steps are executed in order, and one bad step often makes later failures look unrelated.",
+        "tone": "info"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Failed Builds",
+        "title": "Use Intermediate Build Layers to Investigate Build Failures"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Each successful Dockerfile step produces an image layer. During debugging, that matters because you can often run a shell against the last successful intermediate image and inspect the environment just before the failure. In some cases, you can even create an image from a failed intermediate container.</p><p>This is especially useful when package installation, file copies, or build tools fail in the middle of a long Dockerfile.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Example pattern for debugging build failures",
+        "language": "bash",
+        "code": "# Turn off BuildKit temporarily if you need more explicit intermediate output\n# Docker Desktop Engine config example:\n# {\n#   \"features\": { \"buildkit\": false }\n# }\n\n# Build again and note the last successful image/container IDs\n\ndocker build -t my-image .\n\n# Run a shell against a relevant intermediate image\ndocker run -it <intermediate-image-id> /bin/sh\n\n# If needed, create an image from a failed intermediate container\ndocker commit <failed-container-id> debug-image\ndocker run -it debug-image /bin/sh",
+        "show_line_numbers": false,
+        "width": "content"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Registry Access",
+        "title": "Registry Errors Usually Come Down to Names, Credentials, Proxies, or Rate Limits"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>When image pulls fail, the error often looks more mysterious than it is. The most common causes are a misspelled image name, the wrong registry URL, missing login credentials, an unreachable registry behind a proxy, DNS resolution failure, or pull rate limits.</p><p>Private registries add another layer: credentials, trust, and secret management all need to be correct before pulls and pushes will work reliably.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Registry troubleshooting commands",
+        "language": "bash",
+        "code": "docker login\n\ndocker trust inspect my-registry.example.com/team/app:latest\n\ndocker secret inspect my-secret\n\n# Example daemon-related environment variables\n# HTTP_PROXY\n# HTTPS_PROXY\n# NO_PROXY",
+        "show_line_numbers": false,
+        "width": "content"
+      }
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Registry Checklist",
+        "text": "Check image spelling, tag spelling, registry URL, authentication state, proxy settings, DNS behavior, and whether a public registry is enforcing pull rate limits for your account tier.",
+        "tone": "warning"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Runtime Signals",
+        "title": "Exit Codes Tell You Where to Look Next"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Container exit codes are a compact but powerful hint. They can distinguish between a successful completion, an application crash, a missing command, a daemon-level problem, or a signal-based shutdown.</p><p>Instead of treating a stopped container as a mystery, inspect the exit code and pair that with the logs.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Inspect a container exit code",
+        "language": "bash",
+        "code": "docker inspect --format '{{ .State.ExitCode }}' my-container",
+        "show_line_numbers": false,
+        "width": "content"
+      }
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Common Docker exit codes",
+        "language": "text",
+        "code": "0   = process completed successfully or no foreground process remains\n1   = application error inside the container\n125 = docker daemon or malformed docker command error\n126 = command cannot be invoked\n127 = command not found\n137 = container received SIGKILL\n139 = segmentation fault / memory access violation\n143 = container received SIGTERM",
+        "show_line_numbers": false,
+        "width": "content"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Volume Mounts",
+        "title": "Volume Problems Are Usually Path, Order, or Permission Problems"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Volume mount failures often produce the error <code>invalid volume specification</code>, but the root cause is usually simple: wrong source path, wrong target path, mounting a file where a directory is expected, reversed mount order, or user permissions that do not match the mounted directory.</p><p>Volumes deserve careful inspection because they affect both file visibility and data persistence.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Volume inspection commands",
+        "language": "bash",
+        "code": "docker volume ls\n\ndocker volume inspect my-volume\n\ndocker inspect --format '{{ json .Config.Volumes }}' my-container",
+        "show_line_numbers": false,
+        "width": "content"
+      }
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Mount Order Matters",
+        "text": "If you mount a subfolder and later mount its parent over it, the later mount can obscure what was mounted first. Also be very cautious with root-level mounts when running with elevated permissions.",
+        "tone": "danger"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Networking",
+        "title": "Inspect Networks, Don’t Assume Them"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Docker networking issues often look complicated because they blend host networking, container isolation, internal DNS, port publishing, and custom network configuration. The fastest way to regain clarity is to inspect both the network and the container’s view of that network.</p><p>The default bridge network works, but user-defined bridge networks are usually a better choice because they provide cleaner service discovery and more predictable behavior.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Inspect Docker networks",
+        "language": "bash",
+        "code": "docker network ls\n\ndocker network inspect bridge\n\ndocker inspect --format '{{ json .NetworkSettings }}' my-container\n\ndocker inspect --format '{{ json .HostConfig }}' my-container",
+        "show_line_numbers": false,
+        "width": "content"
+      }
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "How a published port connects host traffic to a container",
+        "diagram": "flowchart LR\n    A[Browser or client on host] --> B[Host port 5000]\n    B --> C[Docker port binding]\n    C --> D[Container port 5000]\n    D --> E[Application process inside container]",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Ports",
+        "title": "When a Port Is Already in Use, the Problem May Be Docker or the Host OS"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Errors about unavailable ports or failed external connectivity usually mean the same thing: the requested host port is already occupied. That conflict might come from another container or from a process running directly on the host operating system.</p><p>Start by checking running containers, then verify the host system itself.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Check port mappings and host port usage",
+        "language": "bash",
+        "code": "docker inspect --format '{{ json .NetworkSettings.Ports }}' my-container\n\ndocker compose down\n\ndocker stop <container-id>\n\ndocker system prune -f\n\n# macOS / Linux\nsudo lsof -i -P -n | grep LISTEN\n\n# Windows\nnetstat -nao",
+        "show_line_numbers": false,
+        "width": "content"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "DNS and Reachability",
+        "title": "Test Name Resolution and Connectivity from Inside the Container"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Container-to-container communication depends on both network connectivity and name resolution. If a container can reach another one by IP but not by name, the likely problem is DNS. If it cannot reach either, the problem is usually the network or routing.</p><p>The best place to test this is from within the container itself.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Test DNS and IP reachability from inside a container",
+        "language": "bash",
+        "code": "docker exec -it my-container /bin/sh\n\ncat /etc/resolv.conf\nip addr show\nping other-container\nping 172.20.0.5\nping google.com",
+        "show_line_numbers": false,
+        "width": "content"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>If needed, install missing networking tools inside a Debian or Ubuntu-based container during debugging.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Install IP and ping tools in Ubuntu-based containers",
+        "language": "bash",
+        "code": "apt update\napt install -y iproute2 iputils-ping",
+        "show_line_numbers": false,
+        "width": "content"
+      }
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "DNS Tip",
+        "text": "User-defined Docker networks provide built-in DNS for container names. The default bridge network is less convenient for this and is a common source of confusion in local development.",
+        "tone": "success"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Certificates",
+        "title": "Certificate Errors Often Come from Trust Store Mismatch"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Certificate-related Docker failures often appear when pulling from registries or when TLS is used from inside containers. A common mistake is using the wrong certificate file extension or placing CA certificates in the wrong location. Another frequent issue is forgetting that Docker must be restarted after host certificate changes.</p><p>When Docker says a certificate was signed by an unknown authority, it usually means the CA certificate is not in the trust store Docker is actually using.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Typical Linux container certificate update pattern",
+        "language": "bash",
+        "code": "COPY my-ca.crt /usr/local/share/ca-certificates/my-ca.crt\nRUN update-ca-certificates",
+        "show_line_numbers": false,
+        "width": "content"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>On corporate networks, TLS inspection may also require the organization’s CA certificate rather than a locally created one.</p>"
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Network Recovery",
+        "title": "Network Not Found Usually Means Containers Point to a Removed Network ID"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Docker Compose creates networks automatically. If containers are stopped but not removed, the network can be deleted while those containers still reference it. Later, when you restart the containers, the network name may exist again but the network ID will be different. That is how you end up with a <code>network not found</code> error even though the network appears to exist.</p><p>The fix is to remove both the stale containers and the stale network state, then recreate everything cleanly.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Why a recreated network can still break existing containers",
+        "diagram": "flowchart TD\n    A[Compose creates network N1] --> B[Containers attach to N1]\n    B --> C[Containers are stopped but not removed]\n    C --> D[Network N1 is removed]\n    D --> E[Compose creates new network with same name but ID N2]\n    E --> F[Old containers still reference N1]\n    F --> G[network not found error]\n    G --> H[Remove stale containers and recreate]",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Clean recovery for network-not-found scenarios",
+        "language": "bash",
+        "code": "docker compose down\n\ndocker system prune -f\n\n# optional but often useful\n# restart Docker Desktop\n\ndocker compose up --force-recreate",
+        "show_line_numbers": false,
+        "width": "content"
+      }
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Healthy Habit",
+        "text": "At the end of a work session, bringing projects down cleanly and pruning unused Docker resources reduces the chance of stale networks, stopped containers, and confusing port conflicts the next time you start.",
+        "tone": "info"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Practical Method",
+        "title": "A Repeatable Checklist for Troubleshooting Docker"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>For most Docker problems, this sequence works well:</p><ol><li>Read the container logs.</li><li>Inspect the container image, command, mounts, ports, and network settings.</li><li>Open a shell and verify files, paths, line endings, and permissions.</li><li>If it is a build issue, inspect Dockerfile order and cache behavior.</li><li>If it is a registry issue, verify names, tags, login, trust, DNS, and proxy settings.</li><li>If it is a volume issue, inspect mount points and user permissions.</li><li>If it is a networking issue, inspect networks, test ports, test DNS, and test IP reachability from inside the container.</li><li>When in doubt, clean unused resources and retry in a fresh state.</li></ol>"
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Summary",
+        "title": "Docker Becomes Easier Once You Know Where the Truth Lives"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Docker troubleshooting is not about memorizing every error string. It is about knowing where runtime truth is stored and how to interrogate it. Logs tell you what failed. Inspect output tells you how the container was configured. Shell access tells you what files and tools actually exist. Build cache explains why a change did or did not take effect. Networks, ports, DNS, and certificates explain how containers communicate.</p><p>Once you work this way consistently, most Docker problems stop feeling mysterious. They become a series of concrete checks that lead you to the fix.</p>"
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Final Takeaway",
+        "text": "The most effective Docker troubleshooting habit is to move from evidence to hypothesis, not from frustration to guesswork.",
+        "tone": "success"
+      }
+    }
+  ]
 }
 ]
