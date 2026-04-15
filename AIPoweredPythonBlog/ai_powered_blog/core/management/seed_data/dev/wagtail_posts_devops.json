@@ -2675,5 +2675,398 @@
       }
     }
   ]
+},
+  {
+  "slug": "docker-model-runner-local-llms-compose-chatbots",
+  "title": "Docker Model Runner: Running Local LLMs with Docker, Compose, and Production-Style Chatbots",
+  "excerpt": "Learn what Docker Model Runner is, why it runs models outside containers, how it integrates with Docker Hub and Compose, and how to build private local chatbot systems on top of OpenAI-compatible endpoints.",
+  "author_username": "Michał Antolik",
+  "category_slug": "devops-automation",
+  "tag_slugs": ["docker", "containers", "devops", "ai", "generative-ai", "chatbots", "automation"],
+  "live": true,
+  "published_at": "2026-04-15T14:00:00Z",
+  "body": [
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Setting the Scene",
+        "title": "Why Local LLM Deployment Matters"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Many teams now want to run language models locally instead of calling cloud APIs. The motivation may be data privacy, tighter cost control, offline capability, regulatory constraints, or a general preference for keeping inference inside the company network.</p><p>That requirement becomes even more interesting when the organization is already standardized on Docker. In that case, the question is not only <em>how do we run a local model?</em> but also <em>how do we do it in a way that fits our existing container workflows?</em></p><p>This is exactly where Docker Model Runner becomes useful. It gives Docker users a native way to pull, load, and serve local LLMs without forcing them to adopt a completely separate platform and operating model.</p>"
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Main Theme",
+        "text": "Docker Model Runner is designed to make local language model workflows feel like a natural extension of Docker rather than a separate AI toolchain.",
+        "tone": "info"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Foundations",
+        "title": "What Docker Model Runner Actually Is"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Docker Model Runner, often shortened to <strong>DMR</strong>, is a local model server integrated into the Docker ecosystem. At a high level, it gives you a Docker-native way to run local large language models while still working with familiar concepts such as Docker Desktop, Docker CLI, Docker Hub, Docker Compose, and the Docker API.</p><p>The simplest way to think about it is this: if Docker is already your standard platform for packaging and running application components, DMR extends that workflow so you can also manage local LLMs in a very similar way.</p><p>That means you can pull a model, inspect it, configure how it is used by an application, and connect apps to it using the same Docker-first mental model you already use for services, images, and environments.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "High-level view of Docker Model Runner",
+        "diagram": "flowchart LR\n User[Developer] --> CLI[Docker CLI / Docker Desktop]\n CLI --> DMR[Docker Model Runner]\n DMR --> Store[Local model store]\n DMR --> API[OpenAI-compatible API]\n API --> App[Chatbot or local application]",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>This is one of the biggest advantages of DMR. If your team already understands Docker, the learning curve for local AI becomes much smaller. Instead of introducing a separate model server, separate registry logic, and separate orchestration patterns, you stay within the same operational ecosystem.</p>"
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Problem",
+        "title": "Why Models Do Not Simply Run Inside Normal Containers"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>In theory, you <em>can</em> run AI inference workloads inside containers. In practice, the hard part is acceleration. Language models are usually only useful when they can access specialized hardware such as GPUs or other acceleration devices. Running them only on a CPU is often too slow for realistic interactive usage.</p><p>The issue is that hardware acceleration from inside containers is not universally simple. NVIDIA-based workflows exist, but they often require extra toolkits and host-level preparation. Other platforms, especially those using different acceleration stacks, are even more awkward.</p><p>Instead of trying to make every accelerator work nicely inside a container abstraction, Docker Model Runner takes a more practical approach: it runs the model inference stack <strong>outside</strong> the application containers while still exposing it through Docker-native tooling.</p>"
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Key Architecture Decision",
+        "text": "Your application can still run in containers, but the model runtime itself is hosted outside those containers for better access to GPUs and other hardware accelerators.",
+        "tone": "warning"
+      }
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Why DMR avoids placing the model runtime inside the app container",
+        "diagram": "flowchart TD\n A[Application container] --> B{Needs local LLM inference}\n B --> C[Inference inside container]\n C --> D[Harder hardware access]\n B --> E[Inference through DMR]\n E --> F[Runtime outside container]\n F --> G[Better access to host acceleration hardware]",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Architecture",
+        "title": "How Docker Model Runner Works Internally"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>The DMR architecture is straightforward once you break it into layers. Docker tools are still the control surface. Models are pulled from a registry, stored locally, loaded on demand, and then exposed through OpenAI-compatible endpoints that applications can call.</p><p>At runtime, Docker Model Runner delegates inference work to a runtime engine. In the course transcript, the default runtime is <code>llama.cpp</code>, which is the component that actually performs model inference. DMR itself handles the Docker integration and the serving model, while the runtime handles the low-level execution.</p><p>This separation is important because the runtime layer is conceptually pluggable. Today that may mean <code>llama.cpp</code>; tomorrow it could mean other runtimes with different hardware capabilities.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Docker Model Runner architecture deep dive",
+        "diagram": "flowchart TD\n Docker[Docker Desktop or Docker Engine] --> DMR[Docker Model Runner]\n DMR --> Registry[Docker Hub or OCI registry]\n Registry --> DMR\n DMR --> LocalStore[Local model store on host filesystem]\n DMR --> Runtime[Runtime layer / core inference engine]\n Runtime --> HW[GPU or other acceleration hardware]\n DMR --> Endpoints[OpenAI-compatible endpoints]\n Endpoints --> LocalApps[Local apps]\n Endpoints --> Containers[Containerized apps]\n Endpoints --> RemoteApps[Remote network apps]",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>One especially useful detail is that DMR serves industry-standard OpenAI-style APIs. That means many applications already written to call OpenAI can be adapted to call DMR with only minimal configuration changes. Instead of changing application logic completely, you often just change the endpoint and model name.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Conceptual flow of a model request",
+        "language": "text",
+        "code": "1. Pull a model into the local model store\n2. Application sends a request to an OpenAI-compatible endpoint\n3. DMR checks whether the model is already loaded\n4. If needed, the runtime loads the model into memory\n5. The runtime performs inference\n6. DMR returns the generated response to the app",
+        "show_line_numbers": false,
+        "width": "content"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Runtime Layer",
+        "title": "What the Runtime and Inference Engine Mean"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>The transcript uses terms like <strong>runtime</strong> and <strong>core inference engine</strong>. In this context, those refer to the software responsible for actually executing the model.</p><p>DMR is not the model itself. It is the orchestration and integration layer. The runtime, such as <code>llama.cpp</code>, is what reads the model files, loads weights into memory, uses the available hardware, processes prompts, and generates tokens.</p><p>This matters operationally because performance, hardware support, model formats, and low-level tuning options often depend on the runtime, not just on Docker. DMR gives you the Docker workflow; the runtime determines how the inference work is actually performed.</p>"
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Terminology",
+        "text": "Inference simply means generating model output from input. In a chatbot scenario, it is the process of turning the user's prompt into a response.",
+        "tone": "success"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Distribution",
+        "title": "Why OCI Artifacts Matter for Models"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>One of the most important ideas in the transcript is that Docker is treating models as <strong>OCI artifacts</strong>. This is bigger than it may look at first glance.</p><p>OCI registries are already widely used for container images and related cloud-native assets. By storing models as OCI artifacts, Docker avoids creating an entirely separate storage universe just for AI. The same ecosystem that already stores images, metadata, signatures, and other artifacts can also store models.</p><p>That reduces registry sprawl and makes model management feel more like a continuation of modern DevOps practices rather than a disconnected specialist workflow.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Why storing models as OCI artifacts is useful",
+        "diagram": "flowchart LR\n A[OCI registry] --> B[Container images]\n A --> C[Helm charts]\n A --> D[SBOMs]\n A --> E[Policies and signatures]\n A --> F[AI models as OCI artifacts]\n F --> G[Unified distribution and storage strategy]",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Operationally, this means model distribution can fit naturally alongside the rest of a platform team's Docker and registry workflows. For organizations already using OCI registries internally, this is a very attractive design choice.</p>"
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Installation",
+        "title": "Installing and Enabling Docker Model Runner"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>On macOS and Windows, the practical path is Docker Desktop. In the transcript, Docker Model Runner is enabled through the Docker Desktop settings under features in development or beta-style settings, with host-side TCP support also enabled so external network access is possible.</p><p>On Linux, the path is Docker CE plus the DMR plugin. The exact installation command depends on distribution packaging, but conceptually the result is the same: a local Docker environment capable of pulling, loading, and serving models.</p><p>Once enabled, DMR becomes visible through Docker commands and through Docker Desktop's model UI.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Typical commands used to verify DMR",
+        "language": "bash",
+        "code": "docker model version\ndocker model status\ndocker model",
+        "show_line_numbers": false,
+        "width": "content"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>The exact output depends on platform and runtime support. For example, the runtime may report GPU support differently on Apple Silicon than on a Linux machine without GPU passthrough.</p>"
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Models",
+        "title": "Pulling and Inspecting Local Models"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>To use a model, you first pull it. In Docker Model Runner, this feels very similar to pulling container images. The model is downloaded from Docker Hub or another supported source and stored locally in the model store.</p><p>The transcript also explains quantization. This is critical in local AI because full-precision models are often too large for ordinary development hardware. Quantized models reduce precision in a controlled way to lower memory requirements while preserving acceptable quality.</p><p>You will frequently see model names that include the parameter count and the quantization format. Those details matter because they directly affect speed, memory usage, and quality.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Example model pull workflow",
+        "language": "bash",
+        "code": "docker model pull ai/qwen3:0.6B-Q4_K_M\ndocker model inspect ai/qwen3:0.6B-Q4_K_M",
+        "show_line_numbers": false,
+        "width": "content"
+      }
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Practical Rule",
+        "text": "For local development, a smaller quantized model is often the right starting point. It is usually much easier to get acceptable latency from a modest model than from a large one that exceeds local memory limits.",
+        "tone": "info"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>The course also highlights that DMR can work with models in formats suited to local inference engines such as GGUF. That matters because not every model format is equally practical on consumer hardware.</p>"
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Testing",
+        "title": "How to Test That a Model Actually Works"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>There are two main testing paths shown in the transcript. The first is a direct CLI-driven test using <code>docker model run</code>, which gives you a quick REPL-like experience. This is useful for confirming that a model can be loaded and can produce output, even if it is not the ideal interface for real applications.</p><p>The second and more important path is to call DMR through its OpenAI-compatible HTTP endpoints. This is the route real applications will use.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Simple command-line model check",
+        "language": "bash",
+        "code": "docker model run ai/gemma3:4B-Q4_K_M",
+        "show_line_numbers": false,
+        "width": "content"
+      }
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Calling the OpenAI-compatible chat completions endpoint",
+        "language": "bash",
+        "code": "curl http://localhost:12434/v1/chat/completions \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\n    \"model\": \"ai/gemma3:4B-Q4_K_M\",\n    \"messages\": [\n      {\"role\": \"system\", \"content\": \"Give short answers.\"},\n      {\"role\": \"user\", \"content\": \"How far is the Moon from Earth?\"}\n    ],\n    \"temperature\": 0.2\n  }'",
+        "show_line_numbers": false,
+        "width": "wide"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>This compatibility layer is what makes DMR strategically useful. If an existing chatbot, API, or internal service already speaks OpenAI-style chat completions, DMR can often slot in as a local replacement.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Request path for a local chat completion",
+        "diagram": "sequenceDiagram\n participant App as Application\n participant DMR as Docker Model Runner\n participant RT as Runtime\n participant GPU as Acceleration hardware\n App->>DMR: POST /v1/chat/completions\n DMR->>RT: Load model if needed\n RT->>GPU: Execute inference\n GPU-->>RT: Token generation\n RT-->>DMR: Response\n DMR-->>App: OpenAI-compatible payload",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Compose Integration",
+        "title": "Using Docker Compose with Docker Model Runner"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>One of the strongest parts of the transcript is the Compose integration story. Docker Compose can define the frontend and backend containers of an application while also referencing a top-level <code>models</code> section that describes the model dependency.</p><p>This allows the app to remain declarative. Instead of documenting manual steps like <em>run the backend, then configure the model server, then remember the model name and endpoint</em>, everything lives in a single Compose-driven definition.</p><p>In the course example, the frontend talks to a backend API, and the backend talks to DMR using the special host name that resolves from inside containers to the host-side model runner.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Compose-based chatbot architecture",
+        "diagram": "flowchart LR\n Browser[User browser] --> Frontend[Frontend container :3000]\n Frontend --> Backend[Backend container :8000]\n Backend --> DMR[model-runner.docker.internal]\n DMR --> Runtime[Inference runtime]\n Runtime --> Model[Local LLM]",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Example Compose structure with a model dependency",
+        "language": "yaml",
+        "code": "services:\n  frontend:\n    build: ./frontend\n    ports:\n      - \"3000:3000\"\n    depends_on:\n      - backend\n\n  backend:\n    build: ./backend\n    env_file:\n      - .env\n    models:\n      - model-server\n\nmodels:\n  model-server:\n    model: ${LLM_MODEL_NAME}",
+        "show_line_numbers": false,
+        "width": "wide"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>The important conceptual shift is that models become a first-class part of the Compose description. That is a powerful idea because it lets AI dependencies participate in the same declarative deployment workflow as the rest of the application stack.</p>"
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Why this matters",
+        "text": "Infrastructure teams want repeatability. Putting model references into Compose reduces hidden setup steps and makes local AI applications easier to build, review, and reproduce.",
+        "tone": "success"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Application Pattern",
+        "title": "How a Local Chatbot Uses DMR"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>The application pattern demonstrated in the course is simple and strong. A frontend presents the chat interface, a backend handles application logic and request shaping, and DMR serves the language model. The backend becomes the broker between UI behavior and LLM inference.</p><p>This is a good architecture because it keeps the model endpoint out of the browser, centralizes prompt shaping, and gives you a clean place to add context injection, authentication, logging, rate control, and future retrieval logic.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Local chatbot request lifecycle",
+        "diagram": "flowchart TD\n A[User sends prompt] --> B[Frontend]\n B --> C[Backend API]\n C --> D[OpenAI-compatible request to DMR]\n D --> E[Model loaded if needed]\n E --> F[Inference]\n F --> G[Stream response back]\n G --> H[Frontend renders answer]",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Production-style UI",
+        "title": "Using Open WebUI as a Local Chat Platform"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>The final part of the transcript shifts from a custom chatbot to a production-style local interface built with <strong>Open WebUI</strong>. This is important because it shows that DMR is not limited to demo scripts or hand-built apps. It can sit underneath a polished, full-featured interface that feels much closer to tools like ChatGPT or Claude.</p><p>Open WebUI stores conversation state, supports reusable settings, and gives you a richer user-facing experience. When wired to DMR through OpenAI-compatible settings, it becomes a private local AI platform that remains under your control.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Minimal Compose example for Open WebUI with DMR",
+        "language": "yaml",
+        "code": "services:\n  chatbot:\n    image: ghcr.io/open-webui/open-webui:main\n    ports:\n      - \"3001:8080\"\n    volumes:\n      - open-webui-data:/app/backend/data\n    restart: unless-stopped\n    models:\n      dmr:\n        endpoint_var: OPENAI_API_BASE_URL\n        model_var: OPENAI_API_MODEL\n\nmodels:\n  dmr:\n    model: ${MODEL_NAME}\n\nvolumes:\n  open-webui-data:",
+        "show_line_numbers": false,
+        "width": "wide"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>The exact variable names can vary depending on how the application expects to receive endpoint and model configuration, but the principle is the same: the service inherits enough information to find the local model server and choose the correct model.</p><p>The result is a fully local chatbot platform with persistent history and a much more production-like user experience.</p>"
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Operations",
+        "title": "What Happens When the App Starts and Stops"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Another practical idea from the transcript is lazy model loading. Pulling a model does not necessarily mean it stays fully loaded in memory forever. DMR can keep models in the local store and load them on demand when a request arrives.</p><p>This matters because model memory usage is significant. If the model is unloaded after a period of inactivity, the system can reclaim memory while still keeping the model available for quick reuse from the local store.</p><p>On the application side, Docker Compose gives you the normal lifecycle commands, so startup and shutdown remain simple even though the solution now includes AI capabilities.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Typical Compose lifecycle",
+        "language": "bash",
+        "code": "docker compose up -d\ndocker compose logs -f\ndocker compose down",
+        "show_line_numbers": false,
+        "width": "content"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Takeaways",
+        "title": "What This Means for Real DevOps and Platform Work"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>The real value of Docker Model Runner is not just that it can run a local LLM. Other tools can also do that. The interesting part is that DMR brings local AI into a Docker-native operational model.</p><p>That has several consequences:</p><ul><li>Model distribution can align with OCI registry practices</li><li>Application integration can follow OpenAI-compatible APIs</li><li>Local AI services can participate in Compose-based app definitions</li><li>Containerized apps can keep their normal deployment story while the model runtime gets direct host hardware access</li><li>Teams can reduce tool sprawl instead of adding a completely separate local AI stack</li></ul><p>For platform engineers, this is the strategic benefit. It is not only about inference. It is about fitting AI workloads into a repeatable, understandable, automatable delivery model.</p>"
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Final Summary",
+        "text": "Docker Model Runner lets Docker-centric teams run private local language models without abandoning the Docker workflows, APIs, and deployment patterns they already know.",
+        "tone": "info"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Conclusion",
+        "title": "From Local Model Experiment to Repeatable Platform Pattern"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>If your team is experimenting with local AI, Docker Model Runner offers a practical path from curiosity to structure. You can pull models with Docker-style commands, expose them through OpenAI-compatible APIs, wire them into Compose applications, and place polished chatbot interfaces on top.</p><p>That combination makes DMR more than a developer toy. It becomes a bridge between traditional application operations and emerging local AI workflows. For teams already living in Docker, that bridge is incredibly valuable.</p><p>And perhaps the most important lesson from the course is this: local AI adoption does not have to mean throwing away the operational discipline you already have. With Docker Model Runner, it can become an extension of it.</p>"
+    }
+  ]
 }
 ]
