@@ -1097,5 +1097,516 @@
       "value": "<p>Managing container images well means understanding the full lifecycle: how images are built, how their layers affect size and speed, how they are distributed through public or private registries, and how security is enforced at each stage.</p><p>A strong workflow usually includes reproducible Dockerfiles, pinned base images, optimized layers, a properly configured registry with persistent storage, TLS encryption, registry authentication, trust validation, and secure Kubernetes pull configuration.</p><p>Once these pieces are in place, images become more than packaging artifacts. They become a reliable delivery mechanism for infrastructure and application behavior.</p>"
     }
   ]
+},
+  {
+  "slug": "from-docker-compose-to-swarm-and-gke-microservices-deployment",
+  "title": "From Docker Compose to Swarm and GKE: Deploying a Multi-Container Microservices App Step by Step",
+  "excerpt": "Learn how to take a small microservices application from local Docker Compose development to Docker Swarm orchestration and finally to Kubernetes on Google Kubernetes Engine, including databases, networking, scaling, ingress, and monitoring.",
+  "author_username": "Michał Antolik",
+  "category_slug": "devops-automation",
+  "tag_slugs": ["docker", "containers", "devops", "kubernetes", "ci-cd", "monitoring", "database"],
+  "live": true,
+  "published_at": "2026-04-15T11:00:00Z",
+  "body": [
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Overview",
+        "title": "Why Multi-Container Applications Matter"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Modern applications are often split into separate services instead of being delivered as one large monolith. A typical example is a web front end, an API, and a database, each with its own responsibility. This makes the system easier to evolve, easier to scale, and easier to deploy in repeatable environments.</p><p>Containers fit this model extremely well because each service can be packaged independently with its own runtime, dependencies, and configuration. In practice, that means you can run the same application locally with Docker Compose, move it to a Docker Swarm cluster for orchestration, and later deploy the same container images to Kubernetes.</p>"
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Core Idea",
+        "text": "The application stays conceptually the same across environments: a frontend talks to an API, the API talks to a database, and orchestration tools manage networking, scaling, and recovery.",
+        "tone": "info"
+      }
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Multi-Container Application Structure",
+        "diagram": "flowchart LR\n Browser[Browser] --> Web[Web Frontend / NGINX]\n Web --> API[Catalog API]\n API --> DB[(Postgres Database)]",
+        "width": "wide"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Local Development",
+        "title": "Starting with docker init and docker compose up"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>The first step is containerizing the API. For a .NET application, <code>docker init</code> can inspect the project, detect the platform, generate a Dockerfile, and suggest a Compose-based startup configuration. This is a fast way to bootstrap container support without writing every file by hand.</p><p>After generating the Docker-related files, <code>docker compose up</code> builds the image and starts a container from it. Docker pulls any required base images, runs the Dockerfile instructions, creates the custom application image, and then launches the container.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Bootstrap and run the API locally",
+        "language": "bash",
+        "code": "docker init\ndocker compose up",
+        "show_line_numbers": false,
+        "width": "content"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>In the course example, the API is exposed on port <code>9000</code>. Once the container is running, the application becomes reachable through <code>http://localhost:9000</code>. At this stage, however, the API still fails on database-driven endpoints because only the API container exists.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "What docker compose up Does",
+        "diagram": "flowchart TD\n A[docker compose up] --> B[Read compose file]\n B --> C[Build custom image]\n C --> D[Pull base images if needed]\n D --> E[Create container]\n E --> F[Attach network]\n F --> G[Start application]",
+        "width": "wide"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Compose",
+        "title": "Adding a Postgres Database Container"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>A 500 error from the API usually means the application has started, but one of its dependencies is missing. In this case, the logs reveal that the API cannot connect to a database. The solution is to define a second service in the Compose file for Postgres and wire the API to it using environment variables.</p><p>One of the big advantages of Compose is built-in service discovery. If the database service is named <code>db</code>, the API can connect to that hostname directly because Compose places both services on the same network automatically.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Compose file with API and Postgres",
+        "language": "yaml",
+        "code": "services:\n  api:\n    build:\n      context: ./catalog-api/src\n    ports:\n      - \"9000:8080\"\n    environment:\n      ConnectionStrings__DefaultConnection: Host=db;Port=5432;Database=library_catalog;Username=postgres;Password=postgres\n\n  db:\n    image: postgres:17.2\n    environment:\n      POSTGRES_USER: postgres\n      POSTGRES_PASSWORD: postgres\n      POSTGRES_DB: library_catalog\n    volumes:\n      - postgres_data:/var/lib/postgresql/data\n      - ./database/init/init.sql:/docker-entrypoint-initdb.d/init.sql:ro\n\nvolumes:\n  postgres_data:",
+        "show_line_numbers": false,
+        "width": "wide"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>This configuration introduces two critical concepts. First, the named volume preserves database files outside the container lifecycle, which protects data when containers are recreated. Second, the mounted SQL script initializes the schema and seed data automatically the first time the database starts.</p><p>The API container does not need to know an IP address. It only needs the service name <code>db</code>, because Compose manages internal DNS resolution between containers on the project network.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Docker Compose Networking and Storage",
+        "diagram": "flowchart TD\n API[API Container] -->|Host=db| DB[Postgres Container]\n DB --> VOL[(Named Volume: postgres_data)]\n DB --> INIT[init.sql mounted at startup]\n API --> NET[Compose Network]\n DB --> NET",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Why the Service Name Matters",
+        "text": "Inside a Compose application, containers communicate through service names, not localhost. From the API container, localhost means the API container itself, not the database.",
+        "tone": "warning"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Cleanup",
+        "title": "Why docker compose down Is Important"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Once the Compose file changes significantly, especially after renaming services, it is often safer to tear the environment down and recreate it cleanly. Otherwise, old containers, networks, or images may remain behind as orphaned resources.</p><p><code>docker compose down</code> removes the running containers and the project network. With additional flags, it can also remove images. This makes it easy to reset the local environment and verify that the configuration still works from scratch.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Clean up and rebuild",
+        "language": "bash",
+        "code": "docker compose down --rmi local\ndocker compose up",
+        "show_line_numbers": false,
+        "width": "content"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>After recreation, the API and database containers should start together. If the initialization script runs successfully and the connection string is correct, database-backed API endpoints begin working immediately.</p>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Frontend",
+        "title": "Adding an NGINX Web Container"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>The final piece of the local application is the frontend. In the course example, the web application is served by NGINX using static files and a custom configuration. This introduces a third service to the stack: web.</p><p>Unlike the Postgres service, the web service is built from a local directory because it has its own Dockerfile and custom files. The container is published on host port <code>8080</code>, while the API remains on <code>9000</code>.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Add a web service",
+        "language": "yaml",
+        "code": "services:\n  web:\n    build:\n      context: ./web\n    ports:\n      - \"8080:80\"",
+        "show_line_numbers": false,
+        "width": "content"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>At this point the local system consists of three containers: web, API, and database. The browser talks to the web container, the web container proxies or calls the API, and the API reads from Postgres. This is a classic microservices-style composition, even though it is still running on a single machine.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Three-Service Local Stack",
+        "diagram": "flowchart LR\n User[User Browser] -->|localhost:8080| Web[NGINX Web]\n User -->|localhost:9000| API[API]\n Web --> API\n API --> DB[(Postgres)]",
+        "width": "wide"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Compose",
+        "title": "Recreating the Entire Environment Safely"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>One of the most practical benefits of Compose is repeatability. You can destroy the containers with <code>docker compose down</code>, confirm the application is no longer reachable, and bring everything back with <code>docker compose up</code>. Because the Postgres data lives in a named volume, the database contents survive this cycle.</p><p>This illustrates an essential principle in containerized development: containers are disposable, but state must be handled deliberately through volumes or external services.</p>"
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Key Lesson",
+        "text": "Containers should be easy to destroy and recreate. Durable data should live outside the container filesystem.",
+        "tone": "success"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Swarm",
+        "title": "Moving from One Host to a Docker Swarm Cluster"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Local Compose works well for development, but production-like environments usually require multiple machines. Docker Swarm provides clustering and orchestration while staying close to the Docker CLI model. A Swarm is initialized on one manager node, and worker nodes join using a generated token.</p><p>Once the cluster is created, services can be scheduled across nodes. A service is the Swarm abstraction for one or more containers managed as a unit.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Initialize a Swarm and inspect nodes",
+        "language": "bash",
+        "code": "docker swarm init\ndocker node ls",
+        "show_line_numbers": false,
+        "width": "content"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>In the course demo, one Raspberry Pi acts as the manager and two more act as workers. After joining them, the cluster becomes capable of running distributed services across all three machines.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Docker Swarm Cluster",
+        "diagram": "flowchart LR\n M[Manager Node] --- W1[Worker Node 1]\n M --- W2[Worker Node 2]\n M --> S[Swarm Control Plane]\n S --> T1[Service Tasks]\n S --> T2[Replicas across nodes]",
+        "width": "wide"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Services",
+        "title": "Creating, Visualizing, and Scaling Swarm Services"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>The next step is deploying services into the cluster. A visualization service can help show where tasks are placed, and then a second service can demonstrate scaling and load balancing. In Swarm terminology, each running instance of a service is a task, effectively a managed container replica.</p><p>When a service is scaled from one replica to two or more replicas, Swarm automatically distributes them across nodes when possible. Requests sent to the published port are load balanced across the available tasks.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Create and scale a Swarm service",
+        "language": "bash",
+        "code": "docker service create --name echo -p 8081:8080 hashicorp/http-echo\n\ndocker service scale echo=2\ndocker service ps echo",
+        "show_line_numbers": false,
+        "width": "content"
+      }
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Swarm Load Balancing Across Replicas",
+        "diagram": "flowchart TD\n Client[Client Request] --> LB[Swarm Routing Mesh]\n LB --> R1[echo.1]\n LB --> R2[echo.2]\n R1 --> N1[Node pi3]\n R2 --> N2[Node pi4]",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>This is one of Swarm's strongest operational features: scaling is declarative. You specify the desired replica count, and Swarm creates or removes tasks until the actual state matches the requested state.</p><p>The same mechanism also gives you self-healing. If a container dies, Swarm notices that the desired replica count is no longer satisfied and starts a replacement task automatically.</p>"
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Self-Healing in Practice",
+        "text": "If you manually remove a running container that belongs to a Swarm service, Swarm immediately schedules a new one so the service returns to its desired state.",
+        "tone": "info"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Stacks",
+        "title": "Turning a Compose File into a Swarm Stack"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Managing several separate <code>docker service create</code> commands quickly becomes cumbersome for a real multi-container application. A better approach is to adapt the Compose configuration into a Swarm stack file. This keeps the architecture declarative and lets Docker deploy the whole application as a named stack.</p><p>The main differences are operational. Custom images need proper names so they can be pushed to a registry like Docker Hub, configuration files can be injected as Swarm configs, and stateful services such as databases may need placement constraints to ensure they always land on the intended node.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Build, push, and deploy a stack",
+        "language": "bash",
+        "code": "docker compose -f stack.yaml build\ndocker compose -f stack.yaml push\n\ndocker stack deploy -c stack.yaml staging\n\ndocker stack services staging\ndocker stack ps staging",
+        "show_line_numbers": false,
+        "width": "wide"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>After deployment, the services are prefixed with the stack name, such as <code>staging_api</code>, <code>staging_db</code>, and <code>staging_web</code>. This makes it possible to host multiple environments on the same cluster, for example staging and production, without service-name collisions.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Stack Deployment Flow",
+        "diagram": "flowchart TD\n A[stack.yaml] --> B[Build custom images]\n B --> C[Push images to registry]\n C --> D[docker stack deploy]\n D --> E[Create services]\n E --> F[Create overlay network]\n E --> G[Create configs]\n E --> H[Create volumes]",
+        "width": "wide"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Troubleshooting",
+        "title": "Why Tasks Can Fail During Startup"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Distributed orchestration introduces a timing issue that does not always appear locally: one service may start before another dependency is ready. In the course example, the NGINX web service can fail during startup because it tries to reach the API before the API is available. Swarm treats that as a failed task and retries it.</p><p>That is why stack-level task listings can show failed historical tasks even when the application is now healthy. Looking at service logs helps explain whether the issue was a transient dependency problem or a real configuration error.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Investigate failed tasks",
+        "language": "bash",
+        "code": "docker stack ps staging\ndocker service ps staging_web\ndocker service logs staging_web",
+        "show_line_numbers": false,
+        "width": "content"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>A message such as <code>host not found in upstream api</code> from NGINX usually means the frontend started before the API service was ready to resolve or accept traffic. In many orchestrated systems, initial restart attempts are normal while the full dependency graph comes online.</p>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Resources",
+        "title": "Networks, Volumes, and Configs in Swarm"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Swarm manages more than just containers. It also creates cluster-aware networks for service communication, volumes for persistent data, and configs for externalized files such as bootstrap SQL scripts. These are first-class resources and can be inspected independently.</p><p>This is especially important for stateful workloads. In the course example, the database volume exists only on the node that hosts the Postgres task, while the SQL init script is stored as a Swarm config that can be injected into the container when needed.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Inspect Swarm resources",
+        "language": "bash",
+        "code": "docker network ls\ndocker volume ls\ndocker config ls\ndocker config inspect staging_init_sql",
+        "show_line_numbers": false,
+        "width": "content"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Kubernetes",
+        "title": "Deploying the Same Architecture to GKE"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>After proving the application locally and in Swarm, the next step is deploying it to Kubernetes on Google Kubernetes Engine. The main idea remains the same, but the resources change. Instead of a Compose file or stack file, Kubernetes uses manifests to define deployments, services, pods, and ingress rules.</p><p>In the course example, an Autopilot GKE cluster is created, credentials are fetched with the Google Cloud CLI, and a dedicated namespace is prepared for the application. This isolates the workload and keeps related resources grouped together.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Create a cluster and prepare a namespace",
+        "language": "bash",
+        "code": "gcloud container clusters create-auto prod\n\ngcloud container clusters get-credentials prod\nkubectl create namespace library1\nkubectl config set-context --current --namespace=library1",
+        "show_line_numbers": false,
+        "width": "wide"
+      }
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Kubernetes Version of the Application",
+        "diagram": "flowchart TD\n Internet[External Traffic] --> Ingress[Kubernetes Ingress]\n Ingress --> WebSvc[web Service]\n Ingress --> ApiSvc[api Service /api]\n WebSvc --> WebPod[Web Pod]\n ApiSvc --> ApiPod[API Pod]\n ApiPod --> DbSvc[postgres Service]\n DbSvc --> DbPod[(Postgres Pod)]",
+        "width": "wide"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Database",
+        "title": "Creating the Postgres Service First"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>As in local Compose, the database is created first. The Kubernetes manifest defines the Postgres container image, environment variables, and a Service resource that exposes the pod internally. A temporary port-forward allows local tools such as <code>psql</code> to connect for testing and initialization.</p><p>Once connected, the SQL bootstrap script can be applied to create the <code>books</code> table and its initial data. This mirrors the earlier Compose example, but here it is done through Kubernetes resources and CLI workflows.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Apply Postgres manifest and connect locally",
+        "language": "bash",
+        "code": "kubectl apply -f postgres.yaml\nkubectl get all\nkubectl port-forward svc/postgres 5432:5432\npsql -U postgres -d library_catalog -f ./init.sql",
+        "show_line_numbers": false,
+        "width": "wide"
+      }
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Practical Detail",
+        "text": "In the demo, recreating the pod removes the database contents because a persistent volume is not configured. In production, you would attach persistent storage so data survives pod replacement.",
+        "tone": "warning"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Routing",
+        "title": "Exposing the API and Web App Through an Ingress"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>After the database is ready, the API and web manifests are applied. Each one defines a container image and an internal Kubernetes Service. An Ingress resource then provides external routing. In this setup, requests to <code>/api</code> are sent to the API service, while other paths are sent to the web service.</p><p>This is an important architectural concept because it centralizes external access while keeping the underlying services internal to the cluster.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Deploy API, web, and ingress",
+        "language": "bash",
+        "code": "kubectl apply -f api.yaml\nkubectl apply -f web.yaml\nkubectl apply -f ingress.yaml\nkubectl get all\nkubectl get ingresses",
+        "show_line_numbers": false,
+        "width": "wide"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Initially the Ingress may not have an external address. That is normal while the cloud load balancer is being provisioned. Once the external IP appears, opening it in the browser should show the library catalog, and hitting the <code>/api/books</code> path should return the API response.</p>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Observability",
+        "title": "Adding Postgres Exporter for Prometheus Metrics"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>One of the strengths of containerized systems is how easy it is to bolt on supporting capabilities. The course demonstrates this by adding a second container to the Postgres pod: a Prometheus-compatible exporter. This sidecar exposes metrics on port <code>9187</code> without changing the database image itself.</p><p>Once the pod is recreated, a port-forward can expose that metrics endpoint locally. From there, Prometheus-style metrics can be inspected directly in the browser or with <code>curl</code>.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Check exporter metrics",
+        "language": "bash",
+        "code": "kubectl apply -f postgres.yaml\nkubectl get pods\nkubectl port-forward pod/postgres 9187:9187\ncurl http://localhost:9187/metrics",
+        "show_line_numbers": false,
+        "width": "wide"
+      }
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Postgres Pod with Exporter Sidecar",
+        "diagram": "flowchart LR\n Pod[Postgres Pod] --> DB[Postgres Container]\n Pod --> EXP[postgres-exporter Container]\n EXP --> METRICS[/metrics endpoint]\n Prometheus[Prometheus or curl] --> METRICS",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>A particularly useful metric in the demo is database size. By capturing the metrics output before and after creating the application table, you can see the database grow. That proves the exporter is correctly scraping internal Postgres data and exposing it in a machine-readable format.</p><p>In a real production system, these metrics would be scraped continuously by Prometheus and visualized in Grafana, with alerts added for thresholds such as storage growth, scrape failures, or connection issues.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Capture metrics before and after a database change",
+        "language": "bash",
+        "code": "curl http://localhost:9187/metrics > metrics1.log\npsql -U postgres -d library_catalog -f ./init.sql\ncurl http://localhost:9187/metrics > metrics2.log\ndiff metrics1.log metrics2.log",
+        "show_line_numbers": false,
+        "width": "wide"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Takeaways",
+        "title": "What This End-to-End Journey Really Teaches"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>This workflow demonstrates a very practical deployment progression. Docker Compose is excellent for local development and fast iteration. Docker Swarm introduces clustering, scaling, and self-healing with minimal conceptual overhead. Kubernetes on GKE takes the same containerized architecture into a cloud-native production model with manifests, ingress, and stronger ecosystem support.</p><p>The most important lesson is that containers give you a portable unit of deployment, but the real operational maturity comes from how you manage dependencies, data persistence, networking, startup ordering, observability, and recovery. Those concerns exist in every environment; the tooling simply evolves as the system grows.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Deployment Maturity Path",
+        "diagram": "flowchart LR\n A[Single Container] --> B[Docker Compose\\nLocal multi-service app]\n B --> C[Docker Swarm\\nCluster orchestration]\n C --> D[Kubernetes / GKE\\nCloud-native production]",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Final Thought",
+        "text": "The architecture does not fundamentally change as you move from local development to orchestration platforms. What changes is the level of automation, resilience, and operational control around the same set of services.",
+        "tone": "success"
+      }
+    }
+  ]
 }
 ]
