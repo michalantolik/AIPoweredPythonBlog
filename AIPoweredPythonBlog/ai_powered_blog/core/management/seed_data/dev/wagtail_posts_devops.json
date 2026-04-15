@@ -1608,5 +1608,579 @@
       }
     }
   ]
+},
+  {
+  "slug": "preparing-docker-applications-for-production",
+  "title": "Preparing Docker Applications for Production",
+  "excerpt": "A practical guide to preparing Docker applications for production by externalizing configuration, surfacing logs, modeling health and readiness checks, and routing traffic with reverse proxies in Docker and Kubernetes.",
+  "author_username": "Michał Antolik",
+  "category_slug": "devops-automation",
+  "tag_slugs": ["docker"],
+  "live": true,
+  "published_at": "2026-04-15T11:00:00Z",
+  "body": [
+    {
+      "type": "section_heading",
+      "value": "Why production-ready containers need more than a Dockerfile"
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Getting an application to run in a container is only the starting point. A production platform such as Docker Swarm or Kubernetes can start, stop, and replace containers, but unless your application is designed to work with the platform, the platform only sees a black box.</p><p>To get the real benefits of containers in production—portability, centralized operations, self-healing, safer deployments, and clean traffic routing—you need to make your application images and deployment model integrate with the platform.</p><p>The core ideas are straightforward:</p><ul><li>read configuration from the container environment rather than baking environment-specific settings into images,</li><li>surface application logs as container logs,</li><li>report health and readiness so the platform can make good decisions,</li><li>and route incoming traffic through a reverse proxy or ingress layer.</li></ul>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Production integration model for containers",
+        "diagram": "flowchart TD\n    A[Docker Image] --> B[Container Runtime]\n    B --> C[Configuration from platform]\n    B --> D[Logs to stdout/stderr]\n    B --> E[Health and readiness signals]\n    B --> F[Traffic routed through proxy or ingress]\n    C --> G[Portable deployment across environments]\n    D --> H[Centralized logging]\n    E --> I[Self-healing and zero-downtime rollout]\n    F --> J[Multi-app hosting, HTTPS, caching, load balancing]",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": "The four production concerns"
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Preparing Docker applications for production usually comes down to four concerns:</p><ol><li><strong>Configuration</strong> – the same image should work in dev, test, and production with different runtime settings.</li><li><strong>Logging</strong> – logs should be collected centrally and searchable across all components.</li><li><strong>Self-healing</strong> – the platform should detect unhealthy components and take corrective action.</li><li><strong>Traffic management</strong> – incoming requests should be routed safely and efficiently to the right containers.</li></ol><p>This post walks through all four and shows how the same ideas apply in Docker Compose and Kubernetes.</p>"
+    },
+    {
+      "type": "section_heading",
+      "value": "1. Configuration should come from the container environment"
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>A production image should not be rebuilt just because the environment changes. The image should contain application binaries and sensible defaults, while the environment-specific settings come from the platform at runtime.</p><p>The two main configuration sources exposed by the container environment are:</p><ul><li><strong>environment variables</strong>,</li><li><strong>files mounted into the container filesystem</strong>.</li></ul><p>A good configuration model merges sources in a clear precedence order.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Configuration precedence inside a container",
+        "diagram": "flowchart TD\n    A[Default config bundled in image] --> B[Override config file mounted into container]\n    B --> C[Environment variables]\n    C --> D[Final runtime settings used by app]",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>This model is powerful because it lets you ship one immutable image and change behavior per environment without editing application code or rebuilding artifacts.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Docker run with environment variables",
+        "code": "docker run \\\n  -e APP_ENV=prod \\\n  -e METRICS_ENABLED=false \\\n  my-app",
+        "language": "bash"
+      }
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Docker run with a mounted override config",
+        "code": "docker run \\\n  -v $(pwd)/config:/app/config-override \\\n  my-app",
+        "language": "bash"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": "Using built-in config libraries when the app supports layered configuration"
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Modern application platforms usually have libraries that already support hierarchical configuration. In the course examples:</p><ul><li>the Go application used <strong>Viper</strong>,</li><li>the Node.js application used <strong>node-config</strong>,</li><li>and the Java application required extra help because it expected a single config file.</li></ul><p>When the app platform supports it natively, the implementation is clean. The application reads defaults from a local file, then looks for an override file in another path, and finally allows environment variables to override everything else.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Compose example with environment variables and mounted config",
+        "code": "services:\n  app:\n    image: my-app\n    environment:\n      APP_ENV: PROD\n      METRICS_ENABLED: \"false\"\n    volumes:\n      - ./config:/app/config-override",
+        "language": "yaml"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>This is exactly what you want in production: a declarative model where runtime configuration is stored outside the image and versioned alongside deployment definitions.</p>"
+    },
+    {
+      "type": "section_heading",
+      "value": "When the app cannot merge configuration: the Config Loader pattern"
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Not every application can read from multiple sources. Older systems often expect exactly one file in exactly one location. That does not mean they cannot be made production-ready in containers.</p><p>The solution is a small <strong>configuration loader utility</strong> packaged into the image. The loader reads:</p><ul><li>the default config,</li><li>an optional override file,</li><li>and selected environment variables,</li></ul><p>then writes a single final config file where the application expects it.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Config loader pattern for legacy applications",
+        "diagram": "flowchart TD\n    A[Default config in image] --> D[Config Loader utility]\n    B[Mounted override config] --> D\n    C[Environment variables] --> D\n    D --> E[Generated final config file]\n    E --> F[Application startup]",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Container startup that prepares config before running the app",
+        "code": "CMD config-loader && java -jar app.jar",
+        "language": "dockerfile"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>This pattern is especially useful for Spring Boot apps expecting a properties file, legacy .NET Framework applications expecting XML config, or any application that does not natively support layered configuration.</p><p>The important outcome is consistency: all application components can be configured the same way from the platform, even if their internal configuration models differ.</p>"
+    },
+    {
+      "type": "section_heading",
+      "value": "Kubernetes ConfigMaps and Secrets"
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Kubernetes makes externalized configuration a first-class concept. Instead of keeping configuration only in Compose files or host folders, you store configuration as platform objects:</p><ul><li><strong>ConfigMaps</strong> for non-sensitive settings,</li><li><strong>Secrets</strong> for sensitive values such as API keys or credentials.</li></ul><p>These objects can be injected into containers either as files or as environment variables.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "How Kubernetes injects configuration into a pod",
+        "diagram": "flowchart TD\n    A[ConfigMap] --> B[Pod]\n    A2[Secret] --> B\n    B --> C[Mounted file in container filesystem]\n    B --> D[Environment variable]\n    C --> E[Application config]\n    D --> E",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Kubernetes ConfigMap example",
+        "code": "apiVersion: v1\nkind: ConfigMap\nmetadata:\n  name: app-config\ndata:\n  config.toml: |\n    [environment]\n    name = \"PROD\"\n    metrics_enabled = false",
+        "language": "yaml"
+      }
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Kubernetes Secret example",
+        "code": "apiVersion: v1\nkind: Secret\nmetadata:\n  name: app-secret\ntype: Opaque\nstringData:\n  API_KEY: DEMO_KEY",
+        "language": "yaml"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>This is one of the biggest operational advantages of containers: the application image lifecycle is separated from the configuration lifecycle. The same tested image can be promoted through test and production environments, while each environment supplies its own ConfigMaps and Secrets.</p>"
+    },
+    {
+      "type": "callout",
+      "value": {
+        "text": "<p><strong>Best practice:</strong> promote the same image through every environment. Change configuration with environment variables, ConfigMaps, and Secrets—not by rebuilding the image.</p>"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": "2. Logs must become container logs"
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>In production, centralized logging is one of the main reasons you want your applications integrated with the container platform. But the platform can only collect what it can see.</p><p>Docker and Kubernetes both treat <strong>stdout</strong> and <strong>stderr</strong> as the container log stream. That means if your application already writes useful logs to the console, you are in a good place. If it writes logs somewhere else, such as files, syslog, ETW, or the Windows Event Log, the platform will not see them automatically.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Standard container logging model",
+        "diagram": "flowchart LR\n    A[Application writes to stdout or stderr] --> B[Container runtime captures logs]\n    B --> C[Log collector]\n    C --> D[Central storage]\n    D --> E[Search and dashboards]",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Most modern frameworks support console logging out of the box. What usually matters is configuring the right logging level and making sure your application actually writes useful logs.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Example Winston config writing logs to stdout",
+        "code": "const logger = createLogger({\n  level: 'debug',\n  transports: [\n    new transports.Console()\n  ]\n});",
+        "language": "javascript"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>If your application is silent, container logging does not help. The container platform does not invent logs; it only forwards what the application emits.</p>"
+    },
+    {
+      "type": "section_heading",
+      "value": "Centralized logging with Fluent Bit, Elasticsearch, and Kibana"
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>A common production logging stack in Kubernetes is the EFK stack:</p><ul><li><strong>Fluentd or Fluent Bit</strong> collects logs,</li><li><strong>Elasticsearch</strong> stores them,</li><li><strong>Kibana</strong> provides search and visualization.</li></ul><p>Fluent Bit is often preferred in clusters because it is lighter than Fluentd while still handling log collection effectively.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "EFK logging pipeline",
+        "diagram": "flowchart LR\n    A[Application and system containers] --> B[Fluent Bit on each node]\n    B --> C[Elasticsearch]\n    C --> D[Kibana]",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>In Kubernetes, Fluent Bit usually runs as a <strong>DaemonSet</strong>, which means one collector pod runs on each node. It reads the container log files from the host filesystem, enriches them with Kubernetes metadata such as namespace, pod, and container name, and forwards them to Elasticsearch.</p><p>This lets you search across:</p><ul><li>application logs,</li><li>Kubernetes system logs,</li><li>all replicas of all services,</li><li>and all environments in the cluster.</li></ul>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Example Fluent Bit output to Elasticsearch",
+        "code": "[OUTPUT]\n    Name  es\n    Match kube.default.*\n    Host  elasticsearch\n    Index app-logs",
+        "language": "ini"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": "When apps write logs to files: the log relay pattern"
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Some applications write logs to a hidden sink, typically a file. Docker does not know about that file, so from the outside the container appears to have no logs even though the application is logging internally.</p><p>If you cannot change the application to log to stdout directly, add a <strong>log relay</strong>.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Log relay for applications writing to files",
+        "diagram": "flowchart TD\n    A[Application writes log file] --> B[Relay utility tails file]\n    B --> C[Writes log lines to stdout]\n    C --> D[Container runtime captures logs]",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Simple Linux startup command using tail as relay",
+        "code": "CMD app & tail -f /logs/app.log",
+        "language": "dockerfile"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>This works, but it is not perfect. The foreground process becomes the relay rather than the application, which can confuse basic liveness assumptions. If the app crashes but the relay keeps running, the container may still appear alive. If the relay fails while the app is healthy, the container may exit. The pattern is useful, but it should be treated as a compatibility strategy, not the ideal design.</p><p>For Windows containers, Microsoft provides <strong>LogMonitor</strong> for this exact purpose. It can relay logs from files, Event Log, or ETW into stdout without needing to rewrite the application.</p>"
+    },
+    {
+      "type": "section_heading",
+      "value": "Sidecar logging in Kubernetes"
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Kubernetes offers a cleaner alternative to running multiple processes in one container: the <strong>sidecar pattern</strong>.</p><p>Instead of bundling the app and relay in one container, place them in the same pod:</p><ul><li>one container runs the application and writes logs to a shared volume,</li><li>the second container tails the shared log files and writes them to stdout.</li></ul>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Sidecar logging pattern in Kubernetes",
+        "diagram": "flowchart LR\n    A[App container] --> B[Shared volume]\n    B --> C[Logger sidecar]\n    C --> D[Pod stdout logs]\n    D --> E[Fluent Bit]",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>This keeps the application container single-purpose while still making logs visible to the platform.</p>"
+    },
+    {
+      "type": "section_heading",
+      "value": "3. Self-healing requires health and readiness signals"
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>One of the most attractive promises of containers is self-healing: if something goes wrong, the platform fixes it automatically. But the platform can only act on the signals it receives.</p><p>The default signal is weak: if the container process is still running, the platform assumes the container is healthy. That is often not enough. A web app can be running but still be stuck, overloaded, misconfigured, or returning errors.</p><p>To make an application truly self-healing, you need explicit checks.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Liveness vs readiness",
+        "diagram": "flowchart TD\n    A[Container process running] --> B{Liveness probe healthy?}\n    B -- No --> C[Restart or replace container]\n    B -- Yes --> D{Readiness probe healthy?}\n    D -- No --> E[Keep running but do not route traffic]\n    D -- Yes --> F[Accept traffic]",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": "Healthchecks in Docker"
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Docker images support a built-in <strong>HEALTHCHECK</strong> instruction. The runtime executes the healthcheck command on a schedule and interprets the exit code:</p><ul><li><strong>0</strong> means healthy,</li><li><strong>non-zero</strong> means unhealthy.</li></ul><p>A simple HTTP-based healthcheck can be implemented with curl.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Docker healthcheck using curl",
+        "code": "HEALTHCHECK --interval=10s CMD curl --fail http://localhost/health || exit 1",
+        "language": "dockerfile"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>This is easy, but it has a trade-off: curl must be installed in the image. That increases image size, attack surface, and patching responsibility.</p><p>A healthier long-term approach is to build the check using the same runtime your application already uses.</p>"
+    },
+    {
+      "type": "section_heading",
+      "value": "Custom health checks using the application runtime"
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Instead of installing a third-party tool just for healthchecks, create a small utility or script in the application's own runtime:</p><ul><li>Node.js script for a Node.js app,</li><li>Java class for a Java app,</li><li>Go binary for a Go app,</li><li>.NET utility for a .NET app.</li></ul><p>This avoids extra dependencies and lets you express richer logic.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Node.js-based Docker healthcheck",
+        "code": "HEALTHCHECK --interval=10s CMD [\"node\", \"healthcheck.js\"]",
+        "language": "dockerfile"
+      }
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Example healthcheck logic in Node.js",
+        "code": "const http = require('http');\n\nconst req = http.request({\n  hostname: 'localhost',\n  port: 80,\n  path: '/health',\n  timeout: 300\n}, res => {\n  process.exit(res.statusCode === 200 ? 0 : 1);\n});\n\nreq.on('error', () => process.exit(1));\nreq.on('timeout', () => {\n  req.destroy();\n  process.exit(1);\n});\nreq.end();",
+        "language": "javascript"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>The check can share the same configuration model as the main application, which makes it easier to keep behavior consistent across environments.</p>"
+    },
+    {
+      "type": "section_heading",
+      "value": "Readiness checks and dependency checks"
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Readiness is not the same as liveness. Liveness asks whether the app is still healthy. Readiness asks whether it is ready to do useful work.</p><p>A common readiness concern is dependency availability. For example, if an API requires a database or a third-party service to be reachable before it can function, the container should not accept traffic until that dependency is available.</p><p>In Docker, there is no dedicated readiness concept like Kubernetes provides, so a common pattern is to run a dependency check in the startup sequence.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Startup sequence with config loading and dependency validation",
+        "code": "CMD config-loader && dependency-check && java -jar app.jar",
+        "language": "dockerfile"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>If the dependency check fails, the container exits. In a platform like Swarm or Kubernetes, that exit becomes a signal to restart or replace the workload.</p>"
+    },
+    {
+      "type": "section_heading",
+      "value": "Kubernetes liveness probes and readiness probes"
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Kubernetes does not use Docker image healthchecks directly. Instead, it expects health and readiness to be modeled explicitly in pod specs using probes.</p><p>The main probe types are:</p><ul><li><strong>livenessProbe</strong> – if it fails, Kubernetes restarts the container,</li><li><strong>readinessProbe</strong> – if it fails, Kubernetes stops routing traffic to that pod but does not restart it,</li><li><strong>startupProbe</strong> – often used for slow-starting applications, though not central in the course examples.</li></ul>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Kubernetes HTTP liveness probe",
+        "code": "livenessProbe:\n  httpGet:\n    path: /health\n    port: 80\n  periodSeconds: 10",
+        "language": "yaml"
+      }
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Kubernetes exec liveness probe",
+        "code": "livenessProbe:\n  exec:\n    command:\n      - node\n      - healthcheck.js\n  initialDelaySeconds: 10\n  periodSeconds: 30\n  failureThreshold: 2",
+        "language": "yaml"
+      }
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Kubernetes readiness probe",
+        "code": "readinessProbe:\n  httpGet:\n    path: /ready\n    port: 8080\n  periodSeconds: 10",
+        "language": "yaml"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Readiness is especially important during rolling updates. New pods are started first, but they receive no traffic until they report ready. That is one of the main building blocks behind zero-downtime deployments.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "How readiness enables safe rollouts",
+        "diagram": "flowchart LR\n    A[Old version pods serving traffic] --> B[New pods start]\n    B --> C{Ready?}\n    C -- No --> D[No traffic sent]\n    C -- Yes --> E[Traffic gradually shifts]\n    E --> F[Old pods removed]",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": "A critical warning: bad probes can break healthy systems"
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Health and readiness probes are powerful, but they can be dangerous if designed poorly. A probe that calls a third-party service too frequently can create the outage it is trying to prevent.</p><p>For example, if a liveness probe repeatedly calls an external API with strict rate limits, it may trigger those limits, start failing, and cause Kubernetes to restart every pod. Instead of improving resilience, the probe takes the service offline.</p><p>Probes should be:</p><ul><li>fast,</li><li>cheap,</li><li>reliable,</li><li>and ideally focused on local application state rather than expensive external workflows.</li></ul>"
+    },
+    {
+      "type": "callout",
+      "value": {
+        "text": "<p><strong>Probe design rule:</strong> prefer checking local application health or cached dependency state. Avoid frequent liveness probes that directly hammer fragile third-party services.</p>"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": "4. Reverse proxies solve traffic routing and port conflicts"
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Ports are exclusive resources. If one container binds host port 8010, another container cannot use the same host port on the same machine. This creates two problems:</p><ul><li>you cannot expose multiple applications on the same external port directly,</li><li>and you cannot easily scale components that publish host ports.</li></ul><p>The standard solution is a <strong>reverse proxy</strong>. The reverse proxy is the single entry point that publishes external ports and routes traffic internally to the correct containers.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Why a reverse proxy is needed",
+        "diagram": "flowchart TD\n    A[Incoming HTTP/HTTPS traffic] --> B[Reverse proxy]\n    B --> C[App 1 containers]\n    B --> D[App 2 containers]\n    B --> E[API containers]\n    B --> F[Other services]",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": "Using NGINX as a reverse proxy"
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>NGINX is a mature and extremely popular reverse proxy. It works well in containers, but it is traditionally configured with static files.</p><p>You define rules that map incoming hostnames or paths to backend services. NGINX receives the request, resolves the target service by DNS, fetches the content, and sends the response back to the client.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Simple NGINX reverse proxy rule",
+        "code": "server {\n  listen 80;\n  server_name whoami.local;\n\n  location / {\n    proxy_pass http://whoami;\n  }\n}",
+        "language": "nginx"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>One major advantage of NGINX is <strong>caching</strong>. If the response for a path is stable, NGINX can store it in memory or on disk and serve future requests without calling the application container again.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Example NGINX cache usage",
+        "code": "location /api/image {\n  proxy_pass http://image-api;\n  proxy_cache longterm;\n  proxy_cache_valid 200 6h;\n}",
+        "language": "nginx"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>This reduces latency and lowers application load, which is especially useful for expensive or mostly static responses.</p><p>The downside is operational: when routing rules change or service discovery changes, static configuration often means reloading or restarting the proxy.</p>"
+    },
+    {
+      "type": "section_heading",
+      "value": "Using Traefik as a dynamic reverse proxy"
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Traefik takes a more platform-aware approach. Instead of relying on static configuration files, it connects to the Docker or Kubernetes API and builds routing rules dynamically. In Docker, you typically expose containers to Traefik using labels.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Traefik labels on a container",
+        "code": "services:\n  whoami:\n    image: my-whoami\n    labels:\n      - traefik.enable=true\n      - traefik.http.routers.whoami.rule=Host(`whoami.local`)",
+        "language": "yaml"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Traefik automatically detects containers, updates routing when replicas change, and can simplify SSL/TLS management considerably. It is especially strong at:</p><ul><li>dynamic discovery,</li><li>automatic reconfiguration,</li><li>HTTPS termination,</li><li>middleware such as path rewriting and redirects.</li></ul><p>Compared with NGINX, the trade-off is that Traefik does not traditionally offer the same caching feature set, though it handles API-driven environments very elegantly.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Static vs dynamic reverse proxy model",
+        "diagram": "flowchart LR\n    A[NGINX] --> B[Static config files]\n    B --> C[Manual reload or restart on changes]\n    D[Traefik] --> E[Docker or Kubernetes API]\n    E --> F[Dynamic routing updates]",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": "HTTPS, redirects, and middleware"
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Reverse proxies are also the right place to centralize infrastructure concerns such as:</p><ul><li>HTTP to HTTPS redirects,</li><li>TLS termination,</li><li>certificate management,</li><li>path rewriting,</li><li>sticky sessions,</li><li>rate limiting,</li><li>caching.</li></ul><p>Traefik can integrate with certificate providers and even generate self-signed certificates for non-production use. NGINX can also terminate TLS, and in Kubernetes this is often combined with cert-manager.</p>"
+    },
+    {
+      "type": "section_heading",
+      "value": "Kubernetes Ingress: the platform-native reverse proxy model"
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Kubernetes treats reverse proxying as a first-class pattern. Instead of publishing every application directly, you usually:</p><ol><li>run applications behind internal <strong>ClusterIP</strong> services,</li><li>run an <strong>Ingress controller</strong> such as NGINX or Traefik,</li><li>define <strong>Ingress</strong> resources that map hostnames and paths to backend services.</li></ol><p>This decouples application deployment from traffic routing.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Traffic flow with Kubernetes Ingress",
+        "diagram": "flowchart TD\n    A[Client] --> B[LoadBalancer Service]\n    B --> C[Ingress Controller]\n    C --> D[Ingress Rules]\n    D --> E[ClusterIP Service]\n    E --> F[Pods]",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Kubernetes Ingress example",
+        "code": "apiVersion: networking.k8s.io/v1\nkind: Ingress\nmetadata:\n  name: whoami-ingress\nspec:\n  rules:\n    - host: whoami.local\n      http:\n        paths:\n          - path: /\n            pathType: Prefix\n            backend:\n              service:\n                name: whoami-web\n                port:\n                  number: 80",
+        "language": "yaml"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>With an NGINX Ingress controller, Kubernetes watches Ingress resources, discovers services and endpoints, and updates the NGINX configuration automatically. You get the power of NGINX without having to manually maintain static config files inside your own custom proxy container.</p>"
+    },
+    {
+      "type": "section_heading",
+      "value": "Ingress controllers can add useful production controls"
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>An ingress controller is not just a request router. It is also a convenient place to apply production controls across applications, such as:</p><ul><li>request rate limiting,</li><li>caching,</li><li>TLS termination,</li><li>header manipulation,</li><li>path-based routing,</li><li>host-based multi-tenant routing.</li></ul><p>For example, rate limiting at the ingress layer can protect application services from abusive traffic before requests ever reach a pod.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Ingress routing concept with separate website and API hosts",
+        "code": "www.apod.local   -> apod-web service\napi.apod.local   -> apod-api service\nwhoami.local     -> whoami-web service",
+        "language": "text"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": "What a production-ready containerized application looks like"
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>When these patterns are all in place, the result is not just a containerized app—it is an application that can participate properly in a production platform.</p><p>A production-ready containerized application typically has these properties:</p><ul><li>the image contains the application and only environment-neutral defaults,</li><li>runtime configuration comes from environment variables, mounted files, ConfigMaps, or Secrets,</li><li>logs are visible as container logs and flow into centralized storage,</li><li>health and readiness are modeled explicitly,</li><li>incoming traffic is routed through a reverse proxy or ingress controller,</li><li>and all of this works without rebuilding images for each environment.</li></ul>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "End-to-end production architecture for containerized apps",
+        "diagram": "flowchart TD\n    A[Immutable Docker Image] --> B[Platform injects config]\n    B --> C[App runs in container or pod]\n    C --> D[Logs to stdout]\n    D --> E[Collector]\n    E --> F[Searchable central log store]\n    C --> G[Liveness and readiness probes]\n    G --> H[Platform self-healing and rollout control]\n    I[Ingress or reverse proxy] --> C\n    I --> J[HTTPS, caching, routing, rate limiting]",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": "Practical takeaways"
+    },
+    {
+      "type": "callout",
+      "value": {
+        "text": "<ul><li><strong>Configuration:</strong> use layered config with defaults in the image, overrides from files, and final overrides from environment variables.</li><li><strong>Legacy apps:</strong> use a Config Loader utility if the app only supports one config file.</li><li><strong>Logging:</strong> write logs to stdout/stderr whenever possible.</li><li><strong>Hidden sinks:</strong> use a relay or sidecar if the app writes logs to files or platform-specific sinks.</li><li><strong>Health:</strong> add explicit health checks. Process alive is not enough.</li><li><strong>Readiness:</strong> ensure pods do not receive traffic until they can actually do work.</li><li><strong>Probe safety:</strong> do not make aggressive probes that overload third-party services.</li><li><strong>Traffic:</strong> use a reverse proxy or ingress controller to front multiple apps and scale safely.</li><li><strong>Promotion:</strong> move the same image through all environments and change behavior with platform configuration, not rebuilds.</li></ul>"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": "Final summary"
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Containers become truly powerful in production when the platform can understand enough about what is happening inside them to manage them intelligently. That means the application must expose the right integration points.</p><p>Externalized configuration makes images portable. Console logging makes logs visible to the platform. Health and readiness checks make self-healing and safer rollouts possible. Reverse proxies and ingress controllers make multi-application hosting, HTTPS, and traffic routing manageable.</p><p>These patterns are not tied to one language. They work across Go, Node.js, Java, .NET, Linux containers, Windows containers, Docker Compose, Docker Swarm, and Kubernetes. Once you build them into your images and deployment model, your applications stop behaving like black boxes and start behaving like first-class citizens of the platform.</p><p>That is the real path from <em>containerized</em> to <em>production-ready</em>.</p>"
+    }
+  ]
 }
 ]
