@@ -255,5 +255,847 @@
 
   ]
 },
+  {
+  "slug": "containerize-python-web-app-with-docker",
+  "title": "Containerizing a Python Web App with Docker: From Local Flask App to Reusable Image",
+  "excerpt": "Learn how to take a Python Flask application running locally, package it into a Docker image, run it as a container, troubleshoot it with logs and stats, and prepare it for sharing through image registries.",
+  "author_username": "Michał Antolik",
+  "category_slug": "devops-automation",
+  "tag_slugs": ["docker", "python", "containers", "devops"],
+  "live": true,
+  "published_at": "2026-04-15T10:00:00Z",
+  "body": [
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Containerization",
+        "title": "Start by Understanding How the App Runs Without Docker"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>The best way to containerize an application is to first understand how it runs outside Docker. If you already know the exact steps required to start the app locally, writing a Dockerfile becomes much easier because the Dockerfile is simply a repeatable description of those same steps.</p><p>In this example, the application is a small Python Flask web app. Locally, the workflow is straightforward: create a virtual environment, install dependencies, and run the application entry point.</p><p>This idea is bigger than Python. The same principle applies to .NET, Node.js, Java, Go, and other runtimes. Before you containerize, make sure you understand the local startup path.</p>"
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Core Principle",
+        "text": "A Dockerfile should mirror the real steps required to run the app manually. If you cannot explain the local startup process, containerization will feel confusing.",
+        "tone": "info"
+      }
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Typical local workflow for a Flask app",
+        "language": "bash",
+        "code": "python -m venv .venv\nsource .venv/bin/activate\npip install -r requirements.txt\npython app/main.py",
+        "show_line_numbers": false,
+        "width": "content"
+      }
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "From source code to running local application",
+        "diagram": "flowchart TD\n A[Clone repository] --> B[Create virtual environment]\n B --> C[Activate environment]\n C --> D[Install dependencies]\n D --> E[Run main.py]\n E --> F[Open Flask app in browser]",
+        "width": "wide"
+      }
+    },
 
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Translation",
+        "title": "Turn Manual Runtime Steps into a Dockerfile"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Once the local process is clear, the next step is to translate it into a Docker image build. In Docker, you do not describe a running machine. You describe how to build an image that contains everything needed to run the application.</p><p>The first important decision is the base image. For a Python app, that usually means starting from an official Python image. The course uses a slim variant, which keeps the image smaller while still including Python and pip.</p><p>Instead of cloning the repository inside the image, Docker simply copies files from your existing working directory into the image build context.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Dockerfile for a Flask application using pip",
+        "language": "docker",
+        "code": "FROM python:3.12-slim\n\nWORKDIR /app\n\nCOPY requirements.txt .\nRUN pip install -r requirements.txt\n\nCOPY . .\n\nEXPOSE 3000\n\nCMD [\"python\", \"app/main.py\"]",
+        "show_line_numbers": false,
+        "width": "content"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>This Dockerfile mirrors the local setup:</p><ul><li><strong>FROM</strong> gives you Python and pip</li><li><strong>WORKDIR</strong> defines the working folder inside the image</li><li><strong>COPY requirements.txt</strong> brings in dependency metadata first</li><li><strong>RUN pip install</strong> installs the dependencies during image build</li><li><strong>COPY . .</strong> adds the rest of the application source code</li><li><strong>CMD</strong> defines the process that starts when the container runs</li></ul><p>The virtual environment step disappears because the container itself already provides process isolation. In most simple containerized Python apps, a separate <code>venv</code> inside the container is unnecessary.</p>"
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Why copy requirements first?",
+        "text": "Separating dependency installation from source code copy improves Docker layer reuse. If only the app code changes, Docker can often reuse the already-built dependency layer.",
+        "tone": "success"
+      }
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "How the Dockerfile maps to the original local workflow",
+        "diagram": "flowchart LR\n Local[Local steps] --> L1[Create environment]\n Local --> L2[Install dependencies]\n Local --> L3[Run app]\n Docker[Docker build/runtime] --> D1[Base image already includes Python]\n Docker --> D2[RUN pip install -r requirements.txt]\n Docker --> D3[CMD python app/main.py]\n L1 -.replaced by container isolation.-> D1\n L2 --> D2\n L3 --> D3",
+        "width": "wide"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Execution",
+        "title": "Build the Image and Run the Container"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>After writing the Dockerfile, the next step is to build an image and run a container from it. The build process executes each Dockerfile instruction and creates a layered image. That image then becomes the blueprint for one or more containers.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Build and run the Flask image",
+        "language": "bash",
+        "code": "docker image build -t flask-web .\n\ndocker container run --rm -p 3001:3000 flask-web",
+        "show_line_numbers": false,
+        "width": "content"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Here, port <code>3001</code> is the host port and <code>3000</code> is the container port. The Flask process listens on port 3000 inside the container, but users connect to port 3001 on the host machine.</p><p>The <code>--rm</code> flag tells Docker to remove the container automatically after it stops. That is useful for quick test runs because it keeps the local environment clean.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Image and container runtime flow",
+        "diagram": "flowchart TD\n A[Dockerfile] --> B[docker image build]\n B --> C[Docker image: flask-web]\n C --> D[docker container run]\n D --> E[Running container]\n E --> F[Port mapping 3001:3000]\n F --> G[Browser request to localhost:3001]",
+        "width": "wide"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Lifecycle",
+        "title": "Foreground Containers, Detached Containers, and Removal Behavior"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>In the course, containers are first run in the foreground. That means the terminal remains attached to the main process, so you can see logs directly and stop the application with <code>Ctrl+C</code>.</p><p>Later, the container is run in detached mode. Detached mode is closer to how services are commonly run because the container continues in the background and the terminal is freed for other tasks.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Run a named container in detached mode",
+        "language": "bash",
+        "code": "docker container run -d --name web1 -p 3001:3000 flask-web",
+        "show_line_numbers": false,
+        "width": "content"
+      }
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Monitor and stop the container",
+        "language": "bash",
+        "code": "docker container ps\ndocker container stop web1\ndocker container start web1",
+        "show_line_numbers": false,
+        "width": "content"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>A key distinction appears here:</p><ul><li>With <code>--rm</code>, the container is deleted when it stops</li><li>Without <code>--rm</code>, the stopped container remains and can be restarted later</li></ul><p>This is useful during debugging because keeping stopped containers lets you inspect their state, logs, and configuration.</p>"
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Practical Rule",
+        "text": "Use throwaway containers for quick tests, and named detached containers when you want to inspect, restart, or manage a service over time.",
+        "tone": "info"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Dependencies",
+        "title": "Using uv Instead of pip"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>The course also demonstrates the same Flask app using the <code>uv</code> package manager instead of pip. The containerization pattern stays the same, but the build inputs and commands change.</p><p>Instead of <code>requirements.txt</code>, the project uses <code>pyproject.toml</code> and a lock file. The base image must also provide the <code>uv</code> executable.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Example pattern for a uv-based Dockerfile",
+        "language": "docker",
+        "code": "FROM ghcr.io/astral-sh/uv:python3.12-bookworm-slim\n\nWORKDIR /src\n\nCOPY pyproject.toml uv.lock ./\nRUN uv sync\n\nCOPY . .\n\nEXPOSE 3000\n\nCMD [\"uv\", \"run\", \"app/main.py\"]",
+        "show_line_numbers": false,
+        "width": "content"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>The important lesson is not the specific package manager. It is the repeatable pattern:</p><ul><li>choose a base image that includes the correct runtime tooling</li><li>copy dependency manifests first</li><li>install dependencies during build</li><li>copy source code</li><li>define a startup command</li></ul>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Distribution",
+        "title": "Images, Registries, Repositories, and Tags"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Once an image works locally, it can be shared through a registry such as Docker Hub or GitHub Container Registry. A registry hosts repositories, and each repository contains one or more tagged images.</p><p>The course shows how the official Python base image comes from Docker Hub, while the uv image comes from GitHub Container Registry. The same mechanics apply whether you are consuming images or publishing your own.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Registry hierarchy",
+        "diagram": "flowchart TD\n A[Registry] --> B[Repository]\n B --> C[Image tags]\n C --> D[latest]\n C --> E[v2]\n C --> F[v3.0.1]",
+        "width": "content"
+      }
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Tag and push an image to Docker Hub",
+        "language": "bash",
+        "code": "docker image tag flask-web weshigbee/flask-web:latest\ndocker login\ndocker image push weshigbee/flask-web:latest",
+        "show_line_numbers": false,
+        "width": "content"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Tagging does not duplicate the image contents. It simply adds another name that points to the same image ID. That is why the same image can appear under multiple names locally.</p><p>When pushing, Docker uploads image layers. If most layers are unchanged, Docker reuses what already exists in the registry and only pushes what is new.</p>"
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Why tags matter",
+        "text": "Tags are how you distinguish application versions. They let you deploy, test, and roll back with intention instead of relying on an ambiguous latest image.",
+        "tone": "warning"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Versioning",
+        "title": "Use Tags to Represent Real Application Versions"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>When the application changes, build a new image with a new tag. In the course, the Flask app header is updated to show a new version, and the new image is built with a version-specific tag like <code>v2</code> or <code>v3.0.1</code>.</p><p>This makes application evolution visible and controlled. Instead of overwriting one image mentally, you preserve clear deployable versions.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Build versioned images",
+        "language": "bash",
+        "code": "docker image build -t weshigbee/flask-web:v2 .\ndocker image build -t weshigbee/flask-web:v3.0.1 .",
+        "show_line_numbers": false,
+        "width": "content"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>When a container is already running an older version, you do not \"upgrade\" that container in place. Instead, you remove the old container and create a new one from the new image.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Replace a running container with a new image version",
+        "language": "bash",
+        "code": "docker container rm -f web1\ndocker container run -d --name web1 -p 3001:3000 weshigbee/flask-web:v3",
+        "show_line_numbers": false,
+        "width": "content"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Troubleshooting",
+        "title": "Use Container Logs to Debug Runtime Failures"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>The course adds a small <code>/adder/&lt;a&gt;/&lt;b&gt;</code> endpoint to demonstrate debugging. The endpoint fails because Flask expects a valid response type, but the code returns a float directly instead of a string or response object.</p><p>When the page returns an internal server error, the first place to look is the container logs.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Inspect logs for a running container",
+        "language": "bash",
+        "code": "docker container logs web1",
+        "show_line_numbers": false,
+        "width": "content"
+      }
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Buggy Flask route and fix",
+        "language": "python",
+        "code": "@app.route(\"/adder/<a>/<b>\")\ndef adder(a, b):\n    result = float(a) + float(b)\n    return str(result)",
+        "show_line_numbers": false,
+        "width": "content"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>The important lesson is that container logs are not just infrastructure output. They are often your fastest path to the real application error.</p>"
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Development Workflow Tip",
+        "text": "For small code fixes, rebuilding images repeatedly is slow. During development, run the app locally with Python. Use containers when you are packaging and validating a deployable build.",
+        "tone": "success"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Configuration",
+        "title": "Pass Environment Variables into Containers"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Applications often behave differently in development and production. Flask is a classic example because debug mode changes error output and enables helpful development behavior such as reloading and detailed stack traces.</p><p>The course shows how to pass <code>FLASK_DEBUG=true</code> into the container at runtime.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Set an environment variable when starting a container",
+        "language": "bash",
+        "code": "docker container run --rm -e FLASK_DEBUG=true -p 3001:3000 weshigbee/flask-web:v3",
+        "show_line_numbers": false,
+        "width": "content"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>You can also define a default environment variable in the Dockerfile using <code>ENV</code>. That bakes a default configuration into the image, though runtime values can still override it.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Define a default environment variable in the image",
+        "language": "docker",
+        "code": "ENV FLASK_DEBUG=true",
+        "show_line_numbers": false,
+        "width": "content"
+      }
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "How environment defaults and overrides work",
+        "diagram": "flowchart TD\n A[Dockerfile ENV FLASK_DEBUG=true] --> B[Image config default]\n B --> C[Container starts]\n D[Runtime flag -e FLASK_DEBUG=false] --> C\n C --> E[Runtime value wins over image default]",
+        "width": "wide"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Inspection",
+        "title": "Inspect Image Metadata to Understand What an Image Really Contains"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Docker images contain not just files, but configuration metadata. The course uses <code>docker image inspect</code> to show details such as environment variables, exposed ports, and the startup command.</p><p>This is useful when you want to verify that a build produced the image you expected.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Inspect image metadata",
+        "language": "bash",
+        "code": "docker image inspect weshigbee/flask-web:v3.1",
+        "show_line_numbers": false,
+        "width": "content"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Two categories of layers are especially important conceptually:</p><ul><li><strong>filesystem contributions</strong> such as copied files or installed packages</li><li><strong>configuration contributions</strong> such as <code>CMD</code>, <code>ENV</code>, or <code>EXPOSE</code></li></ul><p>Understanding that split helps explain why images are efficient, reusable, and composable.</p>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Performance",
+        "title": "Use Stats to Observe CPU and Memory Usage"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>The course closes with runtime monitoring and simple load testing. Docker provides a built-in way to inspect live container resource usage using <code>docker container stats</code>.</p><p>Combined with a simple load tool such as Apache Bench, this gives fast feedback about whether your application remains lightweight under higher request volume.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Watch container resource usage",
+        "language": "bash",
+        "code": "docker container stats",
+        "show_line_numbers": false,
+        "width": "content"
+      }
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Simple load testing with Apache Bench",
+        "language": "bash",
+        "code": "ab -n 10000 -c 4 http://localhost:3001/",
+        "show_line_numbers": false,
+        "width": "content"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Watching CPU and memory usage during load helps you reason about capacity. Even in a simple example, it demonstrates an important production mindset: containerization is not only about packaging — it is also about observability and repeatable operations.</p>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Summary",
+        "title": "What This Course Really Teaches"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>This course is not just about writing a Dockerfile. It teaches a practical sequence for containerizing a real application:</p><ul><li>understand how the app runs locally</li><li>translate those steps into a Dockerfile</li><li>build an image and run a container</li><li>manage the container lifecycle</li><li>debug with logs</li><li>configure behavior with environment variables</li><li>tag and share images through registries</li><li>observe runtime health with stats</li></ul><p>Once these skills are comfortable, you are prepared for the next layer of container work: multi-container development, orchestration, CI/CD integration, and cloud deployment.</p>"
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Final Takeaway",
+        "text": "A container image is a repeatable delivery artifact. The real value of Docker appears when you treat your app’s runtime, dependencies, configuration, and deployment process as something explicit and reproducible.",
+        "tone": "success"
+      }
+    }
+  ]
+},
+  {
+  "slug": "managing-container-images-docker-registry-security-kubernetes",
+  "title": "Managing Container Images: Dockerfiles, Registries, Security, and Kubernetes",
+  "excerpt": "Learn how container images work, how to build them with Dockerfiles, how to host a private Docker Registry, how to secure image distribution, and how Kubernetes pulls images from private repositories.",
+  "author_username": "Michał Antolik",
+  "category_slug": "devops-automation",
+  "tag_slugs": ["docker", "containers", "kubernetes", "security", "devops", "linux"],
+  "live": true,
+  "published_at": "2026-04-15T12:00:00Z",
+  "body": [
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Overview",
+        "title": "Why Container Images Matter"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Container images are the foundation of modern Docker workflows. They package an operating system layer, application code, dependencies, and startup instructions into a predictable, portable unit that can be launched anywhere Docker or a compatible runtime is available.</p><p>The real value of images is not only portability, but repeatability. Instead of documenting how to install software by hand, you define the environment once in code and rebuild it whenever needed. That makes development, testing, and production much more consistent.</p>"
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Core Principle",
+        "text": "An image should be immutable. When it runs as a container, Docker adds a separate writable runtime layer on top of the read-only image layers.",
+        "tone": "info"
+      }
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Image and container relationship",
+        "diagram": "flowchart TD\n    A[Dockerfile] --> B[Docker Image]\n    B --> C[Read-only layers]\n    B --> D[Container start]\n    D --> E[Writable container layer]\n    E --> F[Runtime changes and logs]",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Architecture",
+        "title": "How Docker Images Are Structured"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>A Docker image is made of layers. A base layer might contain Ubuntu or Alpine Linux. Additional layers can install packages, add files, configure services, or define startup commands. Because layers are reusable, Docker can share them across many images and containers on the same host.</p><p>This layered model improves both speed and storage efficiency. If multiple images reuse the same base OS or dependency layer, Docker does not need to download or store identical data over and over again.</p><p>That same design also supports predictability. If an image is built correctly, it provides the same environment on a laptop, a server, or in production.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Useful image inspection commands",
+        "language": "bash",
+        "code": "docker images\ndocker search alpine\ndocker pull alpine\ndocker history alpine",
+        "show_line_numbers": false,
+        "width": "content"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p><code>docker images</code> shows locally available images. <code>docker search</code> helps discover public images on Docker Hub. <code>docker pull</code> downloads an image, and <code>docker history</code> reveals the layers and commands used to build it.</p><p>When pulling from public repositories, prefer official or well-maintained images. Public images of unknown quality may contain outdated software, poor configuration, or even malicious content.</p>"
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Build",
+        "title": "Writing Dockerfiles the Right Way"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Images are usually built from Dockerfiles. A Dockerfile is a declarative text file where each instruction describes the desired final state of the image. Common instructions include <code>FROM</code>, <code>ENV</code>, <code>RUN</code>, <code>COPY</code>, <code>EXPOSE</code>, and <code>CMD</code>.</p><p>A typical example is building an Ubuntu-based Apache image, installing the web server, copying a custom <code>index.html</code>, exposing port 80, and defining the foreground process that should keep the container alive.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Example Dockerfile for a simple Apache web server",
+        "language": "docker",
+        "code": "FROM ubuntu:24.04\n\nENV DEBIAN_FRONTEND=noninteractive\n\nRUN apt-get update && apt-get install -y apache2\n\nCOPY index.html /var/www/html/index.html\n\nEXPOSE 80\n\nCMD [\"apache2ctl\", \"-D\", \"FOREGROUND\"]",
+        "show_line_numbers": false,
+        "width": "content"
+      }
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Build and run the image",
+        "language": "bash",
+        "code": "docker build -t webserver .\ndocker run -d --name webserver01 -p 8080:80 webserver\ndocker ps\ncurl http://localhost:8080",
+        "show_line_numbers": false,
+        "width": "content"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Beyond the basics, Dockerfiles support many other instructions. <code>LABEL</code> adds metadata, <code>USER</code> changes the user context, <code>WORKDIR</code> sets the working directory, <code>ENTRYPOINT</code> defines a non-overridable startup command, <code>HEALTHCHECK</code> verifies runtime health, and <code>ARG</code> provides build-time values.</p><p>One useful distinction is <code>COPY</code> versus <code>ADD</code>. Both move files into the image, but <code>ADD</code> can also fetch remote URLs and unpack archives automatically. In most simple cases, <code>COPY</code> is clearer and more predictable.</p>"
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Best Practices",
+        "title": "Reliability, Version Pinning, and Layer Optimization"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Reliable images are built from Dockerfiles, not captured from running containers with <code>docker commit</code>. Committing a live container may preserve unknown state, temporary files, manual edits, or log artifacts. That makes the result much harder to reproduce or trust.</p><p>Version pinning is also important. Using <code>ubuntu:latest</code> or <code>debian:latest</code> feels convenient, but it can unexpectedly change the software stack when upstream maintainers move the tag forward. A safer approach is to pin a known image tag like <code>debian:12</code> or <code>ubuntu:24.04</code>, then deliberately rebuild when you are ready for updates.</p><p>At the same time, pinning versions means you must monitor upstream security updates yourself. Predictability and patch freshness must be balanced intentionally.</p>"
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Practical Rule",
+        "text": "Do not rely on latest for important workloads. Pin exact image versions, then rebuild on your own schedule after validation.",
+        "tone": "warning"
+      }
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Why fewer RUN instructions often produce smaller images",
+        "diagram": "flowchart LR\n    A[Separate RUN commands] --> B[More layers]\n    B --> C[Larger image]\n    D[Combined RUN command] --> E[Fewer layers]\n    E --> F[Smaller image]",
+        "width": "content"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Layer count also affects image size. Every <code>RUN</code> instruction creates a new layer. Combining related shell commands into a single <code>RUN</code> statement often reduces the final size because intermediate files do not persist across as many layers.</p><p>That is why image optimization often includes combining package installation, download, extraction, and cleanup steps into one layer.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Layer-friendly package installation pattern",
+        "language": "docker",
+        "code": "RUN apt-get update && \\\n    apt-get install -y curl && \\\n    rm -rf /var/lib/apt/lists/*",
+        "show_line_numbers": false,
+        "width": "content"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Distribution",
+        "title": "Pushing Images to Docker Hub"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Once an image works locally, the next step is sharing it. Docker Hub is the default public image registry and is often good enough for demos, open-source projects, and team collaboration. After authenticating with <code>docker login</code>, you can retag a local image to include your Docker Hub namespace and push it to the remote repository.</p><p>That lets other users pull the image with a single command, assuming the repository is public or they have access to the private repo.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Tag and push an image to Docker Hub",
+        "language": "bash",
+        "code": "docker login\ndocker tag webserver your-dockerhub-user/webserver:latest\ndocker push your-dockerhub-user/webserver:latest",
+        "show_line_numbers": false,
+        "width": "content"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Cloud platforms offer alternatives such as Amazon ECR, Azure Container Registry, and Google Container Registry. The exact service changes, but the workflow is similar: build, tag, authenticate, and push.</p>"
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Private Infrastructure",
+        "title": "Running Your Own Docker Registry"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>For private networks, internal development, or stricter control over distribution, you can run your own Docker Registry. One simple way is to run the official <code>registry</code> image as a container on a host that already has Docker installed.</p><p>On the server side, port 5000 is commonly exposed for the registry service. On Docker clients, if the registry is not encrypted yet, Docker must be configured to trust that registry as insecure before pushing or pulling images.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Start a basic Docker Registry",
+        "language": "bash",
+        "code": "docker run -d \\\n  --name registry \\\n  -p 5000:5000 \\\n  registry:2",
+        "show_line_numbers": false,
+        "width": "content"
+      }
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Client-side insecure registry configuration",
+        "language": "json",
+        "code": "{\n  \"insecure-registries\": [\"192.168.1.50:5000\"]\n}",
+        "show_line_numbers": false,
+        "width": "content"
+      }
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Tag, push, and pull from a private registry",
+        "language": "bash",
+        "code": "docker tag webserver 192.168.1.50:5000/webserver:latest\ndocker push 192.168.1.50:5000/webserver:latest\ndocker pull 192.168.1.50:5000/webserver:latest",
+        "show_line_numbers": false,
+        "width": "content"
+      }
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Private registry workflow",
+        "diagram": "flowchart LR\n    A[Developer workstation] --> B[Build image]\n    B --> C[Tag for private registry]\n    C --> D[Push to registry]\n    D --> E[Registry server]\n    E --> F[Other client or cluster]\n    F --> G[Pull image]",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Persistence",
+        "title": "Avoid Losing Images Stored in the Registry"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>A registry container without persistent storage is fragile. If the container is removed, its image catalog disappears with it. The fix is to mount a host directory into the registry container so repository data survives restarts and replacement.</p><p>It is also a good idea to add a restart policy so the registry comes back automatically after a host reboot.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Registry with persistent host storage",
+        "language": "bash",
+        "code": "mkdir -p /var/lib/registry-data\n\ndocker run -d \\\n  --name registry \\\n  --restart always \\\n  -p 5000:5000 \\\n  -v /var/lib/registry-data:/var/lib/registry \\\n  registry:2",
+        "show_line_numbers": false,
+        "width": "content"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Security",
+        "title": "Encrypting and Authenticating a Private Registry"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>A production-ready registry should not rely on plain HTTP. Traffic between Docker clients and the registry should be encrypted with TLS, typically using certificates issued by a trusted certificate authority such as Let's Encrypt.</p><p>Once a domain name points to the registry host, the certificate files can be mounted into the registry container and exposed through environment configuration so the registry serves HTTPS traffic securely.</p><p>Encryption protects image transfers in transit, but it does not control who is allowed to use the registry. For that, basic authentication can be added with an <code>htpasswd</code> file containing usernames and hashed passwords.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Generate an htpasswd file for registry authentication",
+        "language": "bash",
+        "code": "mkdir -p ~/auth\n\ndocker run --rm \\\n  --entrypoint htpasswd \\\n  registry:2 -Bbn myuser mypassword > ~/auth/htpasswd",
+        "show_line_numbers": false,
+        "width": "content"
+      }
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Run Docker Registry with TLS and authentication",
+        "language": "bash",
+        "code": "docker run -d \\\n  --name registry \\\n  --restart always \\\n  -p 5000:5000 \\\n  -v /var/lib/registry-data:/var/lib/registry \\\n  -v /opt/registry/certs:/certs \\\n  -v /home/ubuntu/auth:/auth \\\n  -e REGISTRY_HTTP_TLS_CERTIFICATE=/certs/domain.crt \\\n  -e REGISTRY_HTTP_TLS_KEY=/certs/domain.key \\\n  -e REGISTRY_AUTH=htpasswd \\\n  -e REGISTRY_AUTH_HTPASSWD_REALM='Registry Realm' \\\n  -e REGISTRY_AUTH_HTPASSWD_PATH=/auth/htpasswd \\\n  registry:2",
+        "show_line_numbers": false,
+        "width": "content"
+      }
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Authenticate from a Docker client",
+        "language": "bash",
+        "code": "docker login registry.example.com:5000\ndocker push registry.example.com:5000/webserver:latest",
+        "show_line_numbers": false,
+        "width": "content"
+      }
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Security Reminder",
+        "text": "TLS protects the connection. Authentication protects access. You usually need both for a real private registry.",
+        "tone": "success"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Trust",
+        "title": "Verifying Images with Docker Content Trust"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Transport encryption proves that traffic is protected during transfer, but it does not guarantee that an image is signed and trusted. Docker Content Trust adds signing and verification to image workflows so clients can validate that an image came from a trusted publisher and has not been tampered with.</p><p>On the client side, Content Trust is enabled through an environment variable. Once enabled, unsigned images can fail to pull, and signed pushes require access to the correct key material and passphrase.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Enable Docker Content Trust",
+        "language": "bash",
+        "code": "export DOCKER_CONTENT_TRUST=1\necho $DOCKER_CONTENT_TRUST",
+        "show_line_numbers": false,
+        "width": "content"
+      }
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Image trust flow",
+        "diagram": "sequenceDiagram\n    participant Publisher\n    participant Registry\n    participant Client\n    Publisher->>Registry: Push signed image\n    Registry-->>Client: Serve image and trust metadata\n    Client->>Client: Verify signature\n    Client->>Registry: Pull only if trusted",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>This trust model is especially useful when images are shared across teams or environments. It reduces the risk of silently consuming modified or malicious content.</p>"
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Kubernetes",
+        "title": "Pulling Images from Private Registries in Kubernetes"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Kubernetes consumes container images the same way Docker does, but pod creation is usually defined in YAML rather than directly through CLI flags. Public images are simple to run, but private images require Kubernetes to authenticate to the remote registry.</p><p>The standard way to do that is to create a registry secret and reference it through <code>imagePullSecrets</code> in the pod or deployment specification.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Create a Docker registry secret in Kubernetes",
+        "language": "bash",
+        "code": "kubectl create secret docker-registry regcred \\\n  --docker-server=registry.example.com:5000 \\\n  --docker-username=myuser \\\n  --docker-password=mypassword",
+        "show_line_numbers": false,
+        "width": "content"
+      }
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Pod spec that pulls from a private registry",
+        "language": "yaml",
+        "code": "apiVersion: v1\nkind: Pod\nmetadata:\n  name: private-webserver\nspec:\n  containers:\n    - name: webserver\n      image: registry.example.com:5000/webserver:latest\n      ports:\n        - containerPort: 80\n  imagePullSecrets:\n    - name: regcred",
+        "show_line_numbers": false,
+        "width": "content"
+      }
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Apply and inspect the pod",
+        "language": "bash",
+        "code": "kubectl apply -f pod.yaml\nkubectl get pods\nkubectl describe pod private-webserver",
+        "show_line_numbers": false,
+        "width": "content"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>One practical caution is credentials handling. Commands entered in a shell can be recorded in history files such as <code>.bash_history</code>. That means secret creation commands may leave traces on disk. In secure environments, use stricter operational hygiene, dedicated secret management workflows, or more controlled shell practices.</p>"
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Cluster Security",
+        "title": "Kubernetes Admission Controllers and Image Policies"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Kubernetes can enforce image-related rules through admission controllers. These are API-level controls that inspect or modify requests before workloads are accepted by the cluster.</p><p>Two image-related controllers are especially relevant. <code>AlwaysPullImages</code> forces pods to pull images from their original source instead of reusing cached copies, which helps in multi-tenant environments. <code>ImagePolicyWebhook</code> allows external policy systems to decide whether a requested image should be allowed.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Admission control idea",
+        "diagram": "flowchart TD\n    A[Pod create request] --> B[Kubernetes API Server]\n    B --> C[Admission Controller]\n    C -->|Allowed| D[Pull image]\n    C -->|Denied| E[Reject workload]",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Big Picture",
+        "text": "Image security is not only about building images. It also includes registry transport security, authentication, trust validation, and cluster-side enforcement.",
+        "tone": "info"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Summary",
+        "title": "From Build to Secure Consumption"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Managing container images well means understanding the full lifecycle: how images are built, how their layers affect size and speed, how they are distributed through public or private registries, and how security is enforced at each stage.</p><p>A strong workflow usually includes reproducible Dockerfiles, pinned base images, optimized layers, a properly configured registry with persistent storage, TLS encryption, registry authentication, trust validation, and secure Kubernetes pull configuration.</p><p>Once these pieces are in place, images become more than packaging artifacts. They become a reliable delivery mechanism for infrastructure and application behavior.</p>"
+    }
+  ]
+}
 ]
