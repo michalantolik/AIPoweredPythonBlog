@@ -1,132 +1,259 @@
 [
   {
-    "slug": "release-pipelines-that-favor-repeatability",
-    "title": "Release Pipelines That Favor Repeatability Over Heroics",
-    "excerpt": "DEV Wagtail seed article for release pipelines that favor repeatability over heroics in the devops-automation category.",
-    "author_username": "Michał Antolik",
-    "category_slug": "devops-automation",
-    "tag_slugs": [
-      "devops",
-      "automation"
-    ],
-    "live": true,
-    "published_at": "2026-01-10T09:00:00+01:00",
-    "body": [
-      {
-        "type": "section_heading",
-        "value": {
-          "eyebrow": "Foundations",
-          "title": "Release Pipelines That Favor Repeatability Over Heroics"
-        }
-      },
-      {
-        "type": "rich_text",
-        "value": "<p>This seeded article belongs to the <b>devops-automation</b> category and is meant to populate the Wagtail DEV blog with realistic technical content. It follows the same StreamField structure as the existing sample data, so the seeder can call <b>to_python(...)</b> and validate the payload before saving the page.</p><p>The goal is not only to test page creation, but also to exercise sidebar category filtering, tag chips, publish timestamps, and rich article rendering under <b>/articles/</b>. Keeping three posts per category makes the local dataset feel balanced and makes sorting by <b>sort_order</b> easy to verify.</p>"
-      },
-      {
-        "type": "code",
-        "value": {
-          "caption": "Seeder-oriented example",
-          "language": "yaml",
-          "code": "resourceGroup: rg-tech-blog\nservice: managed-app-platform",
-          "show_line_numbers": true,
-          "width": "content"
-        }
-      },
-      {
-        "type": "callout",
-        "value": {
-          "title": "Why this helps locally",
-          "text": "A seeded technical post like this proves that category filters, tag relationships, and body block rendering all work together.",
-          "tone": "info"
-        }
+  "slug": "docker-basics-concepts-configuration",
+  "title": "Docker Basics: Concepts, Configuration, and First Workloads",
+  "excerpt": "Learn how Docker works under the hood, how containers are built and run, and how to create your first production-ready workloads using Dockerfiles.",
+  "author_username": "Michał Antolik",
+  "category_slug": "devops-automation",
+  "tag_slugs": ["docker", "containers", "devops", "linux", "ci-cd"],
+  "live": true,
+  "published_at": "2026-04-15T10:00:00Z",
+  "body": [
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Foundations",
+        "title": "What Makes Docker So Powerful?"
       }
-    ]
-  },
-  {
-    "slug": "shift-left-validation-for-config-and-app-startup",
-    "title": "Shift-Left Validation for Config and App Startup",
-    "excerpt": "DEV Wagtail seed article for shift-left validation for config and app startup in the devops-automation category.",
-    "author_username": "Michał Antolik",
-    "category_slug": "devops-automation",
-    "tag_slugs": [
-      "devops",
-      "automation"
-    ],
-    "live": true,
-    "published_at": "2026-01-11T09:00:00+01:00",
-    "body": [
-      {
-        "type": "section_heading",
-        "value": {
-          "eyebrow": "Practical design",
-          "title": "Shift-Left Validation for Config and App Startup"
-        }
-      },
-      {
-        "type": "rich_text",
-        "value": "<p>This seeded article belongs to the <b>devops-automation</b> category and is meant to populate the Wagtail DEV blog with realistic technical content. It follows the same StreamField structure as the existing sample data, so the seeder can call <b>to_python(...)</b> and validate the payload before saving the page.</p><p>The goal is not only to test page creation, but also to exercise sidebar category filtering, tag chips, publish timestamps, and rich article rendering under <b>/articles/</b>. Keeping three posts per category makes the local dataset feel balanced and makes sorting by <b>sort_order</b> easy to verify.</p>"
-      },
-      {
-        "type": "callout",
-        "value": {
-          "title": "Operational reminder",
-          "text": "Keep the JSON shape stable. Each post should provide slug, title, excerpt, author, category, tags, publish status, publish time, and a StreamField body array.",
-          "tone": "warning"
-        }
-      },
-      {
-        "type": "code",
-        "value": {
-          "caption": "Representative snippet",
-          "language": "yaml",
-          "code": "jobs:\n  test:\n    runs-on: ubuntu-latest",
-          "show_line_numbers": true,
-          "width": "content"
-        }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Docker containers are lightweight, portable environments that allow applications to run consistently across different systems. Unlike traditional virtual machines, containers share the host operating system kernel, making them faster and more efficient.</p><p>Because containers are defined using text-based configuration (like Dockerfiles), they can be versioned, automated, and reproduced with high reliability.</p>"
+    },
+
+    {
+      "type": "callout",
+      "value": {
+        "title": "Key Idea",
+        "text": "Containers are not full virtual machines — they are isolated processes sharing the same OS kernel.",
+        "tone": "info"
       }
-    ]
-  },
-  {
-    "slug": "build-automation-checklists-for-multi-env-projects",
-    "title": "Build Automation Checklists for Multi-Environment Projects",
-    "excerpt": "DEV Wagtail seed article for build automation checklists for multi-environment projects in the devops-automation category.",
-    "author_username": "Michał Antolik",
-    "category_slug": "devops-automation",
-    "tag_slugs": [
-      "devops",
-      "automation"
-    ],
-    "live": true,
-    "published_at": "2026-01-12T09:00:00+01:00",
-    "body": [
-      {
-        "type": "section_heading",
-        "value": {
-          "eyebrow": "Operational view",
-          "title": "Build Automation Checklists for Multi-Environment Projects"
-        }
-      },
-      {
-        "type": "rich_text",
-        "value": "<p>This seeded article belongs to the <b>devops-automation</b> category and is meant to populate the Wagtail DEV blog with realistic technical content. It follows the same StreamField structure as the existing sample data, so the seeder can call <b>to_python(...)</b> and validate the payload before saving the page.</p><p>The goal is not only to test page creation, but also to exercise sidebar category filtering, tag chips, publish timestamps, and rich article rendering under <b>/articles/</b>. Keeping three posts per category makes the local dataset feel balanced and makes sorting by <b>sort_order</b> easy to verify.</p>"
-      },
-      {
-        "type": "mermaid",
-        "value": {
-          "caption": "Simple flow",
-          "diagram": "flowchart TD\n    A[Seed JSON] --> B[Read file]\n    B --> C[Validate StreamField blocks]\n    C --> D[Create or update BlogPostPage]\n    D --> E[Publish revision]",
-          "width": "wide"
-        }
-      },
-      {
-        "type": "callout",
-        "value": {
-          "title": "Design takeaway",
-          "text": "The most useful DEV content is content that looks real enough to validate templates, but simple enough to maintain as source-controlled seed data.",
-          "tone": "success"
-        }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "In Practice",
+        "title": "Running Your First Container"
       }
-    ]
-  }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>With a single Docker command, you can launch a fully working web server. Docker will automatically download the required image, create a container, and expose it to the outside world.</p>"
+    },
+
+    {
+      "type": "code",
+      "value": {
+        "caption": "Running an Apache container",
+        "language": "bash",
+        "code": "docker run -d \\\n  --name app0 \\\n  -e TZ=UTC \\\n  -p 8080:80 \\\n  httpd:latest",
+        "show_line_numbers": false,
+        "width": "content"
+      }
+    },
+
+    {
+      "type": "rich_text",
+      "value": "<p>This command:</p><ul><li>Runs a container in detached mode</li><li>Maps port 8080 (host) to 80 (container)</li><li>Uses a prebuilt Apache image</li></ul><p>Once started, the web server is immediately accessible via <code>http://localhost:8080</code>.</p>"
+    },
+
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Docker Run Flow",
+        "diagram": "flowchart TD\n A[Run command] --> B[Check local image]\n B -->|Not found| C[Pull from Docker Hub]\n C --> D[Create container]\n D --> E[Start process]\n E --> F[Expose ports]",
+        "width": "wide"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Architecture",
+        "title": "Understanding the Docker Ecosystem"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Docker is more than just a CLI tool — it is a complete platform consisting of multiple components working together.</p>"
+    },
+
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Docker Architecture",
+        "diagram": "flowchart TD\n CLI[Docker CLI] --> API[REST API]\n API --> Daemon[Docker Daemon]\n Daemon --> Runtime[Container Runtime]\n Runtime --> Containers[Running Containers]\n Daemon --> Images[Docker Images]\n Images --> Registry[Docker Registry]",
+        "width": "wide"
+      }
+    },
+
+    {
+      "type": "rich_text",
+      "value": "<p><strong>Key components:</strong></p><ul><li><strong>Docker Engine</strong> – the core platform</li><li><strong>Docker Daemon</strong> – manages containers</li><li><strong>CLI</strong> – user interface</li><li><strong>Images</strong> – blueprints for containers</li><li><strong>Containers</strong> – running instances</li><li><strong>Registry</strong> – stores images (e.g. Docker Hub)</li></ul>"
+    },
+
+    {
+      "type": "callout",
+      "value": {
+        "title": "Important",
+        "text": "Docker relies on the Linux kernel. On Windows/macOS, it runs inside a lightweight Linux VM.",
+        "tone": "warning"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Images",
+        "title": "Images vs Containers"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>A Docker image is a read-only template. A container is a running instance of that image.</p>"
+    },
+
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Image to Container Lifecycle",
+        "diagram": "flowchart LR\n Dockerfile --> Image\n Image --> Container\n Container -->|run| Process",
+        "width": "content"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Build",
+        "title": "Creating Images with Dockerfile"
+      }
+    },
+
+    {
+      "type": "code",
+      "value": {
+        "caption": "Example Dockerfile",
+        "language": "dockerfile",
+        "code": "FROM ubuntu:24.04\n\nENV DEBIAN_FRONTEND=noninteractive\n\nRUN apt-get update && apt-get install -y apache2\n\nCOPY index.html /var/www/html/index.html\n\nEXPOSE 80\n\nCMD [\"apache2ctl\", \"-D\", \"FOREGROUND\"]",
+        "show_line_numbers": false,
+        "width": "content"
+      }
+    },
+
+    {
+      "type": "rich_text",
+      "value": "<p>This Dockerfile:</p><ul><li>Uses Ubuntu as base image</li><li>Installs Apache</li><li>Copies custom HTML</li><li>Exposes port 80</li><li>Starts the web server</li></ul>"
+    },
+
+    {
+      "type": "code",
+      "value": {
+        "caption": "Build and run the image",
+        "language": "bash",
+        "code": "docker buildx build -t my-server .\ndocker run -d -p 8080:80 my-server",
+        "show_line_numbers": false,
+        "width": "content"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "System",
+        "title": "Docker Daemon and Configuration"
+      }
+    },
+
+    {
+      "type": "rich_text",
+      "value": "<p>The Docker daemon is the core service that manages containers. Its behavior is configured using the <code>daemon.json</code> file.</p>"
+    },
+
+    {
+      "type": "code",
+      "value": {
+        "caption": "Example daemon.json",
+        "language": "json",
+        "code": "{\n  \"log-driver\": \"json-file\",\n  \"storage-driver\": \"overlay2\"\n}",
+        "show_line_numbers": false,
+        "width": "content"
+      }
+    },
+
+    {
+      "type": "rich_text",
+      "value": "<p>Changes require restarting Docker:</p>"
+    },
+
+    {
+      "type": "code",
+      "value": {
+        "caption": "Restart Docker",
+        "language": "bash",
+        "code": "sudo systemctl restart docker",
+        "show_line_numbers": false,
+        "width": "content"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Operations",
+        "title": "Inspecting and Managing Containers"
+      }
+    },
+
+    {
+      "type": "code",
+      "value": {
+        "caption": "Useful commands",
+        "language": "bash",
+        "code": "docker ps\ndocker ps -a\ndocker stop <container>\ndocker logs <container>\ndocker info",
+        "show_line_numbers": false,
+        "width": "content"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Scaling",
+        "title": "Beyond Single Containers"
+      }
+    },
+
+    {
+      "type": "rich_text",
+      "value": "<p>As applications grow, multiple containers must work together. This is where orchestration tools come in.</p>"
+    },
+
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Container Orchestration Options",
+        "diagram": "flowchart TD\n A[Single Container] --> B[Docker Compose]\n B --> C[Docker Swarm]\n C --> D[Kubernetes]",
+        "width": "wide"
+      }
+    },
+
+    {
+      "type": "rich_text",
+      "value": "<ul><li><strong>Docker Compose</strong> – multi-container apps on one host</li><li><strong>Docker Swarm</strong> – clustering across hosts</li><li><strong>Kubernetes</strong> – enterprise-grade orchestration</li></ul>"
+    },
+
+    {
+      "type": "callout",
+      "value": {
+        "title": "Final Thought",
+        "text": "If you can define your infrastructure as code, you can automate everything.",
+        "tone": "success"
+      }
+    }
+
+  ]
+},
+
 ]

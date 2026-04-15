@@ -66,5 +66,8 @@
   { "slug": "machine-learning", "name": "Machine Learning" },
   { "slug": "avd", "name": "AVD" },
   { "slug": "virtual-desktop", "name": "Virtual Desktop" },
-  { "slug": "certification", "name": "Certification" }
+  { "slug": "certification", "name": "Certification" },
+  { "slug": "containers", "name": "Containers" },
+  { "slug": "linux", "name": "Linux" },
+  { "slug": "ci-cd", "name": "CI/CD" }
 ]
