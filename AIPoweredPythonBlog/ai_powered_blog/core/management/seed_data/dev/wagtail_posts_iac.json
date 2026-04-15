@@ -1,132 +1,192 @@
 [
   {
-    "slug": "terraform-module-boundaries-that-age-well",
-    "title": "Terraform Module Boundaries That Age Well",
-    "excerpt": "DEV Wagtail seed article for terraform module boundaries that age well in the infrastructure-as-code category.",
-    "author_username": "Michał Antolik",
-    "category_slug": "infrastructure-as-code",
-    "tag_slugs": [
-      "terraform",
-      "iac"
-    ],
-    "live": true,
-    "published_at": "2026-01-16T09:00:00+01:00",
-    "body": [
-      {
-        "type": "section_heading",
-        "value": {
-          "eyebrow": "Foundations",
-          "title": "Terraform Module Boundaries That Age Well"
-        }
-      },
-      {
-        "type": "rich_text",
-        "value": "<p>This seeded article belongs to the <b>infrastructure-as-code</b> category and is meant to populate the Wagtail DEV blog with realistic technical content. It follows the same StreamField structure as the existing sample data, so the seeder can call <b>to_python(...)</b> and validate the payload before saving the page.</p><p>The goal is not only to test page creation, but also to exercise sidebar category filtering, tag chips, publish timestamps, and rich article rendering under <b>/articles/</b>. Keeping three posts per category makes the local dataset feel balanced and makes sorting by <b>sort_order</b> easy to verify.</p>"
-      },
-      {
-        "type": "code",
-        "value": {
-          "caption": "Seeder-oriented example",
-          "language": "hcl",
-          "code": "resource \"aws_apprunner_service\" \"blog\" {\n  service_name = \"tech-blog\"\n}",
-          "show_line_numbers": true,
-          "width": "content"
-        }
-      },
-      {
-        "type": "callout",
-        "value": {
-          "title": "Why this helps locally",
-          "text": "A seeded technical post like this proves that category filters, tag relationships, and body block rendering all work together.",
-          "tone": "info"
-        }
+      "slug": "terraform-fundamentals-iac-to-deployment",
+  "title": "Terraform Fundamentals: From Infrastructure as Code to Real Deployments",
+  "excerpt": "Learn Terraform from the ground up: Infrastructure as Code, declarative vs imperative models, core components, workflow, and real-world deployment patterns with AWS.",
+  "category_slug": "infrastructure-as-code",
+  "tag_slugs": ["terraform", "iac", "aws", "devops"],
+  "author_username": "Michał Antolik",
+  "published_at": "2026-04-16T10:00:00+01:00",
+  "live": true,
+  "body": [
+
+    {
+      "type": "section_heading",
+      "value": { "title": "What Is Infrastructure as Code (IaC)?" }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Infrastructure as Code (IaC) is the practice of provisioning and managing infrastructure using code instead of manual processes. The goal is to create environments that are consistent, repeatable, and predictable.</p><p>Instead of clicking through cloud consoles, you define your infrastructure in code and let tools handle the provisioning.</p>"
+    },
+    {
+      "type": "callout",
+      "value": {
+        "text": "IaC ensures that every deployment produces the same result, eliminating configuration drift and manual errors.",
+        "type": "info"
       }
-    ]
-  },
-  {
-    "slug": "environment-configuration-with-tfvars-and-locals",
-    "title": "Environment Configuration with tfvars and locals",
-    "excerpt": "DEV Wagtail seed article for environment configuration with tfvars and locals in the infrastructure-as-code category.",
-    "author_username": "Michał Antolik",
-    "category_slug": "infrastructure-as-code",
-    "tag_slugs": [
-      "terraform",
-      "iac"
-    ],
-    "live": true,
-    "published_at": "2026-01-17T09:00:00+01:00",
-    "body": [
-      {
-        "type": "section_heading",
-        "value": {
-          "eyebrow": "Practical design",
-          "title": "Environment Configuration with tfvars and locals"
-        }
-      },
-      {
-        "type": "rich_text",
-        "value": "<p>This seeded article belongs to the <b>infrastructure-as-code</b> category and is meant to populate the Wagtail DEV blog with realistic technical content. It follows the same StreamField structure as the existing sample data, so the seeder can call <b>to_python(...)</b> and validate the payload before saving the page.</p><p>The goal is not only to test page creation, but also to exercise sidebar category filtering, tag chips, publish timestamps, and rich article rendering under <b>/articles/</b>. Keeping three posts per category makes the local dataset feel balanced and makes sorting by <b>sort_order</b> easy to verify.</p>"
-      },
-      {
-        "type": "callout",
-        "value": {
-          "title": "Operational reminder",
-          "text": "Keep the JSON shape stable. Each post should provide slug, title, excerpt, author, category, tags, publish status, publish time, and a StreamField body array.",
-          "tone": "warning"
-        }
-      },
-      {
-        "type": "code",
-        "value": {
-          "caption": "Representative snippet",
-          "language": "hcl",
-          "code": "locals {\n  env = \"dev\"\n  app = \"tech-blog\"\n}",
-          "show_line_numbers": true,
-          "width": "content"
-        }
-      }
-    ]
-  },
-  {
-    "slug": "safe-infrastructure-changes-with-plan-review",
-    "title": "Safe Infrastructure Changes with Plan Review Discipline",
-    "excerpt": "DEV Wagtail seed article for safe infrastructure changes with plan review discipline in the infrastructure-as-code category.",
-    "author_username": "Michał Antolik",
-    "category_slug": "infrastructure-as-code",
-    "tag_slugs": [
-      "terraform",
-      "iac"
-    ],
-    "live": true,
-    "published_at": "2026-01-18T09:00:00+01:00",
-    "body": [
-      {
-        "type": "section_heading",
-        "value": {
-          "eyebrow": "Operational view",
-          "title": "Safe Infrastructure Changes with Plan Review Discipline"
-        }
-      },
-      {
-        "type": "rich_text",
-        "value": "<p>This seeded article belongs to the <b>infrastructure-as-code</b> category and is meant to populate the Wagtail DEV blog with realistic technical content. It follows the same StreamField structure as the existing sample data, so the seeder can call <b>to_python(...)</b> and validate the payload before saving the page.</p><p>The goal is not only to test page creation, but also to exercise sidebar category filtering, tag chips, publish timestamps, and rich article rendering under <b>/articles/</b>. Keeping three posts per category makes the local dataset feel balanced and makes sorting by <b>sort_order</b> easy to verify.</p>"
-      },
-      {
+    },
+
+    {
+      "type": "section_heading",
+      "value": { "title": "Imperative vs Declarative Approach" }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>There are two main approaches to defining infrastructure:</p><ul><li><strong>Imperative</strong> – you define step-by-step instructions</li><li><strong>Declarative</strong> – you define the desired end state</li></ul><p>Terraform uses the declarative model.</p>"
+    },
+       {
         "type": "mermaid",
         "value": {
-          "caption": "Simple flow",
-          "diagram": "flowchart TD\n    A[Seed JSON] --> B[Read file]\n    B --> C[Validate StreamField blocks]\n    C --> D[Create or update BlogPostPage]\n    D --> E[Publish revision]",
+          "diagram": "flowchart LR\nA[Imperative: HOW] --> B[Step-by-step instructions]\nC[Declarative: WHAT] --> D[Desired final state]",
           "width": "wide"
         }
       },
-      {
-        "type": "callout",
-        "value": {
-          "title": "Design takeaway",
-          "text": "The most useful DEV content is content that looks real enough to validate templates, but simple enough to maintain as source-controlled seed data.",
-          "tone": "success"
-        }
-      }
-    ]
+    {
+      "type": "rich_text",
+      "value": "<p>In declarative systems, you describe what you want, and the tool figures out how to achieve it.</p>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": { "title": "Idempotence and State Awareness" }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Terraform ensures idempotence, meaning applying the same configuration multiple times produces the same result.</p><p>If the desired state matches the current state, Terraform does nothing.</p>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": { "title": "What Is Terraform?" }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Terraform is a tool created by HashiCorp to automate infrastructure provisioning and lifecycle management. It works with cloud providers like AWS, Azure, and many others through APIs.</p><p>Terraform is platform-agnostic and operates using a declarative configuration language called HCL (HashiCorp Configuration Language).</p>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": { "title": "Core Terraform Components" }
+    },
+{
+  "type": "mermaid",
+  "value": {
+    "diagram": "flowchart TD\nA[\"Terraform CLI\"] --> B[\"Configuration Files (.tf)\"]\nA --> C[\"Provider Plugins\"]\nA --> D[\"State File\"]",
+    "width": "wide"
   }
+},
+    {
+      "type": "rich_text",
+      "value": "<ul><li><strong>Terraform Binary</strong> – the CLI tool</li><li><strong>Configuration Files</strong> – written in HCL</li><li><strong>Providers</strong> – plugins to interact with APIs</li><li><strong>State</strong> – tracks real infrastructure</li></ul>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": { "title": "Terraform Workflow: Write → Plan → Apply" }
+    },
+    {
+        "type": "mermaid",
+        "value": {
+          "diagram": "flowchart LR\nA[Write Code] --> B[terraform plan]\nB --> C[Execution Plan]\nC --> D[terraform apply]\nD --> E[Infrastructure Created]",
+          "width": "wide"
+        }
+      },
+    {
+      "type": "rich_text",
+      "value": "<p>Terraform follows a predictable workflow:</p><ul><li><strong>Write</strong> – define infrastructure in code</li><li><strong>Plan</strong> – preview changes</li><li><strong>Apply</strong> – execute changes</li></ul>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": { "title": "Example Terraform Configuration (HCL)" }
+    },
+    {
+      "type": "code",
+      "value": {
+        "language": "hcl",
+        "code": "resource \"aws_instance\" \"web_server\" {\n  ami           = \"ami-123456\"\n  instance_type = \"t3.micro\"\n\n  tags = {\n    Name = \"web-server\"\n  }\n}"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": { "title": "Terraform State Explained" }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Terraform stores state in a JSON file that maps your configuration to real-world infrastructure. This allows Terraform to detect changes and apply updates safely.</p>"
+    },
+      {
+        "type": "mermaid",
+        "value": {
+          "diagram": "flowchart TD\nA[Configuration] --> B[Terraform State]\nB --> C[Real Infrastructure]\nA -->|Compare| C",
+          "width": "wide"
+        }
+      },
+    {
+      "type": "section_heading",
+      "value": { "title": "Terraform Init, Plan, Apply Commands" }
+    },
+    {
+      "type": "code",
+      "value": {
+        "language": "bash",
+        "code": "terraform init\nterraform plan\nterraform apply"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p><strong>init</strong> prepares the environment, <strong>plan</strong> previews changes, and <strong>apply</strong> executes them.</p>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": { "title": "Variables and Outputs" }
+    },
+    {
+      "type": "code",
+      "value": {
+        "language": "hcl",
+        "code": "variable \"aws_region\" {\n  type    = string\n  default = \"us-east-1\"\n}\n\noutput \"public_dns\" {\n  value = aws_instance.web_server.public_dns\n}"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Variables allow dynamic configurations, while outputs expose useful values after deployment.</p>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": { "title": "Terraform Best Practices" }
+    },
+    {
+      "type": "callout",
+      "value": {
+        "text": "Never store credentials in code. Use environment variables or secure credential stores.",
+        "type": "warning"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<ul><li>Use version control (Git)</li><li>Use variables instead of hardcoding</li><li>Store state remotely (e.g., S3)</li><li>Always review plans before applying</li></ul>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": { "title": "Destroying Infrastructure" }
+    },
+    {
+      "type": "code",
+      "value": {
+        "language": "bash",
+        "code": "terraform destroy"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>This command removes all infrastructure managed by Terraform. Use with caution.</p>"
+    }
+
+  ]
+}
 ]
