@@ -69,5 +69,10 @@
   { "slug": "certification", "name": "Certification" },
   { "slug": "containers", "name": "Containers" },
   { "slug": "linux", "name": "Linux" },
-  { "slug": "ci-cd", "name": "CI/CD" }
+  { "slug": "ci-cd", "name": "CI/CD" },
+  { "slug": "deployment", "name": "Deployment" },
+  { "slug": "microservices", "name": "Microservices" },
+  { "slug": "skaffold", "name": "Skaffold" },
+  { "slug": "kompose", "name": "Kompose" },
+  { "slug": "helm", "name": "Helm" }
 ]

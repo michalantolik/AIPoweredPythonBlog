@@ -178,5 +178,1106 @@
       "value": "<p>Kubernetes is not just a DevOps tool — it is a core platform for modern application development.</p><ul><li>Pods are the foundation</li><li>Clusters manage distributed workloads</li><li>kubectl is your control interface</li><li>YAML defines desired state</li></ul><p>Understanding these concepts allows you to build scalable, resilient applications.</p>"
     }
   ]
+},
+  {
+  "slug": "kubernetes-deployments-strategies-for-developers",
+  "title": "Kubernetes Deployment Strategies for Developers",
+  "excerpt": "Learn how Kubernetes deployments work, including rolling updates, canary releases, blue-green deployments, and background jobs with real examples and diagrams.",
+  "author_username": "Michał Antolik",
+  "category_slug": "containers-kubernetes",
+  "tag_slugs": ["kubernetes", "devops", "containers", "deployment"],
+  "live": true,
+  "published_at": "2026-04-15T10:00:00Z",
+  "body": [
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Foundations",
+        "title": "What is a Kubernetes Deployment?"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>A Kubernetes <strong>Deployment</strong> is the core mechanism used to run and manage your application containers. It ensures that the desired number of Pods are running and automatically replaces failed ones.</p><p>Deployments do not directly manage Pods — instead, they use <strong>ReplicaSets</strong>, which enforce the desired state.</p>"
+    },
+
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Kubernetes Deployment Architecture",
+        "diagram": "flowchart LR\n    Dev[kubectl apply] --> API[Kubernetes API]\n    API --> Controller[Controller Manager]\n    Controller --> ReplicaSet\n    ReplicaSet --> Pods\n    Pods --> Containers",
+        "width": "wide"
+      }
+    },
+
+    {
+      "type": "callout",
+      "value": {
+        "text": "Kubernetes follows a declarative model — you define the desired state, and the system continuously works to match it."
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "YAML",
+        "title": "Defining a Deployment"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Deployments are defined using YAML files. Here's a minimal example:</p><pre><code>apiVersion: apps/v1\nkind: Deployment\nmetadata:\n  name: my-nginx\nspec:\n  replicas: 2\n  selector:\n    matchLabels:\n      app: nginx\n  template:\n    metadata:\n      labels:\n        app: nginx\n    spec:\n      containers:\n        - name: nginx\n          image: nginx:latest</code></pre><p>This configuration ensures that two Pods running nginx are always available.</p>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "CLI",
+        "title": "Applying Deployments"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>You deploy YAML to Kubernetes using <code>kubectl</code>:</p><pre><code>kubectl apply -f deployment.yml</code></pre><p>This command creates or updates resources declaratively.</p>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Strategy",
+        "title": "Rolling Updates (Default Strategy)"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Rolling updates gradually replace old Pods with new ones, ensuring zero downtime.</p>"
+    },
+
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Rolling Update Process",
+        "diagram": "flowchart LR\n    v1a[Pod v1] -->|replace| v2a[Pod v2]\n    v1b[Pod v1] -->|replace| v2b[Pod v2]\n    v1c[Pod v1] -->|replace| v2c[Pod v2]",
+        "width": "wide"
+      }
+    },
+
+    {
+      "type": "rich_text",
+      "value": "<p>Kubernetes ensures that some Pods are always available during the update. You can control behavior using:</p><ul><li><strong>maxSurge</strong> – extra Pods allowed</li><li><strong>maxUnavailable</strong> – Pods that can be offline</li></ul>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Advanced",
+        "title": "Canary Deployments"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Canary deployments allow you to release a new version to a small subset of users while the majority still uses the stable version.</p>"
+    },
+
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Canary Deployment Traffic Split",
+        "diagram": "flowchart LR\n    Users --> Service\n    Service --> Stable[Stable Pods]\n    Service --> Canary[Canary Pods]\n    Stable -->|80% traffic| Users\n    Canary -->|20% traffic| Users",
+        "width": "wide"
+      }
+    },
+
+    {
+      "type": "callout",
+      "value": {
+        "text": "Canary deployments reduce risk by exposing new versions to only a small percentage of users."
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Release",
+        "title": "Blue-Green Deployments"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Blue-green deployments maintain two full environments:</p><ul><li><strong>Blue</strong> – current production</li><li><strong>Green</strong> – new version</li></ul><p>Traffic is switched only after validation.</p>"
+    },
+
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Blue-Green Deployment Switch",
+        "diagram": "flowchart LR\n    Users --> Service\n    Service --> Blue[Blue Deployment]\n    Green[Green Deployment]\n    Tester --> Green\n    Service -.switch.-> Green",
+        "width": "wide"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Recovery",
+        "title": "Rollback Strategy"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>If something goes wrong, Kubernetes allows instant rollback:</p><pre><code>kubectl rollout undo deployment my-app</code></pre><p>You can also view history:</p><pre><code>kubectl rollout history deployment my-app</code></pre>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Batch",
+        "title": "Jobs and CronJobs"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Not all workloads are long-running. Kubernetes supports:</p><ul><li><strong>Jobs</strong> – run once and finish</li><li><strong>CronJobs</strong> – run on a schedule</li></ul>"
+    },
+
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Job vs CronJob",
+        "diagram": "flowchart LR\n    Job -->|runs once| Complete\n    CronJob -->|schedule| Job1\n    CronJob --> Job2\n    CronJob --> Job3",
+        "width": "wide"
+      }
+    },
+
+    {
+      "type": "rich_text",
+      "value": "<p>Example Cron schedule (every day at midnight):</p><pre><code>0 0 * * *</code></pre>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Observability",
+        "title": "Monitoring and Troubleshooting"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Key tools for monitoring Kubernetes:</p><ul><li>Prometheus – metrics collection</li><li>Grafana – dashboards</li><li>kubectl – debugging CLI</li></ul><p>Useful commands:</p><pre><code>kubectl get pods\nkubectl describe pod my-pod\nkubectl logs my-pod\nkubectl exec -it my-pod -- sh</code></pre>"
+    },
+
+    {
+      "type": "callout",
+      "value": {
+        "text": "Always implement monitoring before production deployment — debugging without visibility is extremely difficult."
+      }
+    }
+
+  ]
+},
+  {
+  "slug": "kubernetes-volumes-multi-container-pods-guide",
+  "title": "Kubernetes for Developers: Volumes, Multi-container Pods, and Real-world Patterns",
+  "excerpt": "A practical deep dive into Kubernetes storage, Persistent Volumes, multi-container Pod patterns, and service account security—explained with diagrams and real-world examples.",
+  "author_username": "Michał Antolik",
+  "category_slug": "containers-kubernetes",
+  "tag_slugs": ["kubernetes", "containers", "devops", "microservices"],
+  "live": true,
+  "published_at": "2026-04-15T10:00:00Z",
+  "body": [
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Overview",
+        "title": "From Hello World to Real Kubernetes"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Kubernetes becomes truly powerful when you move beyond stateless containers. In real-world systems, applications need persistent data, integration with external services, and secure access to the cluster.</p><p>This guide walks through three essential areas:</p><ul><li>Persistent storage and volumes</li><li>Multi-container Pod patterns</li><li>Application security using Service Accounts</li></ul><p>These are the building blocks of production-ready Kubernetes systems.</p>"
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Key Idea",
+        "text": "Kubernetes doesn't replace storage systems — it integrates with them.",
+        "tone": "info"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Storage",
+        "title": "Why Storage Matters in Kubernetes"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>In traditional systems, applications relied on dedicated storage systems (like NetApp or EMC). Kubernetes keeps the same model but abstracts it.</p><p>Your application runs in a container, but the data lives outside of it — on a persistent storage system.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Kubernetes integrates external storage systems instead of replacing them",
+        "diagram": "flowchart LR\n    App[Application Pod] --> PV[PersistentVolume]\n    PV --> Storage[(External Storage System)]\n    Storage --> Cloud[(Cloud Storage e.g. EBS, Azure Disk)]",
+        "width": "wide"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Core Concept",
+        "title": "Decoupling Data from Containers"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Containers are ephemeral — if they crash, their data is lost. This is unacceptable for real applications.</p><p>Kubernetes solves this by separating:</p><ul><li><strong>Application lifecycle</strong></li><li><strong>Data lifecycle</strong></li></ul><p>Data is stored in volumes that live independently of containers.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Decoupled lifecycle between containers and data",
+        "diagram": "flowchart LR\n    Container1 --> Volume\n    Container2 --> Volume\n    Volume --> PersistentData[(Persistent Data)]",
+        "width": "wide"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Architecture",
+        "title": "Persistent Volume System"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Kubernetes uses three main objects to manage storage:</p><ul><li><strong>PersistentVolume (PV)</strong> – actual storage</li><li><strong>PersistentVolumeClaim (PVC)</strong> – request for storage</li><li><strong>StorageClass</strong> – dynamic provisioning rules</li></ul>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "How Kubernetes storage objects interact",
+        "diagram": "flowchart LR\n    Storage[(External Storage)] --> PV[PersistentVolume]\n    PV --> PVC[PersistentVolumeClaim]\n    PVC --> Pod\n    Pod --> Container",
+        "width": "wide"
+      }
+    },
+
+    {
+      "type": "callout",
+      "value": {
+        "title": "Important",
+        "text": "A Pod never uses a PersistentVolume directly — it always goes through a PVC.",
+        "tone": "warning"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Automation",
+        "title": "Dynamic Provisioning with Storage Classes"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Instead of manually creating volumes, Kubernetes can dynamically provision them using StorageClasses.</p><p>This allows you to define different types of storage like fast SSD or cheaper HDD.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Dynamic provisioning flow",
+        "diagram": "flowchart LR\n    PVC --> StorageClass\n    StorageClass --> Controller\n    Controller --> PV\n    PV --> Storage[(Cloud Storage)]",
+        "width": "wide"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Patterns",
+        "title": "Multi-container Pods Explained"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>A Pod is the smallest deployable unit in Kubernetes and can contain multiple containers.</p><p>All containers in a Pod:</p><ul><li>Run on the same node</li><li>Share networking (localhost)</li><li>Can share volumes</li></ul>"
+    },
+
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Containers inside a Pod share environment",
+        "diagram": "flowchart TD\n    Pod --> ContainerA\n    Pod --> ContainerB\n    ContainerA --> SharedVolume\n    ContainerB --> SharedVolume",
+        "width": "wide"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Pattern",
+        "title": "Init Containers"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Init containers run before the main application container and prepare the environment.</p><p>Common use cases:</p><ul><li>Waiting for services</li><li>Fetching configuration</li><li>Initializing data</li></ul>"
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Rule",
+        "text": "Init containers must complete successfully before the main container starts.",
+        "tone": "info"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Pattern",
+        "title": "Sidecar Containers"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Sidecars run alongside the main container and extend its functionality.</p><p>Example: syncing content from Git continuously.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Sidecar pattern",
+        "diagram": "flowchart LR\n    GitRepo --> Sidecar\n    Sidecar --> SharedVolume\n    SharedVolume --> App[Main Container]",
+        "width": "wide"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Pattern",
+        "title": "Adapter Pattern"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>The adapter transforms output from your application into a format required by external systems.</p><p>Example: converting metrics for Prometheus.</p>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Pattern",
+        "title": "Ambassador Pattern"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>The ambassador acts as a proxy between your app and external services.</p><p>Your app talks to localhost, and the ambassador handles external communication.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Ambassador pattern",
+        "diagram": "flowchart LR\n    App --> Ambassador\n    Ambassador --> ExternalAPI[(External API)]",
+        "width": "wide"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Security",
+        "title": "Service Accounts and Access Control"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Applications running in Pods interact with Kubernetes using Service Accounts.</p><p>Every request goes through the Kubernetes API server:</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Authentication and authorization flow",
+        "diagram": "sequenceDiagram\n    App->>API Server: Request (with token)\n    API Server->>Auth: Authenticate\n    Auth->>RBAC: Authorize\n    RBAC-->>API Server: अनुमति/Denied\n    API Server-->>App: Response",
+        "width": "wide"
+      }
+    },
+
+    {
+      "type": "callout",
+      "value": {
+        "title": "Best Practice",
+        "text": "Always follow least privilege — give apps only the permissions they need.",
+        "tone": "warning"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Example",
+        "title": "Minimal RBAC Example"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<pre><code>apiVersion: v1\nkind: ServiceAccount\nmetadata:\n  name: service-reader\n\n---\napiVersion: rbac.authorization.k8s.io/v1\nkind: Role\nmetadata:\n  name: read-services\nrules:\n- apiGroups: [\"\"]\n  resources: [\"services\"]\n  verbs: [\"get\", \"list\"]</code></pre>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Summary",
+        "title": "Putting It All Together"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Real-world Kubernetes applications combine all of these concepts:</p><ul><li>Persistent storage via PVC and StorageClass</li><li>Multi-container Pods (init + sidecars)</li><li>Secure API access via Service Accounts</li></ul><p>When combined, they create scalable, maintainable, and production-ready systems.</p>"
+    }
+  ]
+},
+  {
+  "slug": "moving-from-docker-compose-to-kubernetes",
+  "title": "Kubernetes for Developers: Moving from Docker Compose to Kubernetes",
+  "excerpt": "Learn how to migrate from Docker Compose to Kubernetes using Kompose and Skaffold, with practical workflows, mappings, and developer-focused insights.",
+  "author_username": "Michał Antolik",
+  "category_slug": "containers-kubernetes",
+  "tag_slugs": ["kubernetes", "docker", "devops", "skaffold", "kompose"],
+  "live": true,
+  "published_at": "2026-01-01T10:00:00Z",
+  "body": [
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Overview",
+        "title": "Why Move from Docker Compose to Kubernetes?"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Docker Compose is an excellent tool for running multi-container applications locally. It allows developers to define services, networks, and volumes in a single YAML file and start everything with a single command.</p><p>However, as applications grow and move toward production environments, limitations start to appear. This is where Kubernetes becomes essential.</p>"
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Key Insight",
+        "text": "Docker Compose is great for local orchestration, but Kubernetes is designed for production-grade scaling, resilience, and automation.",
+        "tone": "info"
+      }
+    },
+
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Docker Compose vs Kubernetes scope",
+        "diagram": "flowchart LR\n    Dev[Developer Machine] --> Compose[Docker Compose]\n    Compose --> Containers[Containers]\n\n    Dev --> Kubernetes[Kubernetes Cluster]\n    Kubernetes --> Nodes[Multiple Nodes]\n    Nodes --> Pods[Pods]\n    Pods --> Containers2[Containers]",
+        "width": "wide"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Concepts",
+        "title": "Docker Compose Fundamentals"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Docker Compose defines multi-container applications using a single YAML file. Each <strong>service</strong> corresponds to a container.</p><p>Example responsibilities:</p><ul><li>Build images</li><li>Run containers</li><li>Manage networks</li><li>Handle logs</li></ul>"
+    },
+    {
+      "type": "rich_text",
+      "value": "<pre><code class=\"language-yaml\">version: '3'\nservices:\n  web:\n    build: .\n    ports:\n      - \"5000:5000\"\n  db:\n    image: postgres\nnetworks:\n  default:\n    driver: bridge</code></pre>"
+    },
+
+    {
+      "type": "callout",
+      "value": {
+        "title": "Limitation",
+        "text": "Docker Compose runs on a single machine and lacks built-in scaling, healing, and advanced deployment strategies.",
+        "tone": "warning"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Concepts",
+        "title": "Kubernetes Core Concepts"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Kubernetes is a container orchestration platform designed for scalability and resilience. It introduces several key abstractions:</p><ul><li><strong>Pod</strong> – runs containers</li><li><strong>Deployment</strong> – manages Pods</li><li><strong>Service</strong> – networking layer</li><li><strong>ConfigMap / Secret</strong> – configuration</li></ul>"
+    },
+
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Kubernetes architecture overview",
+        "diagram": "flowchart TD\n    User --> kubectl\n    kubectl --> Master[Master Node]\n    Master --> Worker1[Worker Node]\n    Master --> Worker2[Worker Node]\n    Worker1 --> Pod1[Pod]\n    Worker2 --> Pod2[Pod]\n    Pod1 --> Container1\n    Pod2 --> Container2",
+        "width": "wide"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Mapping",
+        "title": "How Docker Compose Maps to Kubernetes"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>The biggest conceptual shift is moving from <strong>one YAML file</strong> to <strong>multiple Kubernetes resources</strong>.</p>"
+    },
+
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Docker Compose to Kubernetes mapping",
+        "diagram": "flowchart LR\n    Compose[Docker Compose YAML]\n    Compose --> Service[Service]\n    Compose --> Deployment[Deployment]\n    Compose --> ConfigMap[ConfigMap]\n    Compose --> Storage[Volumes]\n\n    Deployment --> Pods[Pods]\n    Pods --> Containers[Containers]",
+        "width": "wide"
+      }
+    },
+
+    {
+      "type": "callout",
+      "value": {
+        "title": "Important",
+        "text": "One Docker Compose file typically becomes multiple Kubernetes YAML files (Deployments, Services, ConfigMaps, etc.).",
+        "tone": "info"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Tooling",
+        "title": "Kompose: Automatic Conversion"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p><strong>Kompose</strong> is an open-source tool that converts Docker Compose files into Kubernetes manifests.</p><p>It generates:</p><ul><li>Deployments</li><li>Services</li><li>Volumes</li></ul>"
+    },
+
+    {
+      "type": "rich_text",
+      "value": "<pre><code class=\"language-bash\">kompose convert</code></pre>"
+    },
+
+    {
+      "type": "callout",
+      "value": {
+        "title": "Reality Check",
+        "text": "Kompose gives you a great starting point, but you will almost always need to tweak the generated YAML.",
+        "tone": "warning"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Workflow",
+        "title": "Kompose Conversion Flow"
+      }
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Kompose conversion process",
+        "diagram": "flowchart LR\n    Compose[Docker Compose YAML]\n    Compose --> Kompose\n    Kompose --> Deployment\n    Kompose --> Service\n    Kompose --> ConfigMap",
+        "width": "wide"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Tooling",
+        "title": "Skaffold: Developer Workflow on Kubernetes"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p><strong>Skaffold</strong> takes things further by enabling continuous development directly on Kubernetes.</p><p>It automates:</p><ul><li>Build</li><li>Deploy</li><li>Monitor</li><li>Sync changes</li></ul>"
+    },
+
+    {
+      "type": "rich_text",
+      "value": "<pre><code class=\"language-bash\">skaffold init --compose-file docker-compose.yml\nskaffold dev</code></pre>"
+    },
+
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Skaffold development loop",
+        "diagram": "flowchart TD\n    CodeChange[Code Change] --> Build[Build Image]\n    Build --> Deploy[Deploy to Kubernetes]\n    Deploy --> Pod[Running Pod]\n    Pod --> Logs[Stream Logs]\n    Logs --> CodeChange",
+        "width": "wide"
+      }
+    },
+
+    {
+      "type": "callout",
+      "value": {
+        "title": "Developer Experience",
+        "text": "Skaffold enables a local dev loop on Kubernetes similar to Docker Compose—but with production-like behavior.",
+        "tone": "success"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Optimization",
+        "title": "Fast Development with File Sync"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Rebuilding full Docker images on every change can be slow. Skaffold solves this using <strong>file sync</strong>.</p><p>Instead of rebuilding the image:</p><ul><li>Build locally</li><li>Sync files into container</li><li>Instant updates</li></ul>"
+    },
+
+    {
+      "type": "callout",
+      "value": {
+        "title": "Performance Tip",
+        "text": "Use file sync for frontend apps (React, Angular) to avoid slow rebuild cycles.",
+        "tone": "info"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Summary",
+        "title": "Key Takeaways"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<ul><li>Docker Compose is ideal for local development</li><li>Kubernetes is designed for scalable production systems</li><li>Kompose automates YAML conversion</li><li>Skaffold enables live development on Kubernetes</li><li>Understanding the mapping between both worlds is critical</li></ul>"
+    }
+
+  ]
+},
+ {
+  "slug": "kubernetes-for-developers-moving-to-the-cloud",
+  "title": "Kubernetes for Developers: Moving to the Cloud",
+  "excerpt": "A practical developer-focused guide to running Kubernetes in the cloud with managed services, Terraform, Helm, and clusters on AWS, Azure, and Google Cloud.",
+  "author_username": "Michał Antolik",
+  "category_slug": "containers-kubernetes",
+  "tag_slugs": ["kubernetes", "cloud", "aws", "azure", "terraform", "helm", "containers", "devops"],
+  "live": true,
+  "published_at": "2026-04-15T10:30:00Z",
+  "body": [
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Course Overview",
+        "title": "Why Kubernetes in the Cloud Matters"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Running Kubernetes on a managed cloud service can reduce operational overhead, simplify maintenance, and improve stability. Instead of spending time building and patching the Kubernetes control plane yourself, you use the managed Kubernetes offering of a cloud provider and focus on deploying your application.</p><p>This course presents Kubernetes in the cloud from a developer perspective. The main idea is not to become a cloud platform engineer overnight, but to understand the core decisions, tools, and workflows needed to move containerized workloads into AWS, Azure, or Google Cloud.</p>"
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Main takeaway",
+        "text": "Managed Kubernetes reduces undifferentiated infrastructure work so developers can focus more on applications and less on cluster administration.",
+        "tone": "success"
+      }
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "From application code to managed Kubernetes in the cloud",
+        "diagram": "flowchart LR\n    Dev[Developer] --> Code[Containerized Application]\n    Code --> IaC[Terraform]\n    IaC --> Cloud[Cloud Provider]\n    Cloud --> MKS[Managed Kubernetes Service]\n    MKS --> Cluster[Kubernetes Cluster]\n    Cluster --> App[Running Application]",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Foundations",
+        "title": "What Cloud Means in This Context"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>In this course, the cloud means using infrastructure owned and operated by a cloud provider. That includes data centers, networking, storage, power, physical security, hardware replacement, and large portions of operational support. Instead of provisioning and maintaining all of that yourself, you consume it as a service.</p><p>For Kubernetes, this changes the problem significantly. You are no longer deciding only how your application should run. You are also deciding which parts of Kubernetes management should remain your responsibility and which parts should be delegated to the provider.</p><p>The strongest reasons for using cloud-managed Kubernetes are agility, elasticity, and cost control. You can provision faster, scale more easily, and avoid large upfront infrastructure investments.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Why cloud is attractive for Kubernetes workloads",
+        "diagram": "flowchart TB\n    Cloud[Cloud Platform] --> Agility[Agility\\nCreate resources quickly]\n    Cloud --> Elasticity[Elasticity\\nScale up and down]\n    Cloud --> Cost[Pay as you go]\n    Cloud --> Managed[Managed Services\\nLess cluster maintenance]",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Key Concepts",
+        "title": "Managed Kubernetes vs Self-Managed Kubernetes"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>A major theme of the course is the difference between self-managing Kubernetes on cloud virtual machines and using a managed Kubernetes service.</p><p>With self-managed Kubernetes, you are still responsible for installing, upgrading, securing, and troubleshooting the cluster itself. With managed Kubernetes, the provider handles much of the Kubernetes infrastructure so you can work mainly at the cluster usage level rather than the cluster implementation level.</p><p>This is one of the clearest examples of reducing undifferentiated heavy lifting. Unless your business is providing Kubernetes itself, the cluster is usually a means to an end, not the product.</p>"
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Important distinction",
+        "text": "Maintaining your application is not the same as maintaining Kubernetes. A cluster has its own lifecycle, upgrades, security requirements, and failure modes.",
+        "tone": "warning"
+      }
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Responsibility split",
+        "diagram": "flowchart LR\n    A[Self-Managed Kubernetes] --> A1[You manage control plane]\n    A --> A2[You manage worker nodes]\n    A --> A3[You patch and troubleshoot cluster]\n    B[Managed Kubernetes] --> B1[Provider manages core cluster infrastructure]\n    B --> B2[You manage workloads and app configuration]\n    B --> B3[You still design scaling, security, and operations]",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Cloud Strategy",
+        "title": "Cloud Native, Lift and Shift, Multi-cloud, Hybrid, and Serverless"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>The course explains several cloud strategies developers should recognize:</p><ul><li><strong>Cloud native</strong> means designing applications to benefit from the cloud, often by using managed services and flexible, service-oriented architectures.</li><li><strong>Lift and shift</strong> means moving an existing setup into the cloud with minimal architectural change.</li><li><strong>Multi-cloud</strong> means using more than one cloud provider.</li><li><strong>Hybrid</strong> means combining cloud resources with private data center infrastructure.</li><li><strong>Serverless</strong> means consuming execution capacity on demand without managing servers directly.</li></ul><p>The course leans toward a cloud-native approach by using each provider's managed Kubernetes service instead of treating the cloud as just another place to host virtual machines.</p>"
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Operations",
+        "title": "How You Interact with the Cloud"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Another central topic is how teams interact with cloud infrastructure. The course compares four broad approaches:</p><ul><li>Web console</li><li>Command-line interfaces</li><li>SDKs</li><li>Infrastructure as Code</li></ul><p>The web console is useful for discovery and quick experiments, but it creates manual toil and is difficult to reproduce consistently. CLIs and SDKs improve automation. Infrastructure as Code goes further by turning the desired infrastructure into version-controlled definitions that can be reviewed, repeated, and applied across environments.</p>"
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Why IaC matters",
+        "text": "Infrastructure as Code makes cloud infrastructure repeatable, reviewable, and easier to scale across environments and teams.",
+        "tone": "info"
+      }
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Ways to interact with cloud infrastructure",
+        "diagram": "flowchart LR\n    Console[Web Console] --> Manual[Manual clicks]\n    CLI[Command Line] --> Scripts[Scripts]\n    SDK[SDKs] --> Apps[Programmatic access]\n    IaC[Infrastructure as Code] --> VCS[Version control]\n    IaC --> Repeatable[Repeatable environments]\n    IaC --> Review[Code review and automation]",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Automation",
+        "title": "Terraform as the Common Provisioning Layer"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>The practical backbone of the course is Terraform. Instead of creating clusters manually in three separate cloud consoles, the course uses Terraform to define infrastructure and then apply similar patterns to AWS, Azure, and Google Cloud.</p><p>This is important for developers because it introduces a consistent mental model. The provider-specific details differ, but the workflow remains familiar: define infrastructure, initialize providers and modules, preview changes, apply them, and destroy everything when finished.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Core Terraform workflow",
+        "language": "bash",
+        "code": "terraform init\nterraform validate\nterraform plan\nterraform apply -auto-approve\nterraform destroy",
+        "show_line_numbers": false,
+        "width": "content"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>The course also explains why <strong>terraform destroy</strong> is so important in cloud experiments. When you create infrastructure manually, it is easy to forget dependent resources such as load balancers, disks, or networking components. Destroying through Terraform helps remove everything tracked in state, which reduces the risk of paying for forgotten resources.</p>"
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Terraform licensing note",
+        "text": "The course uses Terraform 1.5.5 and mentions the licensing change that led to the OpenTofu fork. That is useful context for teams standardizing on IaC tooling.",
+        "tone": "warning"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Planning",
+        "title": "What You Need to Decide Before Building a Cluster"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>One of the strongest conceptual sections in the course is not about commands, but about design decisions. A managed Kubernetes cluster comes with defaults, but real applications often need more than defaults.</p><p>Before building, you should think about:</p><ul><li>Kubernetes version support on the provider</li><li>Networking and IP planning</li><li>Node types and sizes</li><li>Autoscaling behavior</li><li>Ingress strategy</li><li>Secrets management</li><li>Certificates and DNS</li><li>Container registry integration</li><li>Monitoring and logging</li></ul><p>The course makes an important point here: creating the cluster is usually the easy part. Ongoing maintenance, upgrades, and operational discipline are the harder part.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Key design areas for a cloud Kubernetes cluster",
+        "diagram": "mindmap\n  root((Cluster Design))\n    Kubernetes Version\n    Networking\n    Node Pools\n    Autoscaling\n    Ingress\n    Secrets\n    Certificates\n    DNS\n    Registry\n    Monitoring\n    Logging\n    Maintenance",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Architecture",
+        "title": "The Layered View of a Cloud Kubernetes Deployment"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>The course presents cloud Kubernetes as a stack of layers, which is a very useful model for troubleshooting and design. Problems do not happen only inside pods. They can happen at the cloud account, network, node, managed service, Kubernetes networking, or application layer.</p><p>This layered view helps developers avoid oversimplified thinking when something fails. A broken deployment might not be a bug in the application. It might be a networking issue, an IAM issue, missing credentials, DNS, a node capacity problem, or a provider-specific limit.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Layered model of cloud Kubernetes",
+        "diagram": "flowchart TB\n    Provider[Cloud Provider]\n    Network[Cloud Network / VPC / VNet]\n    Nodes[Nodes and OS]\n    Managed[Managed Kubernetes Service]\n    K8sNet[Kubernetes Networking]\n    Pods[Pods and Containers]\n    App[Application and Libraries]\n\n    Provider --> Network --> Nodes --> Managed --> K8sNet --> Pods --> App",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Environment Strategy",
+        "title": "Proof of Concept vs Production Thinking"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>The course repeatedly stresses that the right cluster design depends on the level of service you are building. A proof of concept, sandbox, and production-grade platform should not look the same.</p><p>If you are experimenting, a simple default cluster may be enough. If you are serving a critical production system, you may need stronger availability guarantees, more environments, more automation, tighter security, and more deliberate upgrade processes.</p><p>The course also discusses environment layout choices such as:</p><ul><li>Separate clusters in separate accounts</li><li>Multiple clusters in one account</li><li>Single cluster with multiple namespaces</li></ul><p>There is no universal answer. The point is to recognize the trade-offs in isolation, complexity, operational cost, and repeatability.</p>"
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Hands-on Workflow",
+        "title": "What the Course Builds on Each Cloud Provider"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>The practical part of the course is intentionally consistent across all three providers. That consistency makes it easier to compare platforms and focus on the real differences.</p><p>For AWS, Azure, and Google Cloud, the workflow is:</p><ol><li>Create a managed Kubernetes cluster with Terraform</li><li>Verify the cluster using the provider CLI and console</li><li>Configure <strong>kubectl</strong> access</li><li>Inspect nodes and system pods</li><li>Install and remove a Helm chart manually</li><li>Install the same Helm chart through Terraform</li><li>Destroy all resources</li></ol>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "The repeated lab workflow used across AWS, Azure, and Google Cloud",
+        "diagram": "flowchart LR\n    Start[Start] --> Create[Create cluster with Terraform]\n    Create --> Verify[Verify with CLI / Console]\n    Verify --> Kubeconfig[Configure kubectl]\n    Kubeconfig --> Inspect[Inspect nodes and pods]\n    Inspect --> HelmManual[Install Helm chart manually]\n    HelmManual --> RemoveManual[Remove Helm chart manually]\n    RemoveManual --> HelmIaC[Manage Helm through Terraform]\n    HelmIaC --> Destroy[Destroy infrastructure]",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "AWS",
+        "title": "Deploying to Amazon EKS"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>For AWS, the course uses EKS with the AWS CLI, <strong>kubectl</strong>, Terraform, and Helm. Authentication is configured through the AWS CLI, and Terraform uses a popular community EKS module to provision the cluster and node groups.</p><p>The demos show how to initialize Terraform, validate the configuration, inspect the plan, apply the cluster, generate <strong>kubeconfig</strong> for kubectl, and then extend the cluster by adding another node group with a different instance type.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Typical EKS-oriented workflow",
+        "language": "bash",
+        "code": "aws configure\naws eks list-clusters\nterraform init\nterraform validate\nterraform plan\nterraform apply -auto-approve\naws eks update-kubeconfig --region us-east-1 --name <cluster-name>\nkubectl get nodes\nkubectl get pods --all-namespaces",
+        "show_line_numbers": false,
+        "width": "content"
+      }
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "What is notable in the EKS demo",
+        "text": "The AWS example highlights how much underlying infrastructure Terraform provisions for you: networking, security groups, node groups, and instances, not just the Kubernetes cluster object itself.",
+        "tone": "info"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Azure",
+        "title": "Deploying to Azure AKS"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>For Azure, the course uses AKS with the Azure CLI, Terraform, kubectl, and Helm. Authentication is handled through <strong>az login</strong> and a service principal used by Terraform. The cluster is then created with a default node pool and later expanded with an additional node pool.</p><p>The course also shows that the default system pods differ between providers. In AKS, you can see provider-specific components such as cloud node management and metrics-related services already running when the cluster is created.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Typical AKS-oriented workflow",
+        "language": "bash",
+        "code": "az login --allow-no-subscriptions\naz aks list\nterraform init\nterraform validate\nterraform plan\nterraform apply -auto-approve\naz aks get-credentials --resource-group <resource-group> --name <cluster-name>\nkubectl get nodes\nkubectl get pods --all-namespaces",
+        "show_line_numbers": false,
+        "width": "content"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Google Cloud",
+        "title": "Deploying to Google Kubernetes Engine"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>For Google Cloud, the course uses GKE with <strong>gcloud</strong>, Terraform, kubectl, and Helm. The setup includes initializing the CLI, authenticating application-default credentials, enabling required APIs, and configuring kubectl access with GKE-specific authentication support.</p><p>An interesting practical detail is that the GKE configuration in the course relies more heavily on defaults, including defaulting to the latest available Kubernetes version unless overridden. That demonstrates an important lesson: provider defaults are helpful, but you should understand when default behavior is acceptable and when it should be made explicit.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Typical GKE-oriented workflow",
+        "language": "bash",
+        "code": "gcloud init\ngcloud auth application-default login\ngcloud container clusters list\nterraform init\nterraform validate\nterraform plan\nterraform apply -auto-approve\ngcloud container clusters get-credentials <cluster-name> --region <region>\nkubectl get nodes\nkubectl get pods --all-namespaces",
+        "show_line_numbers": false,
+        "width": "content"
+      }
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "GKE-specific lesson",
+        "text": "Provider-specific authentication plugins and API enablement steps matter. Even when Terraform creates the cluster, local tooling still needs to be configured correctly for kubectl and Helm to work.",
+        "tone": "warning"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Application Delivery",
+        "title": "Why Helm Appears Twice in the Course"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>The course uses a simple <strong>hello-kubernetes</strong> chart to demonstrate application deployment. First, the chart is installed manually with Helm. Then it is removed. After that, the same type of deployment is managed through Terraform using the Helm provider.</p><p>This is an important operational lesson. Tools like Helm and kubectl can change the cluster immediately, but if those changes are not represented in Terraform, Terraform state will not reflect reality. That can create drift and lead to confusing plan or apply behavior later.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Manual Helm vs Helm managed through Terraform",
+        "diagram": "flowchart TB\n    Manual[helm install directly] --> Drift[Potential drift from Terraform state]\n    TerraformHelm[terraform apply with helm_release] --> Managed[Single declarative workflow]\n    Managed --> Review[Plan and review changes]\n    Managed --> Cleanup[Destroy tracked resources cleanly]",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Manual Helm flow used in the demos",
+        "language": "bash",
+        "code": "helm repo add hello-kubernetes https://paulbouwer.github.io/hello-kubernetes/\nhelm install hello-kubernetes hello-kubernetes/hello-kubernetes\nhelm list\nkubectl get deployments\nkubectl get services\nhelm uninstall hello-kubernetes",
+        "show_line_numbers": false,
+        "width": "content"
+      }
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Terraform-managed Helm release",
+        "language": "json",
+        "code": "{\n  \"concept\": \"Terraform manages a Helm release\",\n  \"benefit\": [\n    \"single source of truth\",\n    \"repeatable environments\",\n    \"less configuration drift\",\n    \"easier destroy and rebuild\"\n  ]\n}",
+        "show_line_numbers": false,
+        "width": "content"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Costs",
+        "title": "Cloud Billing and Resource Discipline"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>The course gives a practical warning that is easy to underestimate: pay attention to the cloud bill. Managed Kubernetes clusters cost money, but the larger cost often comes from related resources such as worker nodes, storage, networking, and load balancers.</p><p>Autoscaling can help reduce waste, but it is not a substitute for good planning. Node types, storage sizes, transfer costs, and cluster count all affect the final bill. This is why the course repeatedly emphasizes cleaning up with Terraform when you are done experimenting.</p>"
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Cost discipline rule",
+        "text": "In cloud experiments, creation is easy but forgetting to destroy resources is expensive.",
+        "tone": "danger"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Troubleshooting",
+        "title": "Operational Habits the Course Tries to Teach"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Although the course is introductory, it teaches several good habits:</p><ul><li>Use the provider CLI to verify real state, not assumptions.</li><li>Use <strong>kubectl</strong> to inspect nodes, pods, deployments, and services.</li><li>Review <strong>terraform plan</strong> before apply.</li><li>Prefer automation over repetitive console actions.</li><li>Find the problem first, then fix the problem.</li><li>Expect account limits, quota issues, and provider-specific constraints.</li></ul><p>These habits are what turn cloud Kubernetes from a collection of commands into a manageable operational workflow.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Simple troubleshooting loop",
+        "diagram": "flowchart LR\n    Observe[Observe actual behavior] --> Inspect[Inspect CLI, kubectl, logs, console]\n    Inspect --> Identify[Identify the real problem]\n    Identify --> Fix[Apply targeted fix]\n    Fix --> Verify[Verify result]",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Comparison",
+        "title": "How to Evaluate AWS, Azure, and Google Cloud"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>The course does not try to crown a universal winner. Instead, it encourages evaluating providers through the lens of your application and organization.</p><p>Important comparison areas include:</p><ul><li>Default cluster behavior</li><li>Kubernetes version availability</li><li>Node types and pricing</li><li>Storage performance and cost</li><li>Autoscaling options</li><li>Integrated registries and CI/CD services</li><li>Operational familiarity within your team</li></ul><p>One provider may be a better fit because of pricing, another because of ecosystem integration, and another because your organization already has strong internal expertise there.</p>"
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Practical evaluation rule",
+        "text": "Pick the provider that best fits your operational model, team skills, and workload requirements—not the one with the most features on paper.",
+        "tone": "success"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "eyebrow": "Final Summary",
+        "title": "What Developers Should Remember from This Course"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>This course is best understood as a practical bridge between knowing Kubernetes and actually running it in the cloud.</p><ul><li>Managed Kubernetes shifts important infrastructure responsibilities to the cloud provider.</li><li>Cloud adds speed, elasticity, and operational convenience, but also cost and platform complexity.</li><li>Terraform gives you a repeatable, provider-agnostic way to provision clusters.</li><li>Helm is useful for packaging applications, but using it outside Terraform can introduce drift.</li><li>Each provider has different defaults, tooling, and operational details.</li><li>Creating a cluster is only the start—maintenance, security, upgrades, and cost management matter just as much.</li></ul><p>If you already know basic Kubernetes concepts, this course gives you a strong foundation for exploring EKS, AKS, and GKE in a practical, tool-driven way.</p>"
+    }
+  ]
 }
 ]
