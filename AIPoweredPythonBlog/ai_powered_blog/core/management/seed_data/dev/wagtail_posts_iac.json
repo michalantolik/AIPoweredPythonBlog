@@ -188,5 +188,1580 @@
     }
 
   ]
+},
+  {
+  "slug": "terraform-variables-locals-and-outputs-explained",
+  "title": "Terraform Variables, Locals, and Outputs Explained",
+  "excerpt": "Learn how Terraform accepts input, transforms data internally with locals, and returns useful information with outputs. This guide covers variable syntax, data types, precedence rules, child modules, sensitive values, and practical usage patterns.",
+  "category_slug": "infrastructure-as-code",
+  "tag_slugs": ["terraform", "iac", "devops"],
+  "author_username": "Michał Antolik",
+  "published_at": "2026-04-16T10:00:00Z",
+  "live": true,
+  "body": [
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Why Variables and Outputs Matter in Terraform"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Terraform configurations become truly reusable when they can <strong>accept input</strong>, <strong>transform data internally</strong>, and <strong>return useful values</strong> after deployment. That is exactly the role of <strong>input variables</strong>, <strong>local values</strong>, and <strong>output values</strong>.</p><p>A useful analogy is to think of a Terraform module like a function. A function accepts arguments, performs some logic, and returns values. In Terraform, <strong>variables</strong> are the inputs, <strong>locals</strong> are internal computed values, and <strong>outputs</strong> are the returned results.</p>"
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Core mental model",
+        "text": "Variables bring data into a module, locals reshape or simplify that data, and outputs expose the final useful values to humans, parent modules, or other configurations.",
+        "tone": "success"
+      }
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "How information flows through Terraform",
+        "diagram": "flowchart LR\nA[Input Variables] --> B[Locals]\nB --> C[Resources and Modules]\nC --> D[Outputs]\nD --> E[CLI / Parent Module / Remote State]",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Input Variables: The Entry Point for Configuration"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Almost every piece of software needs a way for users to supply input before it runs. Terraform is no different. Input variables allow you to parameterize your configuration so that the same module can be reused in different environments and with different values.</p><p>There are two important contexts to understand:</p><ul><li><strong>Root module</strong> – the configuration you run Terraform commands against</li><li><strong>Child modules</strong> – modules called from another module using a <code>module</code> block</li></ul><p>In the root module, variables are a way for the operator to provide values when running commands such as <code>terraform plan</code> or <code>terraform apply</code>. In child modules, variables define what the parent module is allowed or required to pass in.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Root module vs child module",
+        "diagram": "flowchart TD\nA[Operator runs terraform plan/apply] --> B[Root Module]\nB --> C[module block arguments]\nC --> D[Child Module Variables]\nD --> E[Child Module Resources]",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>If a root module variable has no value and no default, Terraform will typically prompt for it. If a child module expects a variable and the parent module does not provide it, Terraform fails because the module call is incomplete.</p>"
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Variable Declaration Syntax"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Variables are declared using a <code>variable</code> block. The block label is the variable name. Inside the block, most arguments are optional, but a few are strongly recommended as best practice.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "A well-defined input variable",
+        "language": "hcl",
+        "code": "variable \"aws_region\" {\n  type        = string\n  description = \"Default AWS region for this configuration, for example us-east-1\"\n  default     = \"us-east-1\"\n}\n",
+        "show_line_numbers": true,
+        "width": "content"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>The most important arguments are:</p><ul><li><strong>type</strong> – defines the expected structure of the value</li><li><strong>description</strong> – explains the purpose of the variable for humans and documentation tools</li><li><strong>default</strong> – makes the variable optional by providing a fallback value</li></ul><p>The <code>description</code> field is especially valuable when generating docs automatically with tools such as <code>terraform-docs</code> or when publishing modules for others to use.</p>"
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Best practice",
+        "text": "Use descriptions on every variable. A module is much easier to adopt when consumers can understand each input without reading all of the implementation.",
+        "tone": "info"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Sensitive, Ephemeral, Validation, and Nullable"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Terraform variables support additional arguments that control safety and validation.</p><ul><li><strong>sensitive</strong> – hides the value from normal terminal output</li><li><strong>ephemeral</strong> – prevents the value from being stored in state or a saved plan file</li><li><strong>validation</strong> – lets you define custom rules for accepted values</li><li><strong>nullable</strong> – controls whether <code>null</code> is a valid input</li></ul><p>These options are useful, but they solve different problems. Marking a variable as sensitive does <strong>not</strong> stop it from being stored in state. That only affects display behavior. If you need a value to avoid persistence entirely, <code>ephemeral = true</code> is the stronger control, although it comes with restrictions on how the value can be used.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Sensitive variable example",
+        "language": "hcl",
+        "code": "variable \"api_key\" {\n  type        = string\n  description = \"API key used by the application\"\n  sensitive   = true\n}\n",
+        "show_line_numbers": true,
+        "width": "content"
+      }
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Important distinction",
+        "text": "Sensitive values are hidden in standard CLI output, but they may still be stored in Terraform state. Protecting state remains essential.",
+        "tone": "warning"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "How to Reference Variables"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Once declared, variables are referenced using the <code>var.</code> prefix.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Referencing a variable",
+        "language": "hcl",
+        "code": "provider \"aws\" {\n  region = var.aws_region\n}\n\nresource \"aws_instance\" \"web\" {\n  instance_type = var.instance_type\n}\n",
+        "show_line_numbers": true,
+        "width": "content"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Ways to Supply Variable Values"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Terraform supports several ways to provide values for variables. This flexibility is useful, but it also means you should understand the precedence rules.</p><p>Common methods include:</p><ul><li><code>-var</code> on the command line</li><li><code>-var-file</code> with a custom <code>.tfvars</code> file</li><li><code>terraform.tfvars</code> or <code>terraform.tfvars.json</code></li><li><code>*.auto.tfvars</code> or <code>*.auto.tfvars.json</code></li><li>environment variables like <code>TF_VAR_api_key</code></li></ul>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Common ways to set variables",
+        "language": "bash",
+        "code": "terraform plan -var \"instance_type=t3.nano\"\nterraform plan -var-file=\"values.tfvars\"\n\nexport TF_VAR_api_key=\"super-secret-value\"\nterraform plan\n",
+        "show_line_numbers": false,
+        "width": "content"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Terraform evaluates multiple sources in a defined order. The practical rule is: <strong>the last applicable source wins</strong>. Environment variables are considered first, then <code>terraform.tfvars</code> files, then auto-loaded tfvars files, then explicit <code>-var-file</code> arguments, and finally <code>-var</code> arguments in the order you pass them.</p><p>This makes command-line overrides especially useful for short experiments without editing committed files.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Variable precedence overview",
+        "diagram": "flowchart TD\nA[Environment Variables TF_VAR_*] --> B[terraform.tfvars / terraform.tfvars.json]\nB --> C[*.auto.tfvars / *.auto.tfvars.json]\nC --> D[-var-file]\nD --> E[-var]\nE --> F[Final effective value]",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Practical guidance",
+        "text": "Use tfvars files for non-sensitive configuration that should be easy to review, and environment variables or secret injection from your CI/CD platform for sensitive values.",
+        "tone": "success"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Terraform Data Types for Variables"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Terraform supports primitive, collection, and structural data types. Choosing a precise type constraint makes your modules safer and easier to use.</p><ul><li><strong>Primitive types</strong>: <code>string</code>, <code>number</code>, <code>bool</code></li><li><strong>Collection types</strong>: <code>list(...)</code>, <code>set(...)</code>, <code>map(...)</code></li><li><strong>Structural types</strong>: <code>tuple(...)</code>, <code>object(...)</code></li></ul><p>Collection types require the contained elements to all be of the same type. Structural types let you define more complex, mixed structures.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Examples of type constraints",
+        "language": "hcl",
+        "code": "variable \"allowed_ports\" {\n  type = list(number)\n}\n\nvariable \"subnet_cidrs\" {\n  type = map(list(string))\n}\n\nvariable \"vpc_config\" {\n  type = object({\n    name               = string\n    subnets            = map(string)\n    create_nat_gateway = bool\n  })\n}\n",
+        "show_line_numbers": true,
+        "width": "content"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Although Terraform allows very complex type definitions, simpler interfaces usually win. A module is easier to maintain and easier to consume when its inputs are clear and focused.</p>"
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "The Meaning of null and nullable"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p><code>null</code> in Terraform represents the absence of a value. When an argument receives <code>null</code>, Terraform often behaves as if that argument was omitted entirely. That can be very useful when you want resource defaults or provider defaults to take over.</p><p>If you want to prevent users from passing <code>null</code>, you can declare <code>nullable = false</code>.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Disallowing null",
+        "language": "hcl",
+        "code": "variable \"vpc_region\" {\n  type        = string\n  description = \"Region for the VPC\"\n  nullable    = false\n}\n",
+        "show_line_numbers": true,
+        "width": "content"
+      }
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "When to use nullable = false",
+        "text": "Use it when the caller must make a real choice and allowing null would hide important intent or cause confusing fallback behavior.",
+        "tone": "info"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Local Values: Internal Helpers and Data Transformations"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Local values help you avoid repetition and make your configuration easier to read. Instead of repeating the same expression in many resources, you define it once in a <code>locals</code> block and reference it wherever needed.</p><p>Locals are especially useful for:</p><ul><li>naming conventions</li><li>tag merging</li><li>computed values derived from variables</li><li>lightweight transformations of maps and lists</li></ul>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Locals for naming and tags",
+        "language": "hcl",
+        "code": "locals {\n  naming_prefix = \"${var.project}-${var.environment}\"\n\n  default_tags = merge(var.tags, {\n    Project     = var.project\n    Environment = var.environment\n  })\n\n  instance_name = \"${local.naming_prefix}-web\"\n}\n",
+        "show_line_numbers": true,
+        "width": "content"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>You reference a local value using <code>local.</code>, for example <code>local.default_tags</code> or <code>local.instance_name</code>. Terraform infers the type of a local automatically from the expression you assign.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "How locals simplify a module",
+        "diagram": "flowchart LR\nA[Variables] --> B[Locals for prefixes, tags, transformations]\nB --> C[VPC]\nB --> D[EC2]\nB --> E[S3]",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Good design habit",
+        "text": "Keep frequently reused naming rules and common tags in locals. One edit then propagates everywhere consistently.",
+        "tone": "success"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Outputs: Returning Useful Information"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Output values are Terraform’s way of exposing useful information after evaluation. They can display data to the terminal, return data from child modules to parent modules, and expose selected values from one configuration to another via remote state.</p><p>This makes outputs essential whenever other people, modules, or automation steps need to consume the result of your infrastructure deployment.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Basic output example",
+        "language": "hcl",
+        "code": "output \"ec2_public_dns\" {\n  description = \"Public DNS name of the application server\"\n  value       = aws_instance.web.public_dns\n}\n",
+        "show_line_numbers": true,
+        "width": "content"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Output blocks support several useful arguments:</p><ul><li><strong>value</strong> – required, the expression to return</li><li><strong>description</strong> – strongly recommended for documentation</li><li><strong>sensitive</strong> – suppresses normal terminal display</li><li><strong>ephemeral</strong> – only valid for child module outputs</li><li><strong>depends_on</strong> – for explicit dependency control when needed</li><li><strong>precondition</strong> – to guarantee something about the output data</li></ul>"
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Outputs in Root Modules and Child Modules"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Outputs behave differently depending on where they are defined:</p><ul><li><strong>Root module outputs</strong> are stored in state and shown after a successful apply</li><li><strong>Child module outputs</strong> are how a child module returns information to its parent</li></ul><p>The parent module cannot directly inspect the internals of a child module. It can only access the outputs that the child module explicitly exposes.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Output flow between modules",
+        "diagram": "flowchart TD\nA[Parent Module] -->|inputs| B[Child Module]\nB -->|outputs| A\nA -->|root outputs| C[CLI or Other Terraform Configurations]",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Using terraform output"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>After apply, Terraform prints root module outputs automatically. You can inspect them again later using the <code>terraform output</code> command.</p><ul><li><code>terraform output</code> – show all outputs</li><li><code>terraform output ec2_public_dns</code> – show one output</li><li><code>terraform output -raw ec2_public_dns</code> – show a single value without quotes</li><li><code>terraform output -json</code> – emit machine-readable JSON</li></ul><p>This is useful both for humans and for automation that wants to capture deployment results programmatically.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Inspecting outputs from the CLI",
+        "language": "bash",
+        "code": "terraform output\nterraform output ec2_public_dns\nterraform output -raw ec2_public_dns\nterraform output -json\n",
+        "show_line_numbers": false,
+        "width": "content"
+      }
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Be careful with JSON output",
+        "text": "Sensitive outputs are hidden in normal post-apply terminal output, but JSON output can still reveal stored values from state. Handle that data securely.",
+        "tone": "warning"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "A Practical Pattern for Real Projects"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>A clean Terraform design often follows this pattern:</p><ol><li>Declare input variables with clear descriptions and precise types</li><li>Use locals for naming conventions, tag composition, and reusable expressions</li><li>Build resources and child module calls from those values</li><li>Return only the important identifiers and connection details as outputs</li></ol><p>This keeps modules understandable and reduces duplication across the configuration.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Recommended Terraform design flow",
+        "diagram": "flowchart TD\nA[Input Variables] --> B[Validation and Type Constraints]\nB --> C[Locals for Naming and Transformation]\nC --> D[Resources and Child Modules]\nD --> E[Outputs for Humans and Automation]",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Key Takeaways"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<ul><li><strong>Input variables</strong> make Terraform modules dynamic and reusable</li><li><strong>Type constraints</strong> improve safety and communicate intent</li><li><strong>Sensitive</strong> hides terminal output, but does not replace state protection</li><li><strong>Locals</strong> help you avoid repetition and organize transformations</li><li><strong>Outputs</strong> expose the important results of a deployment</li><li><strong>Root and child modules</strong> communicate through variables and outputs, not by directly inspecting each other’s internals</li></ul><p>If you understand these three building blocks well, you will write Terraform code that is easier to reuse, easier to maintain, and much easier for others to adopt.</p>"
+    }
+  ]
+},
+  {
+  "slug": "terraform-state-fundamentals-understanding-state-drift-and-backends",
+  "title": "Terraform State Fundamentals: Understanding State, Drift, Backends, Locking, and Workspaces",
+  "excerpt": "Learn how Terraform state works, why it is critical, how plans and applies use it, how to detect and manage drift, and how to store state securely with remote backends, locking, and workspaces.",
+  "category_slug": "infrastructure-as-code",
+  "tag_slugs": ["terraform", "iac", "devops", "state", "aws"],
+  "author_username": "Michał Antolik",
+  "published_at": "2026-04-16T12:00:00+02:00",
+  "live": true,
+  "body": [
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "What Terraform State Really Is"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Terraform state is one of the core parts of how Terraform works. In practical terms, state is Terraform’s memory. It stores the connection between the infrastructure described in your configuration and the real objects that exist in the target platform.</p><p>Without state, Terraform would not reliably know which resources it created, which outputs belong to the current deployment, or what should be updated, replaced, or destroyed.</p><p>State contains entries for managed resources, data sources, outputs, and internal metadata used by Terraform during planning and applying changes.</p>"
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Key idea",
+        "text": "Terraform state is the mapping layer between configuration and real infrastructure. If that mapping is lost, Terraform loses context.",
+        "tone": "info"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "The Four Core Terraform Components"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Terraform operations depend on four major pieces working together:</p><ul><li><strong>Terraform binary</strong> – the CLI tool you run</li><li><strong>Configuration files</strong> – your desired infrastructure written in HCL</li><li><strong>Provider plugins</strong> – integrations with AWS, Azure, Google Cloud, and many other platforms</li><li><strong>State data</strong> – the persisted record of what Terraform manages</li></ul><p>State is what makes Terraform lifecycle operations predictable across multiple runs.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Terraform core components",
+        "diagram": "flowchart TD\nA[Terraform CLI] --> B[Configuration Files]\nA --> C[Provider Plugins]\nA --> D[State Data]\nB --> E[Desired Infrastructure]\nC --> F[Target Platform APIs]\nD --> A",
+        "width": "wide"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Why State Matters During Plan and Apply"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Every time Terraform creates an execution plan, it loads both the current configuration and the current state into memory. It then refreshes the state by querying the real environment and compares what exists with what the configuration says should exist.</p><p>This comparison is how Terraform decides whether it needs to create, update, replace, or destroy anything.</p><p>That means state is not just a passive record. It is actively used every time Terraform evaluates infrastructure changes.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "How Terraform uses state during planning",
+        "diagram": "flowchart LR\nA[Configuration] --> D[Terraform Plan Engine]\nB[Saved State] --> D\nC[Real Infrastructure] -->|Refresh| D\nD --> E[Execution Plan]\nE --> F[terraform apply]",
+        "width": "wide"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "State Lifecycle in a Simple Example"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Imagine a configuration with one AWS EC2 instance resource.</p><ol><li>Before deployment, the configuration exists, but state is empty.</li><li>When you run <strong>terraform plan</strong>, Terraform sees that the resource exists in configuration but not in state, so it plans to create it.</li><li>When you run <strong>terraform apply</strong>, Terraform provisions the EC2 instance and then writes its details into state.</li><li>If you later change the instance type in configuration, Terraform compares the new desired value with the current value in state and plans an in-place update or replacement depending on provider rules.</li><li>If you remove the resource block from configuration, Terraform sees that the object still exists in state but no longer exists in configuration, so it plans to destroy it and remove it from state.</li></ol>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Basic Terraform resource lifecycle",
+        "diagram": "flowchart TD\nA[Empty State] --> B[Resource Defined in Configuration]\nB --> C[terraform plan]\nC --> D[Plan: Create Resource]\nD --> E[terraform apply]\nE --> F[Resource Exists + State Updated]\nF --> G[Configuration Changes]\nG --> H[Plan: Update or Replace]\nF --> I[Resource Removed from Configuration]\nI --> J[Plan: Destroy + Remove from State]",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Critical risk",
+        "text": "If state is lost, Terraform may assume it is starting from scratch. That can lead to duplicate resources, failed applies, or unmanaged infrastructure.",
+        "tone": "danger"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "What Lives Inside Terraform State"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Terraform state is stored as JSON, but you should treat its internal structure as an implementation detail rather than a stable public format.</p><p>Conceptually, state currently holds four major categories of information:</p><ul><li><strong>Resources</strong> – managed resources and data sources, including child module contents</li><li><strong>Outputs</strong> – values exposed by output blocks</li><li><strong>Check results</strong> – results from check blocks</li><li><strong>Metadata</strong> – internal information about the state itself</li></ul><p>Two metadata values are especially important:</p><ul><li><strong>serial</strong> – incremented whenever state changes</li><li><strong>lineage</strong> – a unique identifier for that state instance</li></ul><p>Terraform uses these values when applying saved plans to ensure the plan still matches the correct and current state.</p>"
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Do not hand edit",
+        "text": "Terraform state is JSON, but you should not edit it manually. Use Terraform commands and declarative blocks instead of changing raw state by hand.",
+        "tone": "warning"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Stale Plans and Lineage Checks"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Saved plan files are tied to the state that existed when they were created.</p><p>Terraform performs two safety checks before applying a saved plan:</p><ol><li>If the plan’s <strong>serial</strong> is older than the current state, the plan is stale and Terraform refuses to apply it.</li><li>If the plan’s <strong>lineage</strong> does not match the current state, Terraform knows the plan belongs to a different state instance and refuses to apply it.</li></ol><p>These checks protect you from applying an outdated plan or from applying a plan to the wrong workspace or environment.</p>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Safe Ways to Inspect State"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Terraform provides commands that let you inspect state in a stable and supported way. These commands are much safer than opening the raw state file and trying to interpret its internals yourself.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Useful state inspection commands",
+        "language": "bash",
+        "code": "terraform show\nterraform show -json\nterraform output\nterraform output -json\nterraform output public_dns\nterraform state list\nterraform state show aws_instance.web\nterraform state pull",
+        "show_line_numbers": true,
+        "width": "wide"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<ul><li><strong>terraform show</strong> renders the current state in a consistent human-readable form</li><li><strong>terraform output</strong> reads output values from state</li><li><strong>terraform state list</strong> lists all object addresses tracked in state</li><li><strong>terraform state show</strong> displays detailed attributes for one object</li><li><strong>terraform state pull</strong> prints the raw state contents to standard output</li></ul>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Refresh and Drift Detection"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Terraform refreshes state by querying the real infrastructure during planning. This helps Terraform detect changes that happened outside Terraform.</p><p>You can also run a refresh-only workflow when you want to update state without changing infrastructure.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Refresh-only workflow",
+        "language": "bash",
+        "code": "terraform plan -refresh-only\nterraform apply -refresh-only",
+        "show_line_numbers": true,
+        "width": "content"
+      }
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Drift detection flow",
+        "diagram": "flowchart LR\nA[Terraform State] --> B[Refresh from Real Infrastructure]\nC[Real Infrastructure] --> B\nB --> D{Differences Found?}\nD -->|No| E[State Matches Reality]\nD -->|Yes| F[Drift Detected]",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>There are three common drift scenarios:</p><ul><li><strong>Approved drift</strong> – a manual change was made for a valid operational reason and should be kept</li><li><strong>Unauthorized drift</strong> – a manual change was made and should be reverted back to match configuration</li><li><strong>Continual drift</strong> – another system keeps modifying attributes, causing Terraform to keep trying to revert them</li></ul><p>Approved drift is often resolved by refreshing state, then updating the Terraform configuration to match. Unauthorized drift is usually fixed by a normal <strong>terraform plan</strong> and <strong>terraform apply</strong>. Continual drift is typically handled with <strong>lifecycle.ignore_changes</strong>.</p>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Handling Approved Drift"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>A classic approved drift scenario happens when an emergency change is made directly in the cloud console or via another CLI. For example, an EC2 instance type is changed manually during load testing, and the team decides to keep the change.</p><p>The safe workflow is:</p><ol><li>Run <strong>terraform plan -refresh-only</strong> to detect the difference</li><li>Run <strong>terraform apply -refresh-only</strong> to update state without modifying infrastructure</li><li>Update the Terraform configuration to reflect the new desired value</li><li>Run a normal <strong>terraform plan</strong> to verify that no further changes are required</li></ol>"
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Practical rule",
+        "text": "If the manual change is legitimate and should remain, first synchronize state, then update configuration to match.",
+        "tone": "success"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Moving Resources During Refactoring"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>When you rename a resource block or refactor code into a different address, Terraform may think the old resource should be destroyed and a new one should be created. That is because Terraform tracks resources by their address.</p><p>Historically, this was handled with <strong>terraform state mv</strong>, but Terraform now provides a safer declarative approach: the <strong>moved</strong> block.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Declarative state move with a moved block",
+        "language": "text",
+        "code": "moved {\n  from = aws_instance.web\n  to   = aws_instance.app\n}",
+        "show_line_numbers": true,
+        "width": "content"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>The advantage of the <strong>moved</strong> block is that it becomes part of the normal plan/apply workflow. You can see what Terraform intends to do before any state change happens.</p>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Removing Resources from State Without Destroying Them"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Sometimes you want Terraform to stop managing a resource, but you do not want the real infrastructure to be destroyed. For example, you may be moving resources into a different Terraform configuration.</p><p>Instead of using <strong>terraform state rm</strong> directly, Terraform now supports a declarative <strong>removed</strong> block.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Declarative state removal with destroy disabled",
+        "language": "text",
+        "code": "removed {\n  from = aws_instance.web\n\n  lifecycle {\n    destroy = false\n  }\n}\n\nremoved {\n  from = aws_security_group.web\n\n  lifecycle {\n    destroy = false\n  }\n}",
+        "show_line_numbers": true,
+        "width": "wide"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>With this approach, Terraform plans to remove objects from state while leaving the actual infrastructure untouched.</p>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Local Backend vs Remote Backend"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>If you do not configure anything else, Terraform uses the <strong>local backend</strong>. That means state is stored on the local filesystem, usually in a <strong>terraform.tfstate</strong> file in the working directory.</p><p>The local backend is convenient for experimentation, but it has serious weaknesses:</p><ul><li>If your machine is lost or the disk is corrupted, your state may be lost</li><li>Teams and CI/CD pipelines cannot reliably collaborate using someone’s local filesystem</li></ul><p>For real projects, state should usually be stored in a remote backend such as Amazon S3, Azure Blob Storage, Google Cloud Storage, or HCP Terraform.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Backend choice and collaboration",
+        "diagram": "flowchart TD\nA[Terraform Configuration] --> B{Backend Type}\nB --> C[Local Backend]\nB --> D[Remote Backend]\nC --> E[Single Machine Risk]\nD --> F[Shared Access]\nD --> G[Safer Collaboration]\nD --> H[Automation Support]",
+        "width": "wide"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Backend Block and Partial Configuration"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Backends are configured inside the Terraform block. Backend arguments cannot use normal interpolation with variables or locals because Terraform initializes the backend before evaluating the rest of your configuration.</p><p>That is why partial backend configuration is often used: you define the backend type in code and pass required values during <strong>terraform init</strong>.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "S3 backend with partial configuration",
+        "language": "text",
+        "code": "terraform {\n  backend \"s3\" {\n    key          = \"nacho_brigade/terraform.tfstate\"\n    use_lockfile = true\n  }\n}",
+        "show_line_numbers": true,
+        "width": "content"
+      }
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Backend configuration file example",
+        "language": "text",
+        "code": "bucket = \"my-terraform-state-bucket\"\nregion = \"us-west-2\"",
+        "show_line_numbers": true,
+        "width": "content"
+      }
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Initializing and migrating state to the remote backend",
+        "language": "bash",
+        "code": "terraform init -backend-config=s3.tfbackend",
+        "show_line_numbers": true,
+        "width": "content"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>When Terraform detects that the backend configuration has changed and existing state is present, it can migrate the current state to the new backend during initialization.</p>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "State Security Best Practices"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>State can contain sensitive information in plain text, including attributes, connection details, and outputs. Because of that, state storage must be treated as sensitive infrastructure data.</p><p>A secure remote backend strategy should include:</p><ul><li><strong>Encryption at rest</strong></li><li><strong>Encryption in transit</strong></li><li><strong>Access control</strong> so only approved users and systems can read or modify state</li><li><strong>Versioning</strong> where supported, so old state revisions can be recovered if needed</li></ul>"
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Recommended mindset",
+        "text": "Protect Terraform state the same way you would protect secrets, deployment credentials, or production configuration data.",
+        "tone": "warning"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "State Locking"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>When Terraform starts an operation that uses state, it attempts to place a lock. Locking prevents multiple Terraform processes from modifying the same state at the same time.</p><p>If Terraform cannot acquire a lock, it fails rather than risk corrupting state.</p><p>For the S3 backend, modern locking uses the native S3 lockfile mechanism via <strong>use_lockfile = true</strong>. Older DynamoDB-based locking is deprecated for new use in recent Terraform versions.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Why locking matters",
+        "diagram": "sequenceDiagram\nparticipant U1 as Terraform Process A\nparticipant S as State Backend\nparticipant U2 as Terraform Process B\nU1->>S: Acquire lock\nS-->>U1: Lock granted\nU2->>S: Acquire lock\nS-->>U2: Lock denied\nU1->>S: Release lock",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Emergency unlock command",
+        "language": "bash",
+        "code": "terraform force-unlock <LOCK_ID>",
+        "show_line_numbers": true,
+        "width": "content"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p><strong>force-unlock</strong> should only be used with extreme care. If another Terraform process still believes it owns the lock, unlocking manually can create dangerous inconsistencies.</p>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Terraform Workspaces"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Terraform workspaces let you use the same root module configuration with multiple separate state instances. Each workspace gets its own state, but all workspaces share the same backend.</p><p>This is useful for short-lived testing environments, such as trying configuration changes in a temporary environment before cleaning it up.</p><p>However, workspaces in Terraform Community Edition have limitations. They share backend access, do not provide strong environment isolation, and can become awkward for long-lived environments like production.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Common workspace commands",
+        "language": "bash",
+        "code": "terraform workspace show\nterraform workspace list\nterraform workspace new dev-2\nterraform workspace select default\nterraform workspace delete dev-2",
+        "show_line_numbers": true,
+        "width": "wide"
+      }
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Using terraform.workspace in configuration",
+        "language": "text",
+        "code": "locals {\n  environment = terraform.workspace == \"default\" ? var.environment : terraform.workspace\n}",
+        "show_line_numbers": true,
+        "width": "content"
+      }
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "When to use workspaces",
+        "text": "Community workspaces are best suited to temporary or short-lived environments. For persistent environment management, separate configurations or more advanced platforms are usually a better fit.",
+        "tone": "info"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Practical Best Practices for Terraform State"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<ul><li>Store state remotely for team use and recovery</li><li>Enable locking to prevent concurrent state modification</li><li>Enable backend versioning when supported</li><li>Protect state with strict access controls and encryption</li><li>Do not edit raw state JSON by hand</li><li>Use <strong>terraform show</strong>, <strong>terraform output</strong>, and <strong>terraform state</strong> commands for inspection</li><li>Prefer declarative <strong>moved</strong> and <strong>removed</strong> blocks over direct state mutation commands when refactoring</li><li>Use refresh-only workflows to investigate and synchronize approved drift</li></ul>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Final Takeaway"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Terraform state is not an optional implementation detail. It is fundamental to how Terraform understands infrastructure over time.</p><p>Once you understand state, many Terraform behaviors become much clearer: why plans can be stale, why drift matters, why locking exists, why remote backends are essential, and how Terraform can refactor infrastructure safely without recreating everything.</p><p>If you are serious about reliable Infrastructure as Code, learning state fundamentals is one of the most important steps you can take.</p>"
+    }
+  ]
+},
+  {
+  "slug": "terraform-providers-fundamentals",
+  "title": "Terraform Providers Fundamentals: How Terraform Talks to the Real World",
+  "excerpt": "Learn how Terraform providers work: required providers, provider blocks, initialization, versioning, lock files, authentication, aliases, troubleshooting, and multi-account patterns.",
+  "category_slug": "infrastructure-as-code",
+  "tag_slugs": ["terraform", "iac", "devops", "aws"],
+  "author_username": "Michał Antolik",
+  "published_at": "2026-04-16T12:00:00+01:00",
+  "live": true,
+  "body": [
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Why Providers Matter in Terraform"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Terraform by itself does not know how to create a VPC, an S3 bucket, or a Kubernetes cluster. Its real power comes from <strong>providers</strong>.</p><p>A provider is the component that translates Terraform's language into the API calls of a target platform such as AWS, Azure, Google Cloud, Kubernetes, or many other services.</p><p>Terraform understands concepts like resources, data sources, desired state, dependency graphs, planning, and apply operations. Cloud platforms do not understand those Terraform concepts directly. They expose APIs for create, read, update, delete, and list operations. The provider sits in the middle and maps one world to the other.</p>"
+    },
+    {
+      "type": "callout",
+      "value": {
+        "text": "Providers are the translation layer between Terraform and the external platform APIs it manages.",
+        "tone": "info"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "The Four Core Pieces of a Terraform Run"
+      }
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "diagram": "flowchart TD\nA[Terraform CLI] --> B[Configuration Files .tf]\nA --> C[Provider Plugins]\nA --> D[State Data]\nC --> E[Target Platform APIs]",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>A typical Terraform workflow involves four major pieces:</p><ul><li><strong>Terraform CLI</strong> – the binary you run</li><li><strong>Configuration files</strong> – usually written in HCL</li><li><strong>Provider plug-ins</strong> – binaries that know how to talk to external APIs</li><li><strong>State data</strong> – Terraform's record of what infrastructure exists</li></ul><p>This course transcript focuses on the third piece: provider plug-ins.</p>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "What a Provider Contains"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>A provider can expose several kinds of objects:</p><ul><li><strong>Resources</strong> – managed infrastructure objects</li><li><strong>Data sources</strong> – read-only lookups for existing data</li><li><strong>Functions</strong> – helper functions implemented by the provider</li><li><strong>Ephemeral resources</strong> – short-lived provider-side constructs, when supported</li></ul><p>Not every provider contains every type of object, but a useful provider exposes at least one of them.</p>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "How Terraform Finds and Installs Providers"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Providers can come from:</p><ul><li><strong>The public Terraform Registry</strong></li><li><strong>A private registry</strong></li><li><strong>The local filesystem</strong></li></ul><p>During <code>terraform init</code>, Terraform determines which provider plug-ins are required and downloads them into the local <code>.terraform</code> directory.</p><p>Terraform can discover providers <strong>implicitly</strong> by looking at provider, resource, and data source usage, but the recommended approach is to define them <strong>explicitly</strong> with <code>required_providers</code>.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "diagram": "flowchart LR\nA[terraform init] --> B[Read configuration]\nB --> C[Determine required providers]\nC --> D[Resolve source and version]\nD --> E[Download plugins]\nE --> F[Store in .terraform directory]",
+        "width": "wide"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Defining Required Providers Explicitly"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>The recommended way to declare provider dependencies is inside a <code>terraform</code> block using <code>required_providers</code>.</p><p>Each entry defines:</p><ul><li><strong>local name</strong> – the name used in the configuration</li><li><strong>source</strong> – where Terraform should download the provider from</li><li><strong>version</strong> – the version constraint Terraform must satisfy</li></ul><p>This makes the configuration predictable and avoids accidental provider resolution.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "language": "hcl",
+        "code": "terraform {\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 6.13.0\"\n    }\n\n    random = {\n      source  = \"hashicorp/random\"\n      version = \"~> 3.7.0\"\n    }\n  }\n}",
+        "show_line_numbers": true,
+        "width": "wide"
+      }
+    },
+    {
+      "type": "callout",
+      "value": {
+        "text": "Implicit provider discovery is convenient for experiments, but explicit provider requirements are the safer and more maintainable choice.",
+        "tone": "success"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Provider Requirements vs Provider Configuration"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Declaring a provider requirement downloads the plug-in, but it does <strong>not</strong> configure how that provider should behave.</p><p>For actual usage, most providers need a <code>provider</code> block. This is where you define settings such as region, subscription, API endpoint, cluster hostname, or credentials strategy.</p><p>For example, the AWS provider needs at least a region. Without that, Terraform may initialize successfully but fail during planning or applying.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "language": "hcl",
+        "code": "provider \"aws\" {\n  region = var.region\n}",
+        "show_line_numbers": true,
+        "width": "content"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>This explains a very common beginner issue: <code>terraform init</code> succeeds because the provider plugin can be downloaded, but <code>terraform plan</code> fails because the provider was never configured correctly.</p>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "A Practical Example: Fixing a Missing AWS Provider Configuration"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>In the transcript scenario, a team had AWS resources in the configuration and a region variable defined, but no <code>provider \"aws\"</code> block.</p><p>Terraform implicitly downloaded the AWS provider during initialization, but planning failed with an AWS region error because Terraform had no configured AWS provider instance to use.</p><p>The fix was straightforward:</p><ol><li>Add <code>required_providers</code> for AWS</li><li>Add a provider block with <code>region = var.region</code></li></ol><p>That is an important lesson: provider installation and provider configuration are related, but they are not the same thing.</p>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Useful Provider Commands"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Terraform includes several commands that help inspect provider usage.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "language": "bash",
+        "code": "terraform version\nterraform providers\nterraform providers schema -json",
+        "show_line_numbers": false,
+        "width": "content"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<ul><li><code>terraform version</code> shows the Terraform version and the installed provider versions</li><li><code>terraform providers</code> shows which providers the configuration and modules require</li><li><code>terraform providers schema -json</code> outputs the full provider schema in JSON, which is useful for automation, scripting, inspection, or feeding into other tooling</li></ul>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Finding Providers in the Terraform Registry"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>The public Terraform Registry is more than just a download source. It is also the main documentation hub for providers.</p><p>Providers in the public registry generally fall into three groups:</p><ul><li><strong>Official</strong> – maintained by HashiCorp</li><li><strong>Partner</strong> – maintained by approved technology partners</li><li><strong>Community</strong> – maintained by individuals or open-source communities</li></ul><p>The registry documentation is especially important because it shows authentication options, resource and data source documentation, examples, argument lists, returned attributes, and import guidance.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "diagram": "flowchart TD\nA[Terraform Registry] --> B[Official Providers]\nA --> C[Partner Providers]\nA --> D[Community Providers]\nB --> E[HashiCorp maintained]\nC --> F[Vendor maintained]\nD --> G[Community maintained]",
+        "width": "wide"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Adding Another Provider: Random for Unique Resource Names"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Many cloud resources need globally unique names. A common Terraform pattern is to combine a naming prefix with a generated suffix.</p><p>The transcript used the <code>random</code> provider to create a suffix for an S3 bucket name. This is a good example of using a second provider to solve a practical infrastructure problem.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "language": "hcl",
+        "code": "terraform {\n  required_providers {\n    random = {\n      source  = \"hashicorp/random\"\n      version = \"= 2.3.1\"\n    }\n  }\n}\n\nresource \"random_string\" \"bucket_suffix\" {\n  length  = 12\n  special = false\n  upper   = false\n}",
+        "show_line_numbers": true,
+        "width": "wide"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>After adding a new provider or resource, a good habit is to run:</p><ul><li><code>terraform init</code> – to download any new plugin</li><li><code>terraform validate</code> – to catch syntax or configuration mistakes early</li></ul>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Provider Caching and Mirrors"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Downloading large providers repeatedly can be slow, especially on restricted or air-gapped networks. Terraform offers two related solutions:</p><ul><li><strong>Provider mirrors</strong> – file system or network mirrors that host provider binaries locally</li><li><strong>Plugin cache</strong> – a shared local cache reused across multiple Terraform configurations</li></ul><p>A mirror helps where internet access is limited. A cache helps when you do have connectivity but want to avoid repeated downloads.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "language": "hcl",
+        "code": "provider_installation {\n  filesystem_mirror {\n    path    = \"/path/to/provider-mirror\"\n    include = [\"registry.terraform.io/hashicorp/*\"]\n  }\n}\n\nplugin_cache_dir = \"/path/to/plugin-cache\"",
+        "show_line_numbers": true,
+        "width": "wide"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>The client configuration file is typically stored in <code>~/.terraformrc</code> on non-Windows systems or <code>%APPDATA%/terraform.rc</code> on Windows.</p><p>With a plugin cache enabled, Terraform still checks provider metadata but can reuse already-downloaded binaries instead of downloading them again.</p>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Version Constraints and the Lock File"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Providers follow semantic versioning: <strong>major.minor.patch</strong>.</p><ul><li><strong>Patch</strong> versions usually fix bugs</li><li><strong>Minor</strong> versions usually add non-breaking functionality</li><li><strong>Major</strong> versions may introduce breaking changes</li></ul><p>Terraform lets you control acceptable versions with version constraints.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "language": "hcl",
+        "code": "version = \"= 6.13.0\"\nversion = \">= 6.0.0\"\nversion = \">= 6.0.0, < 7.0.0\"\nversion = \"~> 3.7.0\"",
+        "show_line_numbers": false,
+        "width": "content"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>The pessimistic constraint <code>~&gt;</code> is especially common. For example, <code>~&gt; 3.7.0</code> allows patch upgrades within the 3.7 series, but not 3.8.</p><p>When Terraform selects a provider version, it records that choice in <code>.terraform.lock.hcl</code>. That lock file is meant to be committed to source control so every team member and CI pipeline uses the same provider versions.</p>"
+    },
+    {
+      "type": "callout",
+      "value": {
+        "text": "The lock file is a stability feature. It keeps teams and automation pipelines on the same provider versions until you deliberately upgrade.",
+        "tone": "info"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "How Provider Upgrades Work"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>When you change a version constraint, Terraform does not automatically ignore the locked version. To refresh provider selections, run <code>terraform init -upgrade</code>.</p><p>The general workflow is:</p><ol><li>Adjust the version constraint</li><li>Run <code>terraform init -upgrade</code></li><li>Run <code>terraform plan</code> and verify behavior</li><li>Commit the updated lock file</li></ol><p>A practical caution from the course: <code>-upgrade</code> upgrades all providers and modules that are allowed by the constraints, not just one selected provider. For major upgrades, it is safer to change only one provider at a time.</p>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Authentication Strategies for Providers"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Most providers need credentials. Across major cloud providers, there are five common approaches:</p><ol><li><strong>CLI credentials</strong> – reuse credentials already stored by tools like AWS CLI, Azure CLI, or gcloud</li><li><strong>Environment variables</strong> – inject credentials through the shell or CI environment</li><li><strong>Terraform variables</strong> – pass values into provider arguments</li><li><strong>Machine identity</strong> – use the identity assigned to a VM, instance, or service account</li><li><strong>OIDC</strong> – exchange a trusted token for cloud credentials dynamically</li></ol><p>For local development, CLI credentials are often the simplest. For CI/CD, OIDC is increasingly the recommended model because it avoids long-lived secrets.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "language": "hcl",
+        "code": "provider \"aws\" {\n  region = var.region\n}\n\n# Alternative style using provider arguments\nprovider \"aws\" {\n  region     = var.region\n  access_key = var.aws_access_key\n  secret_key = var.aws_secret_key\n}",
+        "show_line_numbers": true,
+        "width": "wide"
+      }
+    },
+    {
+      "type": "callout",
+      "value": {
+        "text": "Do not hardcode credentials in Terraform code. Prefer CLI auth locally and short-lived identity-based auth such as OIDC in automation.",
+        "tone": "warning"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Cloud-Specific Provider Families"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>The transcript also highlights that some clouds have more than one important provider.</p><ul><li><strong>AWS</strong> – the main <code>aws</code> provider plus <code>awscc</code> for Cloud Control API coverage</li><li><strong>Azure</strong> – <code>azurerm</code>, <code>azapi</code>, <code>azuread</code>, and the emerging <code>msgraph</code> provider</li><li><strong>Google Cloud</strong> – <code>google</code> for generally available services and <code>google-beta</code> for preview or beta features</li></ul><p>The pattern is similar across clouds: the primary provider usually offers the best abstraction, while thin API-wrapper providers tend to expose new services and features sooner but with less ergonomic abstractions.</p>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Using Multiple Provider Instances with Aliases"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>A single provider instance often has boundaries such as one region, one account, one subscription, one cluster, or one credentials set. When your design crosses those boundaries, you need multiple provider instances.</p><p>Terraform supports this with the <code>alias</code> meta-argument.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "language": "hcl",
+        "code": "provider \"aws\" {\n  region = var.region\n}\n\nprovider \"aws\" {\n  alias  = \"dr\"\n  region = var.dr_region\n}\n\nmodule \"dr_vpc\" {\n  source = \"./modules/vpc\"\n\n  providers = {\n    aws = aws.dr\n  }\n\n  region = var.dr_region\n}",
+        "show_line_numbers": true,
+        "width": "wide"
+      }
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "diagram": "flowchart TD\nA[Root module] --> B[aws default -> production region]\nA --> C[aws.dr -> disaster recovery region]\nB --> D[Resources without provider meta-argument]\nC --> E[Resources or modules explicitly mapped to aws.dr]",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Without a <code>provider</code> meta-argument on a resource or a <code>providers</code> map on a child module, Terraform uses the default unaliased provider instance.</p>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Multi-Account Patterns and Assume Role"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Multi-account infrastructure is a common advanced use case. In AWS, two common options are:</p><ul><li>Use separate CLI profiles or separate credentials per account</li><li>Use <strong>assume role</strong> to let one account access another in a controlled way</li></ul><p>The transcript demonstrates a useful pattern: keep a default provider for the application account and add another aliased provider that assumes a role into a security account.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "language": "hcl",
+        "code": "provider \"aws\" {\n  region = var.region\n}\n\nprovider \"aws\" {\n  alias  = \"security\"\n  region = var.region\n\n  assume_role {\n    role_arn = var.security_role_arn\n  }\n}\n\nmodule \"prod_s3_bucket\" {\n  source = \"./modules/vpc_flow_logs\"\n\n  providers = {\n    aws             = aws.security\n    aws.vpc_account = aws\n  }\n\n  vpc_id           = module.prod_vpc.vpc_id\n  naming_prefix    = \"sopes-saloon\"\n  bucket_id_suffix = random_string.bucket_suffix.result\n  iam_role_arn     = var.security_role_arn\n}",
+        "show_line_numbers": true,
+        "width": "wide"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>This pattern is powerful because it cleanly separates responsibilities across accounts while still letting one Terraform configuration orchestrate the full deployment.</p>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Troubleshooting Provider Issues"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Common provider problems usually fall into a few categories:</p><ul><li>Wrong region or project selected</li><li>Wrong account or subscription authenticated</li><li>Unexpected changes caused by using the wrong credentials context</li><li>Provider API errors or provider bugs</li></ul><p>Terraform exposes several logging environment variables that help when diagnosis gets difficult.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "language": "bash",
+        "code": "export TF_LOG=DEBUG\nexport TF_LOG_PATH=./terraform.log\n\n# More targeted logging\nexport TF_LOG_CORE=INFO\nexport TF_LOG_PROVIDER=TRACE",
+        "show_line_numbers": false,
+        "width": "content"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p><code>TF_LOG</code> controls overall verbosity. <code>TF_LOG_PATH</code> redirects that output to a file. <code>TF_LOG_CORE</code> and <code>TF_LOG_PROVIDER</code> let you separate Terraform Core logging from provider plug-in logging.</p><p>Provider trace logs can become very large very quickly, so targeted use is best.</p>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Providers and Terraform Workspaces"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Workspaces change the <strong>state context</strong>, but they do not automatically change provider versions, modules, or authentication context.</p><p>That means two important things:</p><ul><li>Switching workspaces does not switch credentials for you</li><li>Provider versions are shared across the configuration, not isolated per workspace</li></ul><p>This is why workspaces are convenient for temporary environments but can be risky if treated as a full environment isolation strategy.</p>"
+    },
+    {
+      "type": "callout",
+      "value": {
+        "text": "A new workspace does not mean a new account, new credentials, or a different provider version. It only changes which state instance Terraform uses.",
+        "tone": "warning"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Key Takeaways"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<ul><li>Providers are the bridge between Terraform and external APIs</li><li><code>required_providers</code> defines what to install; <code>provider</code> blocks define how to use it</li><li><code>terraform init</code> installs providers and respects version constraints plus the lock file</li><li>Registry documentation is essential for real-world usage</li><li>Aliases let one configuration span multiple regions, accounts, subscriptions, or clusters</li><li>Version upgrades should be deliberate and usually accompanied by lock file changes</li><li>Authentication strategy matters just as much as syntax</li><li>Workspaces do not isolate credentials or provider versions</li></ul><p>Once you understand providers well, Terraform becomes much easier to reason about because you can see exactly where HCL ends and platform-specific behavior begins.</p>"
+    }
+  ]
+},
+  {
+  "slug": "terraform-modules-reusable-infrastructure-patterns",
+  "title": "Terraform Modules: Reusable Infrastructure Patterns, Design, and Publishing",
+  "excerpt": "Learn how Terraform modules work, how root and child modules communicate, how to design reusable modules, and how to version and publish them safely.",
+  "category_slug": "infrastructure-as-code",
+  "tag_slugs": ["terraform", "iac", "devops"],
+  "author_username": "Michał Antolik",
+  "published_at": "2026-04-16T11:00:00+01:00",
+  "live": true,
+  "body": [
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "What a Terraform Module Really Is"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>In Terraform, a module is simply a directory that contains Terraform files. That may sound surprisingly simple, but it is the foundation for how Terraform encourages reuse and composition.</p><p>The directory you run Terraform commands against is called the <strong>root module</strong>. Any other module invoked from it is a <strong>child module</strong>. Child modules can call other modules too, which means a Terraform configuration can form a hierarchy rather than a single flat file.</p><p>This is one of the practical ways Terraform supports the DRY principle: instead of repeating the same infrastructure pattern again and again, you package that pattern into a module and reuse it.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Root module and child module hierarchy",
+        "diagram": "flowchart TD\nA[Root Module] --> B[Child Module: VPC]\nA --> C[Child Module: Web Front End]\nC --> D[Child Module: Logging]\nC --> E[Child Module: Monitoring]",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Key idea",
+        "text": "Every Terraform configuration is already a module. The difference is whether it is the root module you run commands against or a child module invoked by another module.",
+        "tone": "info"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Root Modules vs Child Modules"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Root modules and child modules share the same basic Terraform syntax and file conventions, but they play different roles.</p><ul><li><strong>Root module</strong> – the directory where you run <code>terraform init</code>, <code>plan</code>, and <code>apply</code>.</li><li><strong>Child module</strong> – a reusable module invoked by a parent module and not normally executed directly.</li></ul><p>The root module owns the backend configuration and the overall state. Child modules do not get separate state files by default. Their resources become part of the root module's state.</p><p>Provider configuration also belongs in the root module. Child modules inherit provider instances from the parent unless explicitly remapped.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "State and provider ownership",
+        "diagram": "flowchart LR\nA[Root Module] --> B[Backend Configuration]\nA --> C[Provider Instances]\nA --> D[State File]\nA --> E[Child Module Resources]\nE --> D",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Common Types of Terraform Modules"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Not every Terraform module serves the same purpose. In practice, modules usually fall into three categories.</p><ul><li><strong>Resource modules</strong> – deploy reusable infrastructure patterns such as a VPC, a web front end, or a Lambda plus its IAM and API Gateway configuration.</li><li><strong>Data-only modules</strong> – query one or more data sources and reshape the result into a more useful format.</li><li><strong>Function modules</strong> – do not create resources at all, but instead transform inputs into predictable outputs, such as standardized naming or labels.</li></ul><p>Resource modules are the most common, but the other two can be extremely useful in larger organizations where conventions and data transformations repeat across many projects.</p>"
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "A practical rule",
+        "text": "A good module should add abstraction, consistency, or reuse. If it only wraps one trivial resource without simplifying anything, it may not be worth extracting into a module.",
+        "tone": "warning"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "How to Call a Module"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Terraform uses a <code>module</code> block to instantiate a child module. The only required argument is <code>source</code>, which tells Terraform where to find the module.</p><p>If the module comes from a Terraform registry, you can also use the <code>version</code> argument. Module blocks also support meta-arguments such as <code>count</code>, <code>for_each</code>, <code>depends_on</code>, and <code>providers</code>.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Example module block in the root module",
+        "language": "text",
+        "code": "module \"web_front_end\" {\n  source  = \"./modules/web-front-end\"\n\n  prefix               = var.prefix\n  vpc_id               = module.vpc.vpc_id\n  public_subnet_ids    = module.vpc.public_subnets\n  launch_template_ami  = data.aws_ssm_parameter.app_ami.value\n  user_data_contents   = base64encode(templatefile(\"${path.module}/templates/user_data.tftpl\", {}))\n  app_port             = var.app_port\n  instance_type        = var.instance_type\n  environment          = var.environment\n}",
+        "show_line_numbers": true,
+        "width": "wide"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Module Inputs, Outputs, and Scope"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Modules behave a lot like functions in a programming language. They receive inputs, perform internal work, and return outputs. Everything else stays scoped inside the module.</p><p>A parent module cannot directly access a child module's internal resources, local values, or data sources. It can only pass data in through input variables and get data back through outputs.</p><p>Likewise, a child module cannot directly access the parent's variables or resources. This strict scoping is one of the reasons modules remain predictable and reusable.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Module scoping rules",
+        "diagram": "flowchart LR\nA[Parent Module] -->|input variables| B[Child Module]\nB -->|output values| A\nB --> C[Internal resources]\nB --> D[Local values]\nB --> E[Data sources]\nA -. no direct access .-> C\nA -. no direct access .-> D\nA -. no direct access .-> E",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Child module variables and outputs",
+        "language": "text",
+        "code": "variable \"vpc_id\" {\n  description = \"ID of the VPC where resources will be created\"\n  type        = string\n}\n\nvariable \"public_subnet_ids\" {\n  description = \"Public subnet IDs used by the load balancer and autoscaling group\"\n  type        = list(string)\n}\n\noutput \"autoscaling_group_name\" {\n  description = \"Name of the autoscaling group\"\n  value       = aws_autoscaling_group.web.name\n}\n\noutput \"lb_public_dns\" {\n  description = \"Public DNS name of the load balancer\"\n  value       = aws_lb.web.dns_name\n}",
+        "show_line_numbers": true,
+        "width": "wide"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Provider Inheritance in Modules"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Providers are configured in the root module. Child modules usually inherit the default provider instance automatically. This is called <strong>implicit inheritance</strong>.</p><p>When multiple provider aliases exist in the root module, the parent can explicitly pass the correct provider instance to the child using the <code>providers</code> argument in the module block.</p><p>This keeps provider configuration centralized while still allowing advanced module scenarios such as multi-region or multi-account deployments.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Passing a provider alias into a child module",
+        "language": "text",
+        "code": "provider \"aws\" {\n  region = \"us-west-2\"\n}\n\nprovider \"aws\" {\n  alias  = \"security\"\n  region = \"us-east-1\"\n}\n\nmodule \"security_stack\" {\n  source = \"./modules/security-stack\"\n\n  providers = {\n    aws = aws.security\n  }\n}",
+        "show_line_numbers": true,
+        "width": "wide"
+      }
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Important constraint",
+        "text": "Backend configuration belongs in the root module, and provider setup should generally live there too. Child modules should focus on consuming providers, not owning global configuration.",
+        "tone": "info"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Where Modules Can Come From"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Terraform supports both local and remote module sources.</p><ul><li><strong>Local paths</strong> – great for organizing code inside a repository.</li><li><strong>Terraform registry</strong> – the most common remote source, with version support and generated documentation.</li><li><strong>Git repositories</strong> – useful for source-controlled modules without publishing to a registry.</li><li><strong>Archive URLs, S3, or GCS</strong> – useful in controlled environments or internal distribution models.</li></ul><p>Most teams primarily use local paths during development and registry-based modules for broader reuse.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Examples of module source values",
+        "language": "text",
+        "code": "source = \"./modules/web-front-end\"\nsource = \"terraform-aws-modules/vpc/aws\"\nsource = \"git::https://github.com/example/terraform-aws-web-front-end.git?ref=v1.0.0\"\nsource = \"s3::https://s3.amazonaws.com/internal-modules/networking.zip\"",
+        "show_line_numbers": true,
+        "width": "wide"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Using a Registry Module to Replace Handwritten Infrastructure"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>A strong example from the course is replacing manually defined AWS networking resources with a well-known VPC module from the Terraform registry.</p><p>Instead of maintaining a custom VPC, internet gateway, public subnet, and route table implementation in every root module, the configuration can delegate that responsibility to a trusted module. The root module still controls inputs such as CIDR ranges and subnet lists, while the child module handles the repeated implementation details.</p><p>After adding a new module block, Terraform must be reinitialized so the module can be downloaded into the <code>.terraform</code> directory.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Typical workflow after adding a module",
+        "language": "bash",
+        "code": "terraform init\nterraform validate\nterraform plan",
+        "show_line_numbers": true,
+        "width": "content"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "When You Should Write Your Own Module"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Writing a custom module makes sense when you have a reusable pattern that delivers real value. That usually means one of three things:</p><ul><li>a recurring architectural pattern, such as a web front end behind a load balancer</li><li>a service with lots of configuration complexity, where consumers benefit from abstraction</li><li>a company-specific implementation that bundles multiple resources and conventions together</li></ul><p>Before writing a new module, always ask whether the problem has already been solved by a public or internal module. Reuse is one of the main goals of the module ecosystem.</p>"
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Good Module Design: Composition, Dependency Inversion, and Optional Creation"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Good Terraform modules are designed around clear principles rather than just moving resources into another folder.</p><ul><li><strong>Module composition</strong> – use multiple focused modules together instead of building one giant all-in-one module.</li><li><strong>Dependency inversion</strong> – pass dependencies into the module instead of hardcoding or creating them internally.</li><li><strong>Optional creation</strong> – make some resources conditional when different use cases need different shapes of infrastructure.</li></ul><p>For example, a web front-end module should probably receive a VPC ID, subnet IDs, AMI ID, and user data as inputs rather than deciding how those dependencies are discovered or generated.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Module composition and dependency inversion",
+        "diagram": "flowchart TD\nA[Root Module] --> B[VPC Module]\nA --> C[Web Front End Module]\nA --> D[Database Module]\nB -->|vpc_id, subnet_ids| C\nA -->|ami_id, user_data| C\nC -. avoids creating its own VPC .-> B",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Design mindset",
+        "text": "A reusable module should model a focused infrastructure concept. It should not become a grab bag of unrelated resources just because they were originally in the same root module.",
+        "tone": "success"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Preferred Module File Structure"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>A well-structured module usually looks a lot like a well-structured root module. At minimum, it should contain resource definitions, variables, outputs, and a Terraform block that declares required providers.</p><p>It should also include a <code>README.md</code> file. In mature modules, examples and tests are strongly recommended as well.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Typical module directory layout",
+        "language": "text",
+        "code": "modules/\n  web-front-end/\n    main.tf\n    variables.tf\n    outputs.tf\n    versions.tf\n    README.md\n    examples/\n    tests/",
+        "show_line_numbers": false,
+        "width": "content"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Variables should include a type and description. Outputs should include a clear description too. In larger modules, alphabetical ordering helps documentation stay easy to scan.</p><p>The module should also define its minimum required provider versions, and often a minimum Terraform CLI version if it depends on newer language features.</p>"
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Refactoring a Root Module to Use a Local Child Module"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Once a child module exists, the root module must be refactored to call it and to replace direct resource references with module outputs.</p><p>This is where module boundaries become very visible. Anything that previously pointed directly to a resource now needs to point at an output like <code>module.web_front_end.autoscaling_group_name</code> or <code>module.web_front_end.lb_public_dns</code>.</p><p>The result is a cleaner root module that orchestrates infrastructure instead of implementing every detail itself.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Formatting and validating after refactoring",
+        "language": "bash",
+        "code": "terraform init\nterraform fmt -recursive\nterraform validate\nterraform plan",
+        "show_line_numbers": true,
+        "width": "content"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Versioning Modules Correctly"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Terraform modules usually follow semantic versioning:</p><ul><li><strong>Patch</strong> – bug fixes only</li><li><strong>Minor</strong> – backward-compatible feature additions</li><li><strong>Major</strong> – breaking changes</li></ul><p>Although Terraform records provider versions in the dependency lock file, module versions are not locked there the same way. That means using wide version ranges can lead to inconsistent module versions across machines or pipelines.</p><p>For stable deployments, pinning a registry module to an exact version is the safest option.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Examples of version constraints",
+        "language": "text",
+        "code": "version = \"1.1.0\"\nversion = \">= 1.1.0, < 2.0.0\"\nversion = \"~> 1.4.0\"",
+        "show_line_numbers": true,
+        "width": "content"
+      }
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Recommended practice",
+        "text": "Pin module versions explicitly when using registry modules. It avoids surprise upgrades and keeps every environment using the same tested version.",
+        "tone": "warning"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Publishing a Module to the Terraform Registry"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Publishing a Terraform module is straightforward when you follow the expected workflow. You place the module in a public GitHub repository, tag releases using semantic versioning, and then connect that repository to the Terraform registry.</p><p>The registry uses your repository contents and tags to generate documentation and expose install instructions. This makes it easier for other teams to discover, review, and adopt the module.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Publishing flow for a Terraform module",
+        "diagram": "flowchart LR\nA[Create GitHub repository] --> B[Push module files]\nB --> C[Create semantic version tag]\nC --> D[Publish in Terraform Registry]\nD --> E[Consume with source + version]",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Using a published registry module",
+        "language": "text",
+        "code": "module \"web_front_end\" {\n  source  = \"globomantics/web-front-end/aws\"\n  version = \"1.0.0\"\n\n  prefix             = var.prefix\n  vpc_id             = module.vpc.vpc_id\n  public_subnet_ids  = module.vpc.public_subnets\n  launch_template_ami = data.aws_ssm_parameter.app_ami.value\n  user_data_contents  = var.user_data_contents\n}",
+        "show_line_numbers": true,
+        "width": "wide"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Evolving a Module Without Breaking Consumers"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Modules will change over time. Some changes are safe feature additions, while others require consumers to update their code or state.</p><ul><li><strong>Patch releases</strong> fix bugs without changing the interface.</li><li><strong>Minor releases</strong> add optional inputs, outputs, or behaviors.</li><li><strong>Major releases</strong> introduce breaking changes such as renamed variables, non-optional new inputs, or resource address changes.</li></ul><p>A good example of a non-breaking enhancement is adding an optional <code>instance_tags</code> variable with a default empty map. Existing consumers continue working, while new consumers can opt in.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Adding an optional variable for instance tags",
+        "language": "text",
+        "code": "variable \"instance_tags\" {\n  description = \"Additional tags applied to EC2 instances\"\n  type        = map(string)\n  default     = {}\n}\n\n# inside the launch template tags\nmerge(\n  {\n    Name        = var.prefix\n    Environment = var.environment\n  },\n  var.instance_tags\n)",
+        "show_line_numbers": true,
+        "width": "wide"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Terraform also provides tools to help with refactoring. The <code>moved</code> block can tell Terraform that a resource has changed address, such as moving into a child module or being renamed, without recreating the underlying infrastructure.</p><p>This is especially valuable when reorganizing mature Terraform codebases into better module boundaries.</p>"
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "What This Means in Real Projects"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Terraform modules are not just a syntax feature. They are a design tool for scaling Infrastructure as Code across teams. They let platform teams define reusable patterns, standardize implementation details, and expose only the right level of customization to consumers.</p><p>The strongest Terraform codebases usually have a thin root module that composes several focused child modules: networking, web front end, data services, logging, security, and more. That approach keeps configurations easier to reason about, easier to test, and easier to evolve over time.</p><p>If you understand module boundaries, inputs, outputs, provider inheritance, versioning, and publishing, you are already thinking about Terraform at a much more production-ready level.</p>"
+    }
+  ]
 }
 ]
