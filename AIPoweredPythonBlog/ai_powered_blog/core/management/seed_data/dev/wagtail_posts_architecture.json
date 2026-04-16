@@ -1,464 +1,216 @@
 [
-  {
-    "slug": "01-design-patterns-practical-guide",
-    "title": "Design Patterns: How to Think Like an Architect",
-    "excerpt": "Learn how design patterns solve real problems and make systems easier to build and maintain.",
-    "author_username": "Michał Antolik",
-    "category_slug": "architecture-patterns",
-    "tag_slugs": [
-      "design-patterns",
-      "architecture"
-    ],
-    "live": true,
-    "body": [
-      {
-        "type": "section_heading",
-        "value": {
-          "title": "What is it"
-        }
-      },
-      {
-        "type": "rich_text",
-        "value": "<p>A design pattern is a proven way to solve a common problem in software.</p><p>It is not code. It is a structure you can apply when you recognize a situation.</p><p>Example: when your code depends too much on a database, you can use a Repository pattern.</p>"
-      },
-      {
-        "type": "section_heading",
-        "value": {
-          "title": "Why it matters"
-        }
-      },
-      {
-        "type": "rich_text",
-        "value": "<p>Without patterns, developers solve the same problems again and again.</p><p>This leads to messy code, duplication, and hard-to-change systems.</p><p>Patterns give you a shared language. Instead of long explanations, you can say: \"use Strategy\".</p>"
-      },
-      {
-        "type": "mermaid",
-        "value": {
-          "caption": "Pattern thinking flow",
-          "diagram": "flowchart LR\nProblem --> Recognize\nRecognize --> Pattern\nPattern --> CleanSolution\nCleanSolution --> MaintainableSystem",
-          "width": "wide"
-        }
-      },
-      {
-        "type": "section_heading",
-        "value": {
-          "title": "How it works"
-        }
-      },
-      {
-        "type": "rich_text",
-        "value": "<p>Every pattern solves a specific type of problem.</p><p>You first recognize the problem. Then you apply the structure of the pattern.</p><p>Patterns usually define roles: interfaces, implementations, and interactions.</p>"
-      },
-      {
-        "type": "mermaid",
-        "value": {
-          "caption": "Abstraction and implementations",
-          "diagram": "flowchart LR\nClient --> Abstraction\nAbstraction --> ImplementationA\nAbstraction --> ImplementationB",
-          "width": "wide"
-        }
-      },
-      {
-        "type": "section_heading",
-        "value": {
-          "title": "Code example"
-        }
-      },
-      {
-        "type": "code",
-        "value": {
-          "language": "csharp",
-          "code": "public interface IRepository\n{\n    void Save();\n}\n\npublic class SqlRepository : IRepository\n{\n    public void Save() { /* SQL logic */ }\n}"
-        }
-      },
-      {
-        "type": "section_heading",
-        "value": {
-          "title": "Common mistakes"
-        }
-      },
-      {
-        "type": "rich_text",
-        "value": "<ul><li>Using patterns without a real problem</li><li>Overengineering simple code</li><li>Forgetting that patterns have trade-offs</li></ul>"
-      },
-      {
-        "type": "section_heading",
-        "value": {
-          "title": "Quick summary"
-        }
-      },
-      {
-        "type": "callout",
-        "value": {
-          "text": "Patterns are tools. Use them when the problem matches. Not before."
-        }
+ {
+  "slug": "design-patterns-overview-roadmap",
+  "title": "Design Patterns Overview: How to Learn, Apply, and Combine Them",
+  "excerpt": "A practical overview of design patterns: what they are, where they came from, when to use them, and how to build real mastery instead of memorizing names.",
+  "author_username": "Michał Antolik",
+  "category_slug": "architecture-patterns",
+  "tag_slugs": [
+    "design-patterns",
+    "architecture"
+  ],
+  "live": true,
+  "body": [
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "What design patterns really are"
       }
-    ]
-  },
-  {
-    "slug": "02-strategy-pattern-deep",
-    "title": "Strategy Pattern: Replace If-Else with Clean Design",
-    "excerpt": "Learn how to remove conditional logic and make your system flexible.",
-    "author_username": "Michał Antolik",
-    "category_slug": "architecture-patterns",
-    "tag_slugs": [
-      "strategy",
-      "design-patterns"
-    ],
-    "live": true,
-    "body": [
-      {
-        "type": "section_heading",
-        "value": {
-          "title": "What is it"
-        }
-      },
-      {
-        "type": "rich_text",
-        "value": "<p>Strategy pattern lets you change behavior without modifying the main class.</p><p>You move logic into separate classes called strategies.</p>"
-      },
-      {
-        "type": "section_heading",
-        "value": {
-          "title": "Why it matters"
-        }
-      },
-      {
-        "type": "rich_text",
-        "value": "<p>Large if/else blocks grow over time.</p><p>They become hard to read, test, and extend.</p><p>Strategy removes this problem by isolating behavior.</p>"
-      },
-      {
-        "type": "mermaid",
-        "value": {
-          "caption": "Strategy selection overview",
-          "diagram": "flowchart LR\nOrder --> Strategy\nStrategy --> SwedenTax\nStrategy --> USTax\nStrategy --> NoTax",
-          "width": "wide"
-        }
-      },
-      {
-        "type": "section_heading",
-        "value": {
-          "title": "How it works"
-        }
-      },
-      {
-        "type": "rich_text",
-        "value": "<p>You define an interface. Then multiple implementations.</p><p>The main class uses the interface, not the implementation.</p><p>The correct strategy is selected at runtime.</p>"
-      },
-      {
-        "type": "mermaid",
-        "value": {
-          "caption": "Strategy interaction flow",
-          "diagram": "sequenceDiagram\nClient->>Order: SetStrategy()\nOrder->>Strategy: Calculate()\nStrategy-->>Order: Result",
-          "width": "wide"
-        }
-      },
-      {
-        "type": "section_heading",
-        "value": {
-          "title": "Code example"
-        }
-      },
-      {
-        "type": "code",
-        "value": {
-          "language": "csharp",
-          "code": "public interface ITaxStrategy\n{\n    decimal Calculate(decimal amount);\n}\n\npublic class SwedenTax : ITaxStrategy\n{\n    public decimal Calculate(decimal amount) => amount * 0.25m;\n}\n\npublic class Order\n{\n    public ITaxStrategy Strategy { get; set; }\n\n    public decimal GetTax(decimal amount)\n    {\n        return Strategy.Calculate(amount);\n    }\n}"
-        }
-      },
-      {
-        "type": "section_heading",
-        "value": {
-          "title": "Common mistakes"
-        }
-      },
-      {
-        "type": "rich_text",
-        "value": "<ul><li>Too many small strategies</li><li>Choosing strategy in wrong place</li><li>Not using dependency injection</li></ul>"
-      },
-      {
-        "type": "section_heading",
-        "value": {
-          "title": "Quick summary"
-        }
-      },
-      {
-        "type": "callout",
-        "value": {
-          "text": "Use Strategy when behavior changes based on conditions."
-        }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>A design pattern is a general, reusable solution to a recurring software design problem in a specific context.</p><p>It is not a finished library, framework, or copy-paste implementation. It is a proven structure for solving a kind of problem that appears again and again.</p><p>Patterns matter because they help developers move from accidental design to intentional design. Instead of inventing a brand-new approach every time, you can recognize the situation and apply a known solution.</p>"
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Where patterns came from"
       }
-    ]
-  },
-  {
-    "slug": "03-command-pattern-deep",
-    "title": "Command Pattern: Turn Actions into Objects",
-    "excerpt": "Encapsulate operations and unlock undo, queues, and flexibility.",
-    "author_username": "Michał Antolik",
-    "category_slug": "architecture-patterns",
-    "tag_slugs": [
-      "command"
-    ],
-    "live": true,
-    "body": [
-      {
-        "type": "section_heading",
-        "value": {
-          "title": "What is it"
-        }
-      },
-      {
-        "type": "rich_text",
-        "value": "<p>Command pattern wraps an action inside an object.</p><p>This allows you to execute, store, and undo operations.</p>"
-      },
-      {
-        "type": "mermaid",
-        "value": {
-          "caption": "Command pattern structure",
-          "diagram": "flowchart LR\nClient --> Invoker\nInvoker --> Command\nCommand --> Receiver",
-          "width": "wide"
-        }
-      },
-      {
-        "type": "section_heading",
-        "value": {
-          "title": "Why it matters"
-        }
-      },
-      {
-        "type": "rich_text",
-        "value": "<p>In real systems, actions are not just executed once.</p><p>You may need to log them, retry them, or undo them.</p>"
-      },
-      {
-        "type": "mermaid",
-        "value": {
-          "caption": "Command execution flow",
-          "diagram": "sequenceDiagram\nClient->>Invoker: Execute(Command)\nInvoker->>Command: Execute()\nCommand->>Receiver: Action()",
-          "width": "wide"
-        }
-      },
-      {
-        "type": "section_heading",
-        "value": {
-          "title": "Code example"
-        }
-      },
-      {
-        "type": "code",
-        "value": {
-          "language": "csharp",
-          "code": "public interface ICommand\n{\n    void Execute();\n    void Undo();\n}\n\npublic class AddToCartCommand : ICommand\n{\n    public void Execute() { /* add item */ }\n    public void Undo() { /* remove item */ }\n}"
-        }
-      },
-      {
-        "type": "section_heading",
-        "value": {
-          "title": "Common mistakes"
-        }
-      },
-      {
-        "type": "rich_text",
-        "value": "<ul><li>Putting too much logic in invoker</li><li>Not storing command state</li></ul>"
-      },
-      {
-        "type": "section_heading",
-        "value": {
-          "title": "Quick summary"
-        }
-      },
-      {
-        "type": "callout",
-        "value": {
-          "text": "Command is perfect when actions must be stored, replayed, or undone."
-        }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>The idea of patterns did not begin in software. It came from architecture and urban design, where Christopher Alexander described recurring solutions for towns, buildings, and spaces.</p><p>Software developers later adapted this idea to object-oriented design. The most influential milestone was the classic Gang of Four book, which organized software design patterns into categories and gave the industry a shared vocabulary.</p><p>That shared vocabulary is one of the biggest reasons patterns became so valuable. Teams could stop describing every solution from scratch and start talking at the level of intent.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "How the idea of patterns moved into software",
+        "diagram": "flowchart LR\nArchitecture[City and building architecture] --> RecurringSolutions[Recurring solutions to recurring problems]\nRecurringSolutions --> Software[Software design]\nSoftware --> PatternCatalog[Named pattern catalogs]\nPatternCatalog --> SharedLanguage[Shared design language for teams]",
+        "width": "wide"
       }
-    ]
-  },
-  {
-    "slug": "04-null-object-pattern-deep",
-    "title": "Null Object Pattern: Eliminate Null Checks",
-    "excerpt": "Write safer code without endless null checks.",
-    "author_username": "Michał Antolik",
-    "category_slug": "architecture-patterns",
-    "tag_slugs": [
-      "null-object"
-    ],
-    "live": true,
-    "body": [
-      {
-        "type": "section_heading",
-        "value": {
-          "title": "What is it"
-        }
-      },
-      {
-        "type": "rich_text",
-        "value": "<p>Instead of returning null, return a safe default object.</p>"
-      },
-      {
-        "type": "section_heading",
-        "value": {
-          "title": "Why it matters"
-        }
-      },
-      {
-        "type": "rich_text",
-        "value": "<p>Null checks increase complexity and bugs.</p><p>This pattern removes them.</p>"
-      },
-      {
-        "type": "mermaid",
-        "value": {
-          "caption": "Real object and null object",
-          "diagram": "flowchart LR\nService --> RealObject\nService --> NullObject",
-          "width": "wide"
-        }
-      },
-      {
-        "type": "section_heading",
-        "value": {
-          "title": "Code example"
-        }
-      },
-      {
-        "type": "code",
-        "value": {
-          "language": "csharp",
-          "code": "public interface IUser { string Name { get; } }\n\npublic class NullUser : IUser\n{\n    public string Name => \"Guest\";\n}"
-        }
-      },
-      {
-        "type": "section_heading",
-        "value": {
-          "title": "Common mistakes"
-        }
-      },
-      {
-        "type": "rich_text",
-        "value": "<ul><li>Using null object where null has meaning</li></ul>"
-      },
-      {
-        "type": "section_heading",
-        "value": {
-          "title": "Quick summary"
-        }
-      },
-      {
-        "type": "callout",
-        "value": {
-          "text": "Replace null with behavior, not checks."
-        }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Why patterns are worth learning"
       }
-    ]
-  },
-  {
-    "slug": "05-specification-pattern-deep",
-    "title": "Specification Pattern: Keep Business Rules Clean",
-    "excerpt": "Avoid duplication and centralize logic.",
-    "author_username": "Michał Antolik",
-    "category_slug": "architecture-patterns",
-    "tag_slugs": [
-      "specification"
-    ],
-    "live": true,
-    "body": [
-      {
-        "type": "section_heading",
-        "value": {
-          "title": "What is it"
-        }
-      },
-      {
-        "type": "rich_text",
-        "value": "<p>Specification pattern stores business rules in reusable objects.</p>"
-      },
-      {
-        "type": "mermaid",
-        "value": {
-          "caption": "Combining specifications",
-          "diagram": "flowchart LR\nSpecA --> Combine\nSpecB --> Combine\nCombine --> Query",
-          "width": "wide"
-        }
-      },
-      {
-        "type": "section_heading",
-        "value": {
-          "title": "Code example"
-        }
-      },
-      {
-        "type": "code",
-        "value": {
-          "language": "csharp",
-          "code": "public interface ISpec<T>\n{\n    bool IsSatisfied(T obj);\n}"
-        }
-      },
-      {
-        "type": "section_heading",
-        "value": {
-          "title": "Quick summary"
-        }
-      },
-      {
-        "type": "callout",
-        "value": {
-          "text": "Put rules in one place and reuse them everywhere."
-        }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Patterns help you avoid reinventing the wheel. Many design problems have already been explored, discussed, refined, and tested in real systems. Knowing this saves time and reduces accidental complexity.</p><p>Patterns also improve communication. Saying <code>use a repository</code> or <code>this should be a strategy</code> is much clearer than describing a long sequence of refactorings in a code review.</p><p>Most importantly, patterns help you produce software that is easier to change. They often reduce coupling, isolate variation, and make behavior easier to extend, test, and reason about.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Why patterns improve development",
+        "diagram": "flowchart LR\nRecurringProblem --> RecognizePattern\nRecognizePattern --> ReuseKnownStructure\nReuseKnownStructure --> BetterCommunication\nReuseKnownStructure --> BetterDesign\nBetterDesign --> EasierTesting\nBetterDesign --> EasierChange\nBetterCommunication --> FasterTeamAlignment",
+        "width": "wide"
       }
-    ]
-  },
-  {
-    "slug": "06-state-pattern-deep",
-    "title": "State Pattern: Replace Complex Conditions",
-    "excerpt": "Manage object behavior using states instead of flags.",
-    "author_username": "Michał Antolik",
-    "category_slug": "architecture-patterns",
-    "tag_slugs": [
-      "state"
-    ],
-    "live": true,
-    "body": [
-      {
-        "type": "section_heading",
-        "value": {
-          "title": "What is it"
-        }
-      },
-      {
-        "type": "rich_text",
-        "value": "<p>State pattern lets objects change behavior depending on their state.</p>"
-      },
-      {
-        "type": "mermaid",
-        "value": {
-          "caption": "State transition flow",
-          "diagram": "stateDiagram-v2\n[*] --> New\nNew --> Pending\nPending --> Completed\nPending --> Failed\nCompleted --> Closed\nFailed --> New",
-          "width": "wide"
-        }
-      },
-      {
-        "type": "section_heading",
-        "value": {
-          "title": "Code example"
-        }
-      },
-      {
-        "type": "code",
-        "value": {
-          "language": "csharp",
-          "code": "interface IState { void Handle(); }\nclass PendingState : IState { public void Handle() { } }"
-        }
-      },
-      {
-        "type": "section_heading",
-        "value": {
-          "title": "Quick summary"
-        }
-      },
-      {
-        "type": "callout",
-        "value": {
-          "text": "Replace flags and conditionals with state objects."
-        }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Patterns are also a language"
       }
-    ]
-  }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>One of the most practical benefits of patterns is communication. Without a pattern name, a developer might explain a solution as a series of low-level refactorings: extract an interface, move persistence logic, inject it into the class, and stop calling the database directly.</p><p>With pattern vocabulary, the same idea becomes much simpler: <code>use the Repository pattern to decouple data access</code>.</p><p>That shift is important. It compresses design discussion into a shared concept and lets the team focus on trade-offs instead of mechanics.</p>"
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "How to learn patterns the right way"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Learning patterns is not about memorizing a catalog. Real learning happens in stages.</p><p>First, there is ignorance: you do not know the pattern exists. Then comes awareness: you have heard of it and know it might help. After that comes experimentation: you try it, often too eagerly, and begin discovering where it fits and where it does not. Finally comes mastery: you can recognize opportunities quickly and apply the pattern with confidence and restraint.</p><p>The best goal is to become T-shaped. Know many patterns broadly enough to follow design conversations, but go deep on the ones that appear often in the systems you actually build.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Practical learning path for design patterns",
+        "diagram": "flowchart LR\nIgnorance[Ignorance] --> Awareness[Awareness]\nAwareness --> Experimentation[Experimentation]\nExperimentation --> Mastery[Mastery]\nMastery --> Judgment[Good judgment about fit and trade-offs]",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "What a well-defined pattern includes"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>A mature pattern is more than a name. It usually includes a standard set of information: its name, classification, intent, motivation, applicability, structure, participants, collaborations, consequences, implementation guidance, known uses, and related patterns.</p><p>If you only want broad awareness, focus first on three things: the name, the intent, and the situations where the pattern applies. That is enough to recognize when a pattern might help.</p><p>If you want mastery, you must go deeper. You should understand the structure, the participant roles, the collaboration between them, and the trade-offs the pattern introduces.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "What makes up a design pattern",
+        "diagram": "mindmap\n  root((Design Pattern))\n    Name\n    Intent\n    Motivation\n    Applicability\n    Structure\n    Participants\n    Collaboration\n    Consequences\n    Implementation\n    Known Uses\n    Related Patterns",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "How diagrams fit into pattern thinking"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Patterns are often taught with UML-style structure diagrams because patterns are fundamentally about relationships. A diagram helps you see abstractions, implementations, dependencies, and interactions at a glance.</p><p>But structure alone is not enough. Several patterns can look similar in diagrams while serving different purposes. Two patterns may share almost the same shape yet differ completely in intent.</p><p>That is why pattern learning should always connect structure with context. Do not just memorize diagrams. Learn what problem the structure is solving.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "The same abstraction can support multiple implementations",
+        "diagram": "flowchart LR\nClient --> IService\nIService --> RealService\nIService --> Proxy\nProxy --> RealService",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "When to apply patterns"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>The worst time to apply a newly learned pattern is impulsively in production code. New pattern knowledge often leads to overuse. Everything starts to look like a nail.</p><p>A better approach is to practice in a controlled environment: coding katas, refactoring exercises, and small experiments backed by tests. That lets you understand the pattern without risking critical code.</p><p>When applying patterns to real code, use refactoring discipline. Start with test coverage, make changes in small steps, work in a separate branch, review the result, and confirm behavior is unchanged. If the pattern does not fit, delete the attempt and keep the lesson.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Safe pattern adoption workflow",
+        "diagram": "flowchart LR\nLearnPattern --> PracticeInKata\nPracticeInKata --> AddTests\nAddTests --> RefactorInSmallSteps\nRefactorInSmallSteps --> ReviewDesign\nReviewDesign --> KeepOrDiscard\nKeepOrDiscard --> BetterJudgment",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Patterns become more powerful when combined"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>In real systems, patterns are rarely used alone. Strong designs often come from combining a few simple patterns.</p><p>For example, a Strategy can encapsulate one family of behavior, a Repository can isolate persistence, a Decorator can add caching or logging, and a Builder can create a configured object safely. Each pattern handles a different kind of responsibility.</p><p>This matters because patterns are not trophies. Their value is not in how many you know, but in how well you combine them to solve a real problem with minimal complexity.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Pattern combinations in a realistic design",
+        "diagram": "flowchart LR\nClient --> Service\nService --> Strategy\nService --> Repository\nRepository --> Decorator\nDecorator --> DataStore\nBuilder --> Service",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "A simple code example"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>This example shows how a pattern name compresses a design decision into something concrete. The service depends on an abstraction instead of directly calling persistence logic. That is the core benefit behind a Repository-style design.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "A simple repository-based design in C#",
+        "language": "csharp",
+        "code": "public interface IOrderRepository\n{\n    Task SaveAsync(Order order);\n}\n\npublic sealed class SqlOrderRepository : IOrderRepository\n{\n    public Task SaveAsync(Order order)\n    {\n        // Database persistence logic\n        return Task.CompletedTask;\n    }\n}\n\npublic sealed class OrderService\n{\n    private readonly IOrderRepository _repository;\n\n    public OrderService(IOrderRepository repository)\n    {\n        _repository = repository;\n    }\n\n    public Task PlaceAsync(Order order)\n    {\n        // Business logic first\n        return _repository.SaveAsync(order);\n    }\n}\n\npublic sealed class Order\n{\n    public string Number { get; set; } = string.Empty;\n}",
+        "show_line_numbers": true,
+        "width": "wide"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Good patterns to start with"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>If you want a practical starting point, begin with patterns that appear often in application code.</p><ul><li><strong>Strategy</strong> helps when behavior varies and large conditionals start growing.</li><li><strong>Repository</strong> helps isolate persistence concerns from business logic.</li><li><strong>Adapter</strong> helps when two interfaces do not naturally fit together.</li><li><strong>Factory</strong> helps when object creation is complex or should be hidden.</li><li><strong>Proxy</strong> and <strong>Decorator</strong> help add control or extra behavior around an object.</li><li><strong>Singleton</strong> is worth understanding, both for how it works and why it is often misused.</li></ul><p>You do not need to master every pattern at once. Start with the ones that solve problems you see every week.</p>"
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Common mistakes"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<ul><li>Memorizing names without understanding intent</li><li>Applying a pattern before a real design problem exists</li><li>Choosing patterns because they look clever rather than because they fit</li><li>Ignoring trade-offs such as added indirection and complexity</li><li>Using production code as a first practice environment</li><li>Learning structures but not learning the context where they help</li><li>Treating one favorite pattern as a universal solution</li></ul>"
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Quick summary"
+      }
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Design patterns are design tools",
+        "text": "Patterns help you recognize recurring problems, communicate intent clearly, and apply proven structures instead of inventing everything from scratch. Learn them broadly, practice them deliberately, and use them only when the problem truly matches.",
+        "tone": "info"
+      }
+    }
+  ]
+}
 ]
