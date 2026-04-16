@@ -537,5 +537,224 @@
       }
     }
   ]
+},
+  {
+  "slug": "command-pattern-csharp",
+  "title": "Command Pattern in C#: Decoupling Actions and Enabling Undo/Redo",
+  "excerpt": "Learn how the Command Pattern works in C#, how to implement it, and why it enables clean architecture, undo/redo functionality, and extensibility in modern applications.",
+  "author_username": "Michał Antolik",
+  "category_slug": "architecture-patterns",
+  "tag_slugs": ["design-patterns", "command", "dotnet", "architecture", "backend"],
+  "live": true,
+  "body": [
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "What is the Command Pattern?"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>The Command Pattern is a <strong>behavioral design pattern</strong> that turns a request into an object. This allows you to parameterize clients with different requests, queue or log operations, and support undo/redo functionality.</p><p>Instead of calling methods directly, you wrap the action inside a command object. This decouples the sender of a request from the receiver.</p>"
+    },
+
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Command Pattern Structure",
+        "diagram": "flowchart LR\nClient --> Invoker\nInvoker --> Command\nCommand --> Receiver",
+        "width": "wide"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Core Components"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>The Command Pattern consists of four key elements:</p><ul><li><strong>Command</strong> – Encapsulates the request and required data</li><li><strong>Receiver</strong> – Performs the actual work</li><li><strong>Invoker</strong> – Executes the command</li><li><strong>Client</strong> – Creates and configures the command</li></ul>"
+    },
+
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Real-world Example: Shopping Cart",
+        "diagram": "flowchart LR\nButton(Client) --> Manager(Invoker)\nManager --> AddToCartCommand(Command)\nAddToCartCommand --> ShoppingCart(Receiver)",
+        "width": "wide"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Why Use the Command Pattern?"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>The Command Pattern is powerful because it enables:</p><ul><li><strong>Decoupling</strong> between UI and business logic</li><li><strong>Undo/Redo functionality</strong></li><li><strong>Command history tracking</strong></li><li><strong>Delayed execution</strong></li><li><strong>Replaying operations</strong></li></ul>"
+    },
+
+    {
+      "type": "callout",
+      "value": {
+        "text": "Commands can be stored and replayed later, making this pattern ideal for event sourcing and recovery scenarios.",
+        "type": "info"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Basic Command Interface in C#"
+      }
+    },
+    {
+      "type": "code",
+      "value": {
+        "language": "csharp",
+        "code": "public interface ICommand\n{\n    bool CanExecute();\n    void Execute();\n    void Undo();\n}"
+      }
+    },
+
+    {
+      "type": "rich_text",
+      "value": "<p>This interface defines the contract for all commands. Each command must know how to execute itself and optionally undo its action.</p>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Command Manager (Invoker)"
+      }
+    },
+
+    {
+      "type": "code",
+      "value": {
+        "language": "csharp",
+        "code": "public class CommandManager\n{\n    private readonly Stack<ICommand> _commands = new();\n\n    public void Invoke(ICommand command)\n    {\n        if (!command.CanExecute()) return;\n\n        command.Execute();\n        _commands.Push(command);\n    }\n\n    public void UndoAll()\n    {\n        while (_commands.Any())\n        {\n            _commands.Pop().Undo();\n        }\n    }\n}"
+      }
+    },
+
+    {
+      "type": "rich_text",
+      "value": "<p>The <strong>CommandManager</strong> acts as the invoker. It executes commands and keeps track of them using a stack, enabling undo operations in reverse order.</p>"
+    },
+
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Undo Mechanism (LIFO)",
+        "diagram": "flowchart TD\nCmd1 --> Cmd2 --> Cmd3\nUndo --> Cmd3 --> Cmd2 --> Cmd1",
+        "width": "wide"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Concrete Command Example"
+      }
+    },
+
+    {
+      "type": "code",
+      "value": {
+        "language": "csharp",
+        "code": "public class AddToCartCommand : ICommand\n{\n    private readonly IShoppingCartRepository _cart;\n    private readonly IProductRepository _products;\n    private readonly Product _product;\n\n    public AddToCartCommand(IShoppingCartRepository cart,\n                            IProductRepository products,\n                            Product product)\n    {\n        _cart = cart;\n        _products = products;\n        _product = product;\n    }\n\n    public bool CanExecute()\n    {\n        return _products.GetStock(_product.Id) > 0;\n    }\n\n    public void Execute()\n    {\n        _products.DecreaseStock(_product.Id, 1);\n        _cart.Add(_product);\n    }\n\n    public void Undo()\n    {\n        _products.IncreaseStock(_product.Id, 1);\n        _cart.Remove(_product);\n    }\n}"
+      }
+    },
+
+    {
+      "type": "rich_text",
+      "value": "<p>This command contains everything it needs to execute: references to repositories and the product itself. It also defines how to undo the action.</p>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Refactoring Application Logic"
+      }
+    },
+
+    {
+      "type": "rich_text",
+      "value": "<p>Instead of calling repositories directly, the application now works through commands:</p>"
+    },
+
+    {
+      "type": "code",
+      "value": {
+        "language": "csharp",
+        "code": "var command = new AddToCartCommand(cartRepo, productRepo, product);\nmanager.Invoke(command);"
+      }
+    },
+
+    {
+      "type": "rich_text",
+      "value": "<p>This removes tight coupling between the UI and the data layer.</p>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Command Pattern in WPF"
+      }
+    },
+
+    {
+      "type": "rich_text",
+      "value": "<p>In WPF, the Command Pattern is built into the framework via <code>ICommand</code>. UI elements like buttons bind directly to commands.</p>"
+    },
+
+    {
+      "type": "code",
+      "value": {
+        "language": "csharp",
+        "code": "public class RelayCommand : ICommand\n{\n    private readonly Action _execute;\n    private readonly Func<bool> _canExecute;\n\n    public RelayCommand(Action execute, Func<bool> canExecute)\n    {\n        _execute = execute;\n        _canExecute = canExecute;\n    }\n\n    public bool CanExecute(object parameter) => _canExecute();\n\n    public void Execute(object parameter) => _execute();\n\n    public event EventHandler CanExecuteChanged;\n}"
+      }
+    },
+
+    {
+      "type": "rich_text",
+      "value": "<p>The <strong>RelayCommand</strong> bridges UI and business logic, allowing reuse of your core command implementations.</p>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Benefits and Tradeoffs"
+      }
+    },
+
+    {
+      "type": "rich_text",
+      "value": "<p><strong>Benefits:</strong></p><ul><li>Clean separation of concerns</li><li>Improved testability</li><li>Flexible and extensible design</li><li>Undo/Redo support</li></ul><p><strong>Tradeoffs:</strong></p><ul><li>Additional abstraction layer</li><li>More classes and complexity</li><li>Overkill for small applications</li></ul>"
+    },
+
+    {
+      "type": "callout",
+      "value": {
+        "text": "Use the Command Pattern in complex applications where flexibility, extensibility, and undo functionality are important.",
+        "type": "warning"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Summary"
+      }
+    },
+
+    {
+      "type": "rich_text",
+      "value": "<p>The Command Pattern encapsulates actions as objects, enabling powerful features like undo/redo, decoupling, and extensibility. It is widely used in UI frameworks like WPF and in complex business applications.</p><p>When applied correctly, it leads to cleaner, more maintainable architecture — especially in systems with evolving requirements.</p>"
+    }
+  ]
 }
 ]
