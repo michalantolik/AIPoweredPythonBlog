@@ -756,5 +756,881 @@
       "value": "<p>The Command Pattern encapsulates actions as objects, enabling powerful features like undo/redo, decoupling, and extensibility. It is widely used in UI frameworks like WPF and in complex business applications.</p><p>When applied correctly, it leads to cleaner, more maintainable architecture — especially in systems with evolving requirements.</p>"
     }
   ]
+},
+  {
+  "slug": "csharp-null-object-pattern",
+  "title": "Eliminating Null Checks in C# with the Null Object Pattern",
+  "excerpt": "Learn how to eliminate repetitive null checks in C# using the Null Object pattern. Reduce cyclomatic complexity, improve readability, and make your code safer with default object implementations.",
+  "author_username": "Michał Antolik",
+  "category_slug": "architecture-patterns",
+  "tag_slugs": ["csharp", "design-patterns", "clean-code"],
+  "live": true,
+  "body": [
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "The Problem with Null"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Null values are deeply embedded in modern programming languages, but they come with a cost. Introduced in 1965 by Tony Hoare, the null reference was intended as a convenience—but later described by its creator as a <strong>\"billion-dollar mistake\"</strong>.</p><p>The problem is simple: null introduces uncertainty. Every time we interact with an object, we must ask:</p><ul><li>Is this object null?</li><li>Are its properties null?</li><li>Will this cause a runtime exception?</li></ul><p>This leads to defensive programming and repeated null checks scattered throughout the codebase.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Typical flow when dealing with nullable objects",
+        "diagram": "flowchart LR\nA[Receive Object] --> B{Is Null?}\nB -->|Yes| C[Handle Null]\nB -->|No| D[Use Object]\nD --> E{Property Null?}\nE -->|Yes| F[Handle Again]\nE -->|No| G[Continue]",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Why Null Checks Hurt Your Code"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Null checks may seem harmless, but they introduce several problems:</p><ul><li><strong>Increased cyclomatic complexity</strong> – every null check adds branching logic</li><li><strong>Reduced readability</strong> – business logic gets buried under defensive code</li><li><strong>Error-prone code</strong> – missing a check leads to runtime exceptions</li></ul><p>Even simple constructors or render methods quickly become cluttered with validation logic.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Typical null-check-heavy code",
+        "language": "csharp",
+        "code": "public void Render(Person person)\n{\n    if (person == null)\n        throw new ArgumentNullException(nameof(person));\n\n    if (person.FirstName == null)\n        throw new ArgumentNullException(nameof(person.FirstName));\n\n    Console.WriteLine(person.FirstName);\n}",
+        "show_line_numbers": true,
+        "width": "wide"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Introducing the Null Object Pattern"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>The <strong>Null Object Pattern</strong> replaces null values with a default object that implements the same interface. Instead of checking for null, your code always interacts with a valid object.</p><p>This object provides safe, default behavior and eliminates the need for defensive checks.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Null Object replaces null values with a safe default implementation",
+        "diagram": "flowchart LR\nA[Request Object] --> B{Exists?}\nB -->|Yes| C[Real Object]\nB -->|No| D[Null Object]\nC --> E[Use Normally]\nD --> E",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Implementation in C#"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>The pattern is typically implemented using an interface shared by both the real object and the null object.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Shared interface",
+        "language": "csharp",
+        "code": "public interface ILearner\n{\n    int Id { get; }\n    string UserName { get; }\n    int CoursesCompleted { get; }\n}",
+        "show_line_numbers": true,
+        "width": "wide"
+      }
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Concrete implementation",
+        "language": "csharp",
+        "code": "public class Learner : ILearner\n{\n    public int Id { get; }\n    public string UserName { get; }\n    public int CoursesCompleted { get; }\n\n    public Learner(int id, string userName, int coursesCompleted)\n    {\n        Id = id;\n        UserName = userName;\n        CoursesCompleted = coursesCompleted;\n    }\n}",
+        "show_line_numbers": true,
+        "width": "wide"
+      }
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Null Object implementation",
+        "language": "csharp",
+        "code": "public class NullLearner : ILearner\n{\n    public int Id => -1;\n    public string UserName => \"Just Browsing\";\n    public int CoursesCompleted => 0;\n}",
+        "show_line_numbers": true,
+        "width": "wide"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Using the Pattern in Practice"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Instead of returning null from a service or repository, return a Null Object. This guarantees that consumers always receive a valid instance.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Returning a Null Object instead of null",
+        "language": "csharp",
+        "code": "public ILearner GetCurrentLearner(int id)\n{\n    var learner = repository.GetLearner(id);\n\n    return learner ?? new NullLearner();\n}",
+        "show_line_numbers": true,
+        "width": "wide"
+      }
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Consumer code without null checks",
+        "language": "csharp",
+        "code": "public void Render(ILearner learner)\n{\n    Console.WriteLine($\"User: {learner.UserName}\");\n    Console.WriteLine($\"Courses: {learner.CoursesCompleted}\");\n}",
+        "show_line_numbers": true,
+        "width": "wide"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Benefits of the Null Object Pattern"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<ul><li><strong>No null checks</strong> – cleaner and more readable code</li><li><strong>Reduced cyclomatic complexity</strong></li><li><strong>Safer execution</strong> – no NullReferenceExceptions</li><li><strong>Better design</strong> – behavior is encapsulated in objects</li></ul>"
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "When to Use This Pattern"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Use the Null Object Pattern when:</p><ul><li>You frequently check for null values</li><li>You want to simplify conditional logic</li><li>A default \"do nothing\" behavior makes sense</li></ul><p>Avoid it when null represents a truly exceptional or invalid state that should not be silently handled.</p>"
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Key Insight",
+        "text": "The Null Object Pattern doesn't remove null—it replaces it with behavior. Instead of checking for absence, you design for safe defaults.",
+        "tone": "info"
+      }
+    }
+  ]
+},
+  {
+  "slug": "csharp-specification-pattern-explained",
+  "title": "C# Specification Pattern Explained: Reusing Domain Rules for Validation and Queries",
+  "excerpt": "Learn how the Specification Pattern works in C#, why strongly typed specifications matter, how to combine them, and how to use them for in-memory validation and efficient database queries.",
+  "author_username": "Michał Antolik",
+  "category_slug": "architecture-patterns",
+  "tag_slugs": [
+    "dotnet",
+    "csharp",
+    "architecture",
+    "patterns",
+    "design-patterns",
+    "specification",
+    "backend",
+    "database",
+    "testing"
+  ],
+  "live": true,
+  "body": [
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "What the Specification Pattern solves"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>The Specification Pattern is a design pattern used to encapsulate a single piece of domain knowledge into a reusable object. In practice, it becomes valuable when the same business rule must be applied in more than one place.</p><p>A common example is a rule like <code>movie is suitable for children</code>. That rule may be needed when validating a user action in memory, and also when querying the database for matching records. Without a shared abstraction, teams often duplicate the same business logic in repositories, services, handlers, and UI-facing code.</p><p>The pattern helps solve two problems at once: <strong>duplication of domain rules</strong> and <strong>loss of maintainability</strong>. Instead of scattering business conditions across the codebase, you place them in dedicated specifications and reuse them consistently.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "The core idea behind Specification",
+        "diagram": "flowchart LR\nBusinessRule[Business rule] --> Specification[Specification]\nSpecification --> Validation[In-memory validation]\nSpecification --> Querying[Database querying]\nSpecification --> Creation[Creation of matching objects]",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "The three main use cases"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>The pattern is most often discussed in the context of three use cases.</p><ul><li><strong>In-memory validation</strong> — check whether an already loaded object satisfies some business rule.</li><li><strong>Database querying</strong> — find records that match the same rule efficiently at the SQL level.</li><li><strong>Creation of new objects</strong> — describe what a valid candidate should look like and search for or generate examples that satisfy the rule.</li></ul><p>In day-to-day business applications, the first two are usually the most important. They are also where duplication appears most often.</p>"
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "The practical trigger",
+        "text": "The Specification Pattern starts paying off when the same business condition must be used in at least two places, especially validation and database filtering.",
+        "tone": "info"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "A simple example domain"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>A good teaching example is a movie catalog. Imagine a <code>Movie</code> entity with fields like name, release date, MPAA rating, genre, and regular rating.</p><p>Now imagine two business rules:</p><ul><li>A movie is <strong>suitable for children</strong> when its MPAA rating is <code>G</code> or <code>PG</code>.</li><li>A movie <strong>has a CD or DVD version</strong> when it was released more than six months ago.</li></ul><p>Those rules can influence both searching and purchasing. You may want to filter movies for kids in the database, and also validate that a child ticket cannot be bought for a movie rated <code>R</code> or <code>PG-13</code>.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Where the same rule appears more than once",
+        "diagram": "flowchart TD\nRule1[Movie suitable for children] --> Search1[Search only kid-friendly movies]\nRule1 --> Validation1[Validate child ticket purchase]\nRule2[Movie available on CD/DVD] --> Search2[Search movies available on disc]\nRule2 --> Validation2[Validate CD purchase]",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "The problem without specifications"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Without specifications, developers usually end up writing the same rule more than once. One version appears in the repository as a LINQ <code>Where</code> clause, and another version appears in service or UI logic as an <code>if</code> statement.</p><p>That seems harmless at first, but over time it increases technical debt. When a rule changes, every copy must be found and updated. Missing even one occurrence creates inconsistent behavior.</p><p>The natural instinct is to move the rule into a method on the entity, such as <code>movie.IsSuitableForChildren()</code>. That improves reuse for in-memory validation, but causes a different problem when used inside ORM queries.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Typical duplication without Specification",
+        "language": "csharp",
+        "code": "public IReadOnlyList<Movie> GetMovies(bool forKidsOnly)\n{\n    return _dbContext.Movies\n        .Where(x => !forKidsOnly || x.MpaaRating <= MpaaRating.PG)\n        .ToList();\n}\n\npublic void BuyChildTicket(Movie movie)\n{\n    if (movie.MpaaRating > MpaaRating.PG)\n        throw new InvalidOperationException(\"Movie is not suitable for children.\");\n\n    // continue purchase\n}",
+        "show_line_numbers": true,
+        "width": "wide"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Why entity methods do not solve querying"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Most ORMs can translate simple expression trees into SQL, but they usually cannot translate arbitrary custom methods. That means code like <code>.Where(x =&gt; x.IsSuitableForChildren())</code> often fails at runtime.</p><p>The ORM can understand comparisons like <code>x.MpaaRating &lt;= MpaaRating.PG</code>, but not your custom domain method unless it has a known SQL equivalent. The fallback is to fetch all rows first and filter in memory, but that is usually inefficient and scales poorly.</p><p>This creates an uncomfortable choice: either duplicate the rule or use an inefficient query. The Specification Pattern is designed to avoid that trade-off.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "The trade-off without Specification",
+        "diagram": "flowchart LR\nA[Duplicate rule] --> B[Works in query]\nA --> C[Works in validation]\nA --> D[Technical debt]\nE[Move rule into entity method] --> F[Great encapsulation]\nE --> G[ORM cannot translate method]\nG --> H[Fetch everything first]\nH --> I[Performance cost]",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "How LINQ makes this possible"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>To understand Specification in C#, it helps to understand the split between <code>IEnumerable&lt;T&gt;</code> and <code>IQueryable&lt;T&gt;</code>.</p><ul><li><strong>IEnumerable</strong> works with in-memory objects and uses delegates.</li><li><strong>IQueryable</strong> works with expression trees that providers such as Entity Framework or NHibernate inspect and translate to SQL.</li></ul><p>This distinction matters because a lambda in C# can become either a delegate or an expression tree depending on where it is used.</p><p>That is the bridge the Specification Pattern relies on: one domain rule can be expressed once as an expression tree, then used both for query translation and for in-memory validation after compilation.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Same lambda, different meaning depending on the target type",
+        "language": "csharp",
+        "code": "Func<Movie, bool> predicate = movie => movie.MpaaRating <= MpaaRating.PG;\nExpression<Func<Movie, bool>> expression = movie => movie.MpaaRating <= MpaaRating.PG;\n\n// predicate: executed in memory\n// expression: can be inspected and translated by an ORM",
+        "show_line_numbers": true,
+        "width": "wide"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "The naive approach: plain expressions"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>A first improvement is to store business rules as plain C# expressions and reuse them. That removes duplication and supports both querying and validation.</p><p>For querying, the expression is passed directly into the ORM. For validation, the expression is compiled into a delegate and executed in memory.</p><p>This is a real improvement, but it still exposes too much low-level detail to the client code.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Reusable rules as plain expressions",
+        "language": "csharp",
+        "code": "public static class MovieRules\n{\n    public static readonly Expression<Func<Movie, bool>> IsSuitableForChildren =\n        movie => movie.MpaaRating <= MpaaRating.PG;\n\n    public static readonly Expression<Func<Movie, bool>> HasCDVersion =\n        movie => movie.ReleaseDate <= DateTime.UtcNow.AddMonths(-6);\n}\n\n// Querying\nvar kidMovies = _dbContext.Movies.Where(MovieRules.IsSuitableForChildren).ToList();\n\n// Validation\nvar predicate = MovieRules.IsSuitableForChildren.Compile();\nif (!predicate(movie))\n{\n    throw new InvalidOperationException(\"Movie is not suitable for children.\");\n}",
+        "show_line_numbers": true,
+        "width": "wide"
+      }
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Why plain expressions are not enough",
+        "text": "Plain expressions reduce duplication, but the client still has to know when to compile them, how to combine them, and how to pass them around. That means the abstraction is still too low-level.",
+        "tone": "warning"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Why generic specifications are also weak"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Another tempting design is a generic wrapper such as <code>GenericSpecification&lt;T&gt;</code> that accepts any expression through the constructor. That looks better because it adds helper methods like <code>IsSatisfiedBy</code>, but it still does not truly encapsulate domain knowledge.</p><p>The business rule still comes from the client. The specification object is just a transport wrapper around whatever the caller decided to pass in. In other words, the rule is still externally defined instead of being modeled explicitly in the domain.</p><p>A proper specification should <strong>contain</strong> the business rule, not merely receive it.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "A generic specification is usually only a thin wrapper",
+        "language": "csharp",
+        "code": "public class GenericSpecification<T>\n{\n    public Expression<Func<T, bool>> Expression { get; }\n\n    public GenericSpecification(Expression<Func<T, bool>> expression)\n    {\n        Expression = expression;\n    }\n\n    public bool IsSatisfiedBy(T entity)\n    {\n        return Expression.Compile()(entity);\n    }\n}",
+        "show_line_numbers": true,
+        "width": "content"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "The better design: strongly typed specifications"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>The stronger approach is to create a base specification type and then derive concrete, strongly typed specifications from it. Each concrete class represents a precise piece of business knowledge with a clear name and meaning.</p><p>For example:</p><ul><li><code>MovieForKidsSpecification</code></li><li><code>AvailableOnCDSpecification</code></li></ul><p>Now the caller no longer builds the rule. The caller simply chooses the rule object it needs.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Strongly typed specifications contain business meaning",
+        "diagram": "flowchart TD\nBase[Specification<T>] --> Kids[MovieForKidsSpecification]\nBase --> CD[AvailableOnCDSpecification]\nKids --> QueryUse[Used in database queries]\nKids --> ValidationUse[Used in in-memory validation]\nCD --> QueryUse2[Used in database queries]\nCD --> ValidationUse2[Used in in-memory validation]",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "A clean base class for strongly typed specifications",
+        "language": "csharp",
+        "code": "using System;\nusing System.Linq.Expressions;\n\npublic abstract class Specification<T>\n{\n    public abstract Expression<Func<T, bool>> ToExpression();\n\n    public bool IsSatisfiedBy(T entity)\n    {\n        var predicate = ToExpression().Compile();\n        return predicate(entity);\n    }\n}",
+        "show_line_numbers": true,
+        "width": "wide"
+      }
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Concrete specifications with explicit business meaning",
+        "language": "csharp",
+        "code": "public sealed class MovieForKidsSpecification : Specification<Movie>\n{\n    public override Expression<Func<Movie, bool>> ToExpression()\n    {\n        return movie => movie.MpaaRating <= MpaaRating.PG;\n    }\n}\n\npublic sealed class AvailableOnCDSpecification : Specification<Movie>\n{\n    private const int MonthsBeforeCdIsOut = 6;\n\n    public override Expression<Func<Movie, bool>> ToExpression()\n    {\n        return movie => movie.ReleaseDate <= DateTime.UtcNow.AddMonths(-MonthsBeforeCdIsOut);\n    }\n}",
+        "show_line_numbers": true,
+        "width": "wide"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Using the same specification for validation and querying"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>This is where the pattern becomes elegant. The same <code>MovieForKidsSpecification</code> can be used in two different places without duplicating the rule:</p><ul><li>In a repository, by passing <code>spec.ToExpression()</code> into LINQ-to-database.</li><li>In application or domain logic, by calling <code>spec.IsSatisfiedBy(movie)</code>.</li></ul><p>The business rule is declared once and reused safely.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "One rule, two execution contexts",
+        "language": "csharp",
+        "code": "var spec = new MovieForKidsSpecification();\n\n// Querying\nvar movies = _dbContext.Movies\n    .Where(spec.ToExpression())\n    .ToList();\n\n// Validation\nif (!spec.IsSatisfiedBy(movie))\n{\n    throw new InvalidOperationException(\"Movie is not suitable for children.\");\n}",
+        "show_line_numbers": true,
+        "width": "wide"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Combining specifications"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Simple specifications are useful, but the real power comes from combining them. In business systems, requirements are often made of smaller reusable rules.</p><p>The most common combination types are:</p><ul><li><strong>And</strong> — both rules must be satisfied</li><li><strong>Or</strong> — either rule may be satisfied</li><li><strong>Not</strong> — invert a rule</li></ul><p>For example, you may want to search for movies that are both suitable for kids and available on CD, or movies available on CD but not suitable for children.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Composing larger rules from smaller ones",
+        "diagram": "flowchart LR\nKids[MovieForKidsSpecification] --> AndSpec[And]\nCD[AvailableOnCDSpecification] --> AndSpec\nAndSpec --> Result1[Kids movie available on CD]\nCD --> AndSpec2[And]\nNotKids[Not(MovieForKidsSpecification)] --> AndSpec2\nAndSpec2 --> Result2[Movie on CD but not for kids]",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Base class helpers for composition",
+        "language": "csharp",
+        "code": "public abstract class Specification<T>\n{\n    public abstract Expression<Func<T, bool>> ToExpression();\n\n    public bool IsSatisfiedBy(T entity)\n    {\n        return ToExpression().Compile()(entity);\n    }\n\n    public Specification<T> And(Specification<T> other) =>\n        new AndSpecification<T>(this, other);\n\n    public Specification<T> Or(Specification<T> other) =>\n        new OrSpecification<T>(this, other);\n\n    public Specification<T> Not() =>\n        new NotSpecification<T>(this);\n}",
+        "show_line_numbers": true,
+        "width": "wide"
+      }
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "A simple And specification built on expression trees",
+        "language": "csharp",
+        "code": "using System;\nusing System.Linq.Expressions;\n\ninternal sealed class AndSpecification<T> : Specification<T>\n{\n    private readonly Specification<T> _left;\n    private readonly Specification<T> _right;\n\n    public AndSpecification(Specification<T> left, Specification<T> right)\n    {\n        _left = left;\n        _right = right;\n    }\n\n    public override Expression<Func<T, bool>> ToExpression()\n    {\n        var leftExpr = _left.ToExpression();\n        var rightExpr = _right.ToExpression();\n\n        var parameter = Expression.Parameter(typeof(T));\n        var leftBody = Expression.Invoke(leftExpr, parameter);\n        var rightBody = Expression.Invoke(rightExpr, parameter);\n        var body = Expression.AndAlso(leftBody, rightBody);\n\n        return Expression.Lambda<Func<T, bool>>(body, parameter);\n    }\n}",
+        "show_line_numbers": true,
+        "width": "wide"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>The exact implementation of composition varies by project, and some teams prefer additional expression visitors to avoid provider limitations. But the key design idea remains the same: composition belongs <strong>inside the specification abstraction</strong>, not in client code.</p>"
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "The identity specification"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>When building dynamic queries, it is useful to have a neutral starting point: a specification that always returns <code>true</code>. This is often called an <strong>identity specification</strong>.</p><p>It acts like a null object. You start with <code>All</code>, then add criteria only when the user selects them. This makes dynamic filtering much cleaner.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Identity specification for dynamic search",
+        "language": "csharp",
+        "code": "public sealed class IdentitySpecification<T> : Specification<T>\n{\n    public override Expression<Func<T, bool>> ToExpression()\n    {\n        return _ => true;\n    }\n}\n\n// Example usage\nSpecification<Movie> spec = new IdentitySpecification<Movie>();\n\nif (forKidsOnly)\n    spec = spec.And(new MovieForKidsSpecification());\n\nif (onCdOnly)\n    spec = spec.And(new AvailableOnCDSpecification());\n\nvar results = _dbContext.Movies.Where(spec.ToExpression()).ToList();",
+        "show_line_numbers": true,
+        "width": "wide"
+      }
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Why the identity specification is useful",
+        "text": "It lets you build up dynamic search conditions step by step without null checks and without special branching for the first condition.",
+        "tone": "success"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Design guidelines for good specifications"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>A few practical rules make this pattern much easier to maintain.</p><ul><li><strong>Use strongly typed specifications</strong> instead of generic wrappers.</li><li><strong>Make them as specific as possible</strong>. Prefer <code>MovieForKidsSpecification</code> over a vague, over-parameterized rule unless variation is truly necessary.</li><li><strong>Keep them immutable</strong>. If a rule changes, create a new specification instance instead of mutating an old one.</li><li><strong>Avoid unnecessary interfaces</strong> when the base class already provides the needed abstraction.</li></ul><p>The naming of specifications matters. Good names communicate domain intent and reduce cognitive load for the rest of the team.</p>"
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "A common anti-pattern: returning IQueryable from repositories"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>One of the strongest warnings around this topic is to avoid returning <code>IQueryable</code> from public repository methods in medium or large codebases.</p><p>Returning <code>IQueryable</code> looks flexible because callers can append filters however they like. But that flexibility is misleading. The method signature effectively promises that any valid LINQ expression can be used, while the underlying ORM can translate only a subset of them. That is a leaky abstraction.</p><p>This is often framed as a violation of the <strong>Liskov Substitution Principle</strong>: the public API appears to support more than the implementation can actually fulfill.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Avoid exposing IQueryable from public methods",
+        "language": "csharp",
+        "code": "// Risky public API\npublic IQueryable<Movie> Find()\n{\n    return _dbContext.Movies;\n}\n\n// Safer public API\npublic IReadOnlyList<Movie> GetList(Specification<Movie> specification)\n{\n    return _dbContext.Movies\n        .Where(specification.ToExpression())\n        .ToList();\n}",
+        "show_line_numbers": true,
+        "width": "wide"
+      }
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Repository return types",
+        "text": "If you do not intentionally need deferred execution outside the repository, prefer materialized results such as IReadOnlyList over IQueryable. IQueryable exposes persistence details too far up the stack.",
+        "tone": "warning"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Combining specifications with ordinary filters"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Not every query condition deserves its own specification. If a condition is only needed in one place, such as a repository-only filter by minimum rating or paging parameters, it is usually fine to keep that logic directly in the query method.</p><p>The Specification Pattern is not an excuse to force every filter into its own class. Use specifications where they remove real duplication and improve modeling. Use ordinary query clauses where they are simpler and sufficient.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "A specification can coexist with ordinary query filters",
+        "language": "csharp",
+        "code": "public IReadOnlyList<Movie> GetList(\n    Specification<Movie> specification,\n    int minimumRating,\n    int page,\n    int pageSize)\n{\n    return _dbContext.Movies\n        .Where(specification.ToExpression())\n        .Where(x => x.Rating >= minimumRating)\n        .Skip((page - 1) * pageSize)\n        .Take(pageSize)\n        .ToList();\n}",
+        "show_line_numbers": true,
+        "width": "wide"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Working across related entities"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Specifications are not limited to a single class with primitive fields. They can also include related entities, such as a movie and its director.</p><p>For example, a rule like <code>movie directed by a specific person</code> is still a valid specification. In that case, the expression simply navigates through the relationship.</p><p>When querying with related entities, remember that your ORM may use lazy loading by default. If the UI or downstream code needs related data after the context is disposed, you may need eager loading or projection to DTOs.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "A specification involving a related entity",
+        "language": "csharp",
+        "code": "public sealed class MovieDirectedBySpecification : Specification<Movie>\n{\n    private readonly string _directorName;\n\n    public MovieDirectedBySpecification(string directorName)\n    {\n        _directorName = directorName;\n    }\n\n    public override Expression<Func<Movie, bool>> ToExpression()\n    {\n        return movie => movie.Director.Name == _directorName;\n    }\n}",
+        "show_line_numbers": true,
+        "width": "wide"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "When not to use the Specification Pattern"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>This pattern is useful, but it is not mandatory for every project.</p><p>You can usually skip it when:</p><ul><li>You only have <strong>one</strong> relevant use case, such as querying only or validation only.</li><li>The application is small and unlikely to grow much in complexity.</li><li>The business rule is so simple and local that introducing more classes would add ceremony without reducing maintenance cost.</li></ul><p>The pattern becomes worthwhile when the codebase is large enough, the domain has meaningful business rules, and the same rules must be reused in multiple contexts.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "A practical decision guide",
+        "diagram": "flowchart TD\nA[Do you reuse the same business rule in multiple places?] -->|No| B[Do not use Specification yet]\nA -->|Yes| C[Do you need validation and querying to share the rule?]\nC -->|No| D[Regular query or validation code is enough]\nC -->|Yes| E[Specification is a strong candidate]\nE --> F[Use strongly typed immutable specifications]",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "The third use case: creation of new objects"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>The final use case is less common but conceptually important. A specification can describe what a valid candidate should look like, and a system can then search or generate candidate objects that satisfy it.</p><p>This is similar to in-memory validation, but the input object does not already exist. Instead, you start from a candidate set and test each candidate against one or more specifications.</p><p>In practice, this often becomes a brute-force or search-based problem. The specification itself is still useful, but the harder part is usually generating the candidate set rather than evaluating the rule.</p>"
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "A complete example in one flow"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>When applied well, the pattern creates a nice pipeline:</p><ol><li>Model business rules explicitly as strongly typed specifications.</li><li>Reuse them for in-memory validation through <code>IsSatisfiedBy</code>.</li><li>Reuse them for efficient database querying through <code>ToExpression()</code>.</li><li>Compose them with <code>And</code>, <code>Or</code>, and <code>Not</code> when requirements become more sophisticated.</li></ol><p>This keeps business rules centralized, readable, and reusable without sacrificing query efficiency.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "End-to-end flow of a healthy specification-based design",
+        "diagram": "flowchart LR\nRule[Business rule] --> StrongSpec[Strongly typed specification]\nStrongSpec --> Query[LINQ to database]\nStrongSpec --> Validate[In-memory validation]\nStrongSpec --> Compose[AND / OR / NOT composition]\nCompose --> ComplexRules[More advanced business rules]\nQuery --> EfficientSql[Efficient SQL]\nValidate --> ConsistentBehavior[Consistent behavior]",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Final takeaway"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>The Specification Pattern is not about wrapping predicates in fancy classes. It is about <strong>making business rules first-class citizens</strong> in your codebase.</p><p>When implemented with strongly typed specifications, it helps you avoid duplicating domain knowledge, preserve encapsulation, and keep database access efficient. When combined thoughtfully, it also gives you a clear and expressive language for modeling business requirements.</p><p>If your system needs the same rule for both validation and querying, this pattern is often one of the cleanest ways to keep the design under control.</p>"
+    }
+  ]
+},
+  {
+  "slug": "csharp-state-pattern-explained",
+  "title": "C# State Pattern Explained: Cleaner State Transitions Without Boolean Spaghetti",
+  "excerpt": "Learn how the State pattern works in C#, why it reduces conditional complexity, and how to model state transitions cleanly using a booking workflow with New, Pending, Booked, and Closed states.",
+  "author_username": "Michał Antolik",
+  "category_slug": "architecture-patterns",
+  "tag_slugs": [
+    "dotnet",
+    "csharp",
+    "architecture",
+    "patterns",
+    "design-patterns",
+    "state",
+    "backend",
+    "testing"
+  ],
+  "live": true,
+  "body": [
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "What the State pattern solves"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>The State pattern is designed for objects whose behavior changes based on their internal state. It becomes especially valuable when a class starts accumulating <code>if</code>, <code>else</code>, or <code>switch</code> branches just to decide what should happen in each situation.</p><p>A common symptom is a method that started simple but slowly turned into a bundle of flags such as <code>isNew</code>, <code>isPending</code>, <code>isBooked</code>, and several condition chains that all need to stay synchronized. The code still works for a while, but it becomes harder to read, harder to test, and risky to extend.</p><p>The State pattern solves that by moving state-specific behavior into separate classes. The main object no longer needs to know every detail about every possible state. It delegates work to the object that represents its current state.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Core idea of the State pattern",
+        "diagram": "flowchart LR\nContext[BookingContext] --> StateInterface[BookingState]\nStateInterface --> NewState[NewState]\nStateInterface --> PendingState[PendingState]\nStateInterface --> BookedState[BookedState]\nStateInterface --> ClosedState[ClosedState]",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Why naive state handling becomes painful"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Imagine a booking workflow. A booking can be <strong>new</strong>, <strong>pending</strong>, <strong>booked</strong>, or <strong>closed</strong>. The user can submit details, cancel, or wait until the event date passes.</p><p>A naive implementation often starts with a single class and a few booleans. That may feel natural at first, but every new state introduces more checks, more transitions, and more places where a flag has to be set correctly. Eventually, methods stop describing business behavior and start describing defensive bookkeeping.</p><p>This is the real cost: every new requirement tends to force changes in code that was already working. Adding a new state does not stay local. It spills into several methods and increases the chance of subtle bugs.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "How conditional complexity grows in a naive design",
+        "diagram": "flowchart TD\nStart[Booking class] --> Flags[Boolean flags: isNew / isPending / isBooked]\nFlags --> Cancel[Cancel method]\nFlags --> Submit[SubmitDetails method]\nFlags --> DatePassed[DatePassed method]\nCancel --> IfElse1[if / else if / else]\nSubmit --> IfElse2[if / else if / else]\nDatePassed --> IfElse3[if / else if / else]\nIfElse1 --> Coupling[Behavior and state tracking mixed together]\nIfElse2 --> Coupling\nIfElse3 --> Coupling",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "A practical warning sign",
+        "text": "When a class needs multiple booleans just to describe what mode it is in, and several methods keep checking those booleans, the State pattern is often worth considering.",
+        "tone": "warning"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "The three core participants"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>The State pattern is usually described through three roles.</p><ul><li><strong>Context</strong>: the main object whose behavior changes over time. In this example, that is the booking itself.</li><li><strong>State</strong>: an abstract base class or interface that defines the operations the context can delegate.</li><li><strong>Concrete States</strong>: focused implementations such as <code>NewState</code>, <code>PendingState</code>, <code>BookedState</code>, and <code>ClosedState</code>.</li></ul><p>The context stores a reference to the current state and forwards work to it. Each concrete state decides how that action should behave and whether the context should transition to another state.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Minimal abstract state for the booking workflow",
+        "language": "csharp",
+        "code": "public abstract class BookingState\n{\n    public abstract void EnterState(BookingContext booking);\n    public abstract void Cancel(BookingContext booking);\n    public abstract void DatePassed(BookingContext booking);\n    public abstract void EnterDetails(\n        BookingContext booking,\n        string attendee,\n        int ticketCount);\n}\n",
+        "show_line_numbers": true,
+        "width": "wide"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "The booking workflow used to explain the pattern"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>A simple event booking system is a strong teaching example because the states are easy to identify and the transitions are clear.</p><p>A booking starts in the <strong>new</strong> state. If the user submits details, it moves to <strong>pending</strong>. If processing succeeds, it becomes <strong>booked</strong>. If processing fails, it returns to <strong>new</strong>. If the user cancels or the event date passes in certain states, it ends up <strong>closed</strong>.</p><p>That is exactly the kind of workflow where the State pattern shines: a single object, a limited set of legitimate states, and behavior that depends strongly on which state is active right now.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Booking state transitions",
+        "diagram": "stateDiagram-v2\n    [*] --> New\n    New --> Pending: SubmitDetails\n    New --> Closed: Cancel\n    New --> Closed: DatePassed\n    Pending --> Booked: ProcessingSuccess\n    Pending --> New: ProcessingFailed\n    Pending --> Closed: Cancel\n    Booked --> Closed: Cancel\n    Booked --> Closed: DatePassed",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "The context owns the current state"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>The context is the object the rest of the application talks to. In the course example, the UI does not work directly with <code>NewState</code> or <code>PendingState</code>. It works with <code>BookingContext</code>.</p><p><code>BookingContext</code> stores business data such as attendee name, ticket count, booking ID, and a reference to the current state. When the UI calls methods like <code>SubmitDetails</code>, <code>Cancel</code>, or <code>DatePassed</code>, the context simply forwards that call to the current state object.</p><p>This is the heart of the pattern. The context remains stable, while the current state determines the actual behavior.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Booking context delegating work to the current state",
+        "language": "csharp",
+        "code": "public sealed class BookingContext\n{\n    private BookingState currentState;\n\n    public string Attendee { get; set; } = string.Empty;\n    public int TicketCount { get; set; }\n    public int BookingId { get; set; }\n\n    public BookingContext()\n    {\n        TransitionToState(new NewState());\n    }\n\n    public void TransitionToState(BookingState state)\n    {\n        currentState = state;\n        currentState.EnterState(this);\n    }\n\n    public void SubmitDetails(string attendee, int ticketCount)\n    {\n        currentState.EnterDetails(this, attendee, ticketCount);\n    }\n\n    public void Cancel()\n    {\n        currentState.Cancel(this);\n    }\n\n    public void DatePassed()\n    {\n        currentState.DatePassed(this);\n    }\n}\n",
+        "show_line_numbers": true,
+        "width": "wide"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Entering a state is part of the design"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>One especially useful idea in this implementation is the <code>EnterState</code> method. Instead of only switching the current state reference, the context also gives the new state a chance to run setup logic as soon as it becomes active.</p><p>That makes the transition explicit and gives each state a place to perform entry behavior. For a booking, entering the <strong>new</strong> state can assign a booking ID, update the UI, and show the data entry form. Entering the <strong>booked</strong> state can update the UI and show a confirmation message.</p><p>This keeps setup code close to the state that owns it.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "What happens during a transition",
+        "diagram": "sequenceDiagram\n    participant UI\n    participant Context as BookingContext\n    participant State as Current BookingState\n\n    UI->>Context: SubmitDetails(...)\n    Context->>State: EnterDetails(context, attendee, ticketCount)\n    State->>Context: TransitionToState(new PendingState())\n    Context->>State: set currentState\n    Context->>State: EnterState(context)",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "A concrete state in C#"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Each concrete state implements the same interface, but only the behavior that makes sense for that state. For example, <code>NewState</code> accepts user input and can transition either to <code>PendingState</code> or <code>ClosedState</code>.</p><p>Notice what it does <strong>not</strong> do: it does not check whether the booking is pending, booked, or already closed. That is unnecessary because the current object is already <code>NewState</code>. The pattern removes entire categories of defensive conditional logic.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Example NewState implementation",
+        "language": "csharp",
+        "code": "public sealed class NewState : BookingState\n{\n    public override void EnterState(BookingContext booking)\n    {\n        booking.BookingId = Random.Shared.Next(1000, 9999);\n        Console.WriteLine($\"Booking {booking.BookingId} is New\");\n    }\n\n    public override void EnterDetails(\n        BookingContext booking,\n        string attendee,\n        int ticketCount)\n    {\n        booking.Attendee = attendee;\n        booking.TicketCount = ticketCount;\n        booking.TransitionToState(new PendingState());\n    }\n\n    public override void Cancel(BookingContext booking)\n    {\n        booking.TransitionToState(new ClosedState(\"Booking canceled\"));\n    }\n\n    public override void DatePassed(BookingContext booking)\n    {\n        booking.TransitionToState(new ClosedState(\"Booking expired\"));\n    }\n}\n",
+        "show_line_numbers": true,
+        "width": "wide"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Pending state: where asynchronous work fits naturally"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>The <strong>pending</strong> state is a good example of why this pattern is so helpful. Once details are submitted, the booking is effectively waiting for an external result. In the demo project, an asynchronous method simulates processing.</p><p>That makes <code>PendingState</code> a very natural place to hold the processing workflow, cancellation token, and the logic that reacts to success, failure, or cancellation. None of that needs to clutter the context or the other states.</p><p>In other words, the state object becomes the home for behavior that only matters while that state is active.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "PendingState coordinating processing and transitions",
+        "language": "csharp",
+        "code": "public sealed class PendingState : BookingState\n{\n    private readonly CancellationTokenSource cancelToken = new();\n\n    public override void EnterState(BookingContext booking)\n    {\n        Console.WriteLine(\"Booking is Pending\");\n\n        _ = ProcessAsync(booking);\n    }\n\n    private async Task ProcessAsync(BookingContext booking)\n    {\n        await Task.Delay(1000, cancelToken.Token);\n\n        bool success = DateTime.UtcNow.Second % 2 == 0;\n\n        if (success)\n        {\n            booking.TransitionToState(new BookedState());\n        }\n        else\n        {\n            booking.TransitionToState(new NewState());\n        }\n    }\n\n    public override void Cancel(BookingContext booking)\n    {\n        cancelToken.Cancel();\n        booking.TransitionToState(new ClosedState(\"Processing canceled\"));\n    }\n\n    public override void DatePassed(BookingContext booking)\n    {\n        // Ignore or show a validation message.\n    }\n\n    public override void EnterDetails(\n        BookingContext booking,\n        string attendee,\n        int ticketCount)\n    {\n        // Already processing.\n    }\n}\n",
+        "show_line_numbers": true,
+        "width": "wide"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Why this removes boolean spaghetti"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>In the naive version, a single class had to answer questions like: Is the booking new? Pending? Booked? Closed? Can it be canceled now? Should the date passing matter? What happens after a failed process?</p><p>In the State pattern version, those questions disappear from the context. The object is in exactly one state at a time, and the state class itself defines the valid behavior.</p><p>This means you do not have to write code that says, in effect, <em>if I am in state A do this, but if I am in state B do something else</em>. The current state object already embodies that decision.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Why the current state simplifies logic",
+        "diagram": "flowchart LR\nCall[User action] --> Context[BookingContext]\nContext --> CurrentState[Current BookingState]\nCurrentState --> OnePath[Only behavior for this state runs]\nOnePath --> OptionalTransition[Optional transition to another state]",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "The biggest architectural gain",
+        "text": "The State pattern does not just move conditionals around. It changes the model so that the active state determines behavior directly, which sharply reduces invalid branching.",
+        "tone": "info"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Benefits in real C# projects"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>The most visible benefit is cleaner code, but there are several practical advantages.</p><ul><li><strong>Lower conditional complexity</strong>: fewer long methods with nested branching.</li><li><strong>Better separation of concerns</strong>: each state owns its own behavior.</li><li><strong>Safer changes</strong>: adding or modifying one state is less likely to break another.</li><li><strong>Improved readability</strong>: the workflow is expressed through explicit classes and transitions.</li><li><strong>Better testability</strong>: each state can be tested in isolation.</li></ul><p>This pattern is especially useful in workflow-heavy systems such as payments, order processing, approvals, onboarding, subscriptions, document review, and UI flows.</p>"
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "How to test a state-driven design"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>State-driven systems become easier to test because state behavior is localized. Instead of setting several booleans and invoking one huge method, a test can create the context, move it into a known state, trigger an action, and assert the resulting transition.</p><p>That style of testing aligns with the business workflow and tends to produce much more meaningful test names and scenarios.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Example unit test for a transition",
+        "language": "csharp",
+        "code": "[Fact]\npublic void New_booking_transitions_to_closed_when_canceled()\n{\n    var booking = new BookingContext();\n\n    booking.Cancel();\n\n    Assert.IsType<ClosedState>(booking.CurrentStateForTesting);\n}\n",
+        "show_line_numbers": true,
+        "width": "wide"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>In production code you would usually avoid exposing the current state directly unless you have a clean way to inspect it, but the example shows the testing idea clearly: act on a known state and verify the new one.</p>"
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Tradeoffs and when not to use it"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>The State pattern is powerful, but it is not free.</p><ul><li>It introduces more classes than a single naive implementation.</li><li>It takes more initial design work.</li><li>It can feel heavy for tiny workflows with only one or two trivial branches.</li></ul><p>If the object barely changes behavior and the workflow is unlikely to grow, a simpler design may be enough. But once state handling starts spreading across multiple methods and flags, the State pattern usually pays for itself quickly.</p>"
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Good fit vs overkill",
+        "text": "Use the State pattern when states are clear, transitions matter, and behavior genuinely changes by state. Avoid it when the workflow is tiny and unlikely to evolve.",
+        "tone": "warning"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Summary"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>The State pattern helps an object change behavior cleanly as its internal state changes. Instead of centralizing all rules in one growing class, it distributes behavior across focused state classes and lets a context delegate to the current one.</p><p>In C#, this leads to code that is easier to read, easier to test, easier to extend, and far less dependent on booleans and long conditional chains. The booking example shows the pattern clearly, but the same approach applies to many business workflows where valid actions depend on the current step in a process.</p><p>If your class is starting to look like a state machine hidden inside <code>if</code> statements, the State pattern is often the right next move.</p>"
+    }
+  ]
 }
 ]

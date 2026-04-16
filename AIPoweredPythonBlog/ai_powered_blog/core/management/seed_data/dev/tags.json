@@ -76,5 +76,7 @@
   { "slug": "kompose", "name": "Kompose" },
   { "slug": "helm", "name": "Helm" },
   { "slug": "hcl", "name": "HCL" },
-  { "slug": "csharp", "name": "C#" }
+  { "slug": "csharp", "name": "C#" },
+  { "slug": "clean-code", "name": "Clean Code" }
+
 ]
