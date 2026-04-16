@@ -1763,5 +1763,2321 @@
       "value": "<p>Terraform modules are not just a syntax feature. They are a design tool for scaling Infrastructure as Code across teams. They let platform teams define reusable patterns, standardize implementation details, and expose only the right level of customization to consumers.</p><p>The strongest Terraform codebases usually have a thin root module that composes several focused child modules: networking, web front end, data services, logging, security, and more. That approach keeps configurations easier to reason about, easier to test, and easier to evolve over time.</p><p>If you understand module boundaries, inputs, outputs, provider inheritance, versioning, and publishing, you are already thinking about Terraform at a much more production-ready level.</p>"
     }
   ]
+},
+  {
+  "slug": "terraform-advanced-hcl-functions-expressions",
+  "title": "Terraform Advanced HCL: Functions, Expressions, and Dynamic Infrastructure",
+  "excerpt": "Learn how to use Terraform expressions, functions, templates, and meta-arguments to build dynamic, reusable infrastructure.",
+  "category_slug": "infrastructure-as-code",
+  "tag_slugs": ["terraform", "hcl", "devops", "aws", "iac"],
+  "author_username": "Michał Antolik",
+  "published_at": "2026-04-16T10:00:00Z",
+  "live": true,
+  "body": [
+    {
+      "type": "section_heading",
+      "value": { "title": "What is HCL and Terraform Expressions?" }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Terraform uses HashiCorp Configuration Language (HCL) to define infrastructure. At its core, HCL is built from <strong>blocks</strong> and <strong>arguments</strong>.</p><p>An argument consists of a name and a value, and that value can be a <strong>Terraform expression</strong>.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "diagram": "flowchart LR\nA[Terraform Config] --> B[Blocks]\nB --> C[Arguments]\nC --> D[Expressions]",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Expressions define how values are calculated. Terraform supports many types of expressions, from simple literals to dynamic computations.</p>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": { "title": "Types of Expressions" }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>The simplest expression is a <strong>literal</strong>. Terraform does not need to evaluate it.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "language": "hcl",
+        "code": "name_prefix = \"taco-wagon\"\ncount       = 3\nenabled     = true"
+      }
+    },
+    {
+      "type": "callout",
+      "value": {
+        "text": "Literal values are required in terraform blocks and module source/version fields because they are evaluated before the rest of the configuration.",
+        "type": "info"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": { "title": "Operators in Terraform" }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Terraform supports arithmetic, comparison, and logical operators.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "language": "hcl",
+        "code": "a + b\na > b\na == b\na != b\nis_prod && enabled\n!is_prod"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": { "title": "Built-in Functions" }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Terraform provides over 100 built-in functions to manipulate data.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "language": "hcl",
+        "code": "cidrsubnet(\"10.0.0.0/16\", 8, 0)\nlower(\"HELLO\")\nformat(\"%s-%s\", var.team, var.env)\ncoalesce(var.owner, var.team)"
+      }
+    },
+    {
+      "type": "callout",
+      "value": {
+        "text": "Functions like timestamp() and uuid() generate new values on every run and should be used carefully.",
+        "type": "warning"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": { "title": "Provider-defined Functions" }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Providers can define their own functions for platform-specific logic.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "language": "hcl",
+        "code": "provider::aws::arn_parse(aws_vpc.main.arn)"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>This returns a structured map with ARN components.</p>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": { "title": "String Interpolation and Templates" }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Terraform allows dynamic string construction using interpolation.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "language": "hcl",
+        "code": "\"${var.team}-${var.environment}\""
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>You can also use heredoc syntax for multi-line strings:</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "language": "hcl",
+        "code": "<<EOT\nHello ${var.team}\nEnvironment: ${var.environment}\nEOT"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": { "title": "Templatefile Function" }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Instead of embedding large templates, you can move them to external files.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "language": "hcl",
+        "code": "templatefile(\"${path.module}/templates/user_data.tftpl\", {\n  team        = var.team\n  environment = var.environment\n})"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": { "title": "Conditional Expressions (Ternary)" }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Terraform uses a ternary operator for conditionals.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "language": "hcl",
+        "code": "var.is_prod ? \"m5.large\" : \"t3.micro\""
+      }
+    },
+    {
+      "type": "callout",
+      "value": {
+        "text": "Avoid deeply nested ternary expressions—they quickly reduce readability.",
+        "type": "warning"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": { "title": "Meta-arguments: count vs for_each" }
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "diagram": "flowchart LR\nA[Need multiple resources] --> B{Same or different?}\nB -->|Identical| C[count]\nB -->|Distinct| D[for_each]",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p><strong>count</strong> is simple and index-based:</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "language": "hcl",
+        "code": "resource \"aws_subnet\" \"public\" {\n  count = 3\n  cidr_block = cidrsubnet(var.vpc_cidr, 8, count.index)\n}"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p><strong>for_each</strong> is key-based and safer:</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "language": "hcl",
+        "code": "resource \"aws_s3_bucket\" \"buckets\" {\n  for_each = toset([\"logs\", \"data\", \"backup\"])\n  bucket   = \"${each.value}-bucket\"\n}"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": { "title": "Dynamic Blocks" }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Dynamic blocks allow generating nested blocks programmatically.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "language": "hcl",
+        "code": "dynamic \"ingress\" {\n  for_each = local.rules\n  content {\n    from_port = ingress.value.from\n    to_port   = ingress.value.to\n  }\n}"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": { "title": "For Expressions (Data Transformation)" }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>For expressions transform data structures.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "language": "hcl",
+        "code": "[for env in var.environments : lower(env)]"
+      }
+    },
+    {
+      "type": "code",
+      "value": {
+        "language": "hcl",
+        "code": "{ for s in local.subnets : s.name => s }"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": { "title": "Working with External Data (CSV Example)" }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Terraform can ingest external data like CSV files.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "language": "hcl",
+        "code": "locals {\n  rules = csvdecode(file(\"rules.csv\"))\n}"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": { "title": "Sensitive Data Handling" }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Mark variables and outputs as sensitive to prevent exposure in logs.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "language": "hcl",
+        "code": "variable \"api_key\" {\n  type      = string\n  sensitive = true\n}"
+      }
+    },
+    {
+      "type": "callout",
+      "value": {
+        "text": "Sensitive values are still stored in Terraform state. Always secure your backend (S3, Azure Storage, etc.).",
+        "type": "warning"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": { "title": "Ephemeral Values (Advanced Security)" }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Ephemeral values are never stored in state or plan files.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "language": "hcl",
+        "code": "ephemeral \"random_password\" \"app\" {}\n\nresource \"aws_secretsmanager_secret_version\" \"example\" {\n  secret_string_wo         = ephemeral.random_password.app.result\n  secret_string_wo_version = var.version\n}"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": { "title": "Summary" }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Advanced HCL features allow you to build dynamic, reusable Terraform configurations:</p><ul><li>Expressions and operators for logic</li><li>Functions for transformation</li><li>Templates for dynamic strings</li><li>Meta-arguments for scaling resources</li><li>For expressions for data manipulation</li><li>Security mechanisms for sensitive data</li></ul><p>Mastering these concepts is essential for building production-grade Infrastructure as Code.</p>"
+    }
+  ]
+},
+  {
+  "slug": "terraform-validation-and-testing-input-validation-checks-and-tests",
+  "title": "Terraform Validation and Testing: Input Validation, Preconditions, Postconditions, Check Blocks, and Terraform Test",
+  "excerpt": "Learn how to validate Terraform inputs, enforce assumptions and guarantees with preconditions and postconditions, detect drift with check blocks, and automate infrastructure testing with terraform test.",
+  "category_slug": "infrastructure-as-code",
+  "tag_slugs": ["terraform", "iac", "devops", "testing"],
+  "author_username": "Michał Antolik",
+  "published_at": "2026-04-16T09:00:00Z",
+  "live": true,
+  "body": [
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Why Validation and Testing Matter in Terraform"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Infrastructure as Code is still code, which means it benefits from the same defensive thinking used in software development: <strong>trust nothing and verify everything</strong>. End users can pass invalid values, external systems can change infrastructure outside of Terraform, and assumptions that once felt safe can quietly become false over time.</p><p>Terraform provides several mechanisms to defend against these problems at different stages of the lifecycle. Some features validate <strong>user input</strong>, some verify <strong>assumptions before an object is processed</strong>, some check <strong>guarantees after an object exists</strong>, and others support <strong>ongoing validation and automated testing</strong>.</p><p>This article brings those ideas together into one practical mental model so you can write Terraform that is safer, clearer, and easier to maintain.</p>"
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Core idea",
+        "text": "Validation in Terraform is not one single feature. It is a set of mechanisms that operate at different points in the workflow: variable validation for inputs, preconditions for assumptions, postconditions for guarantees, check blocks for non-blocking validation, and terraform test for automation.",
+        "tone": "success"
+      }
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Where Terraform validation and testing fit in the lifecycle",
+        "diagram": "flowchart LR\nA[User Input] --> B[Variable Type + Validation]\nB --> C[Plan Evaluation]\nC --> D[Preconditions]\nD --> E[Resource or Data Source Processed]\nE --> F[Postconditions]\nF --> G[Check Blocks]\nG --> H[terraform test Automation]",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Input Variable Validation: The First Line of Defense"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Terraform variables make modules dynamic and reusable, but they also create an entry point for bad input. A consumer can pass the wrong type, an invalid string, an unsupported environment name, or a value that technically fits the data structure but still makes no practical sense.</p><p>Terraform gives you two main tools to protect variables:</p><ul><li><strong>type</strong> – validates the shape of the value</li><li><strong>validation</strong> blocks – validate the content of the value</li></ul><p>The <code>type</code> argument is structural. It ensures that a variable is a string, number, list, map, object, or another supported structure. Terraform may attempt simple type conversions, but if conversion fails, the run stops.</p><p>The <code>validation</code> block goes further. It lets you express business rules such as allowed ranges, valid prefixes, naming conventions, regular expression patterns, or membership in an approved list.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Type validation versus value validation",
+        "diagram": "flowchart TD\nA[Input Variable Provided] --> B{Correct Data Type?}\nB -- No --> C[Terraform rejects value]\nB -- Yes --> D{Validation Conditions Pass?}\nD -- No --> E[Terraform prints error_message]\nD -- Yes --> F[Variable accepted]",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Validation Block Syntax"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>A <code>validation</code> block is nested inside a <code>variable</code> block. Each validation contains two required arguments:</p><ul><li><strong>condition</strong> – an expression that must evaluate to <code>true</code> or <code>false</code></li><li><strong>error_message</strong> – a full sentence explaining the problem if validation fails</li></ul><p>You can define multiple validation blocks for the same variable. Terraform will evaluate them all and report each failure.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Basic variable validation pattern",
+        "language": "text",
+        "code": "variable \"company_name\" {\n  type = string\n\n  validation {\n    condition     = length(var.company_name) >= 3 && length(var.company_name) <= 20\n    error_message = \"Company name must be between 3 and 20 characters long.\"\n  }\n}\n",
+        "show_line_numbers": true,
+        "width": "content"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>This style keeps the rule close to the variable definition and makes the contract obvious to the module consumer.</p>"
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Useful Expressions and Functions for Validation"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Terraform validation conditions usually rely on a small set of operators and helper functions:</p><ul><li>Comparison operators such as <code>==</code>, <code>!=</code>, <code>&gt;</code>, <code>&lt;</code>, <code>&gt;=</code>, and <code>&lt;=</code></li><li>Logical operators such as <code>&amp;&amp;</code>, <code>||</code>, and <code>!</code></li><li>String helpers like <code>startswith</code>, <code>endswith</code>, and <code>strcontains</code></li><li>Collection helpers like <code>contains</code> and <code>length</code></li><li>Aggregation helpers like <code>alltrue</code> and <code>anytrue</code></li><li>Safety helpers like <code>can</code>, often used with functions that may throw errors such as <code>regex</code></li></ul><p>A common pattern is using <code>can(regex(...))</code> when you want to treat a failed regular expression match as <code>false</code> instead of an exception.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Validation using regex and can",
+        "language": "text",
+        "code": "variable \"company_name\" {\n  type = string\n\n  validation {\n    condition     = !can(regex(\"[^a-zA-Z0-9]\", var.company_name))\n    error_message = \"Company name cannot contain special characters.\"\n  }\n}\n",
+        "show_line_numbers": true,
+        "width": "content"
+      }
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Practical pattern",
+        "text": "Use type constraints for structure and validation blocks for business rules. These two features complement each other rather than replacing each other.",
+        "tone": "info"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Practical Examples of Variable Validation"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>In a realistic Terraform module, you often validate things such as:</p><ul><li>environment names like <code>dev</code>, <code>stage</code>, and <code>prod</code></li><li>AWS regions that must start with a certain prefix</li><li>availability zone counts within an accepted range</li><li>instance types selected from an approved list</li><li>CIDR ranges that must be syntactically valid</li></ul><p>These rules prevent wasted plan and apply cycles by rejecting impossible or unsupported inputs early.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Example: validating environment and region",
+        "language": "text",
+        "code": "locals {\n  allowed_environments = [\"dev\", \"stage\", \"prod\"]\n}\n\nvariable \"environment\" {\n  type = string\n\n  validation {\n    condition     = contains(local.allowed_environments, var.environment)\n    error_message = \"Environment must be one of: dev, stage, prod.\"\n  }\n}\n\nvariable \"aws_region\" {\n  type = string\n\n  validation {\n    condition     = startswith(var.aws_region, \"us-\")\n    error_message = \"AWS region must start with us-.\"\n  }\n}\n",
+        "show_line_numbers": true,
+        "width": "wide"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>The same technique can be used for approved instance types, subnet counts, storage classes, feature flags, or any other configurable input that should follow a clear contract.</p>"
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Preconditions and Postconditions: Testing Assumptions and Guarantees"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Variable validation handles user input, but not every important value comes from a variable. Some values come from data sources, computed expressions, or already-created resources. Terraform addresses this gap with <strong>preconditions</strong> and <strong>postconditions</strong>.</p><p><strong>Preconditions</strong> test assumptions that must be true <em>before</em> an object is processed.</p><p><strong>Postconditions</strong> verify guarantees that must be true <em>after</em> an object exists or has been evaluated.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Assumptions versus guarantees",
+        "diagram": "flowchart TD\nA[Need to process resource or data source] --> B{Preconditions pass?}\nB -- No --> C[Stop run before object processing]\nB -- Yes --> D[Object is evaluated]\nD --> E{Postconditions pass?}\nE -- No --> F[Stop run after evaluation]\nE -- Yes --> G[Downstream objects can continue]",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Using Preconditions"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>A precondition can live inside the <code>lifecycle</code> block of a resource or data source. Outputs can also use preconditions directly. Preconditions are checked before the containing object is processed. If one fails, Terraform halts that part of the run and dependent resources are not evaluated.</p><p>This is useful when your resource depends on something being true, even if that dependency is not direct user input.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Example: AMI architecture precondition",
+        "language": "text",
+        "code": "resource \"aws_instance\" \"web\" {\n  ami           = data.aws_ami.selected.id\n  instance_type = var.instance_type\n\n  lifecycle {\n    precondition {\n      condition     = data.aws_ami.selected.architecture == \"x86_64\"\n      error_message = \"The selected AMI must use x86_64 architecture.\"\n    }\n  }\n}\n",
+        "show_line_numbers": true,
+        "width": "wide"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>That condition expresses an assumption: this module only works with x86_64 images.</p>"
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Using Postconditions"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Postconditions live in the <code>lifecycle</code> block of a resource or data source. They are evaluated after the object exists or after its values are known. Inside a postcondition, you can reference the current object using <code>self</code>.</p><p>This is ideal when your object is expected to guarantee something to downstream consumers.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Example: require a public IP after instance creation",
+        "language": "text",
+        "code": "resource \"aws_instance\" \"web\" {\n  ami           = data.aws_ami.selected.id\n  instance_type = var.instance_type\n  subnet_id     = aws_subnet.public.id\n\n  lifecycle {\n    postcondition {\n      condition     = self.public_ip != null && self.public_ip != \"\"\n      error_message = \"The EC2 instance must have a public IP address after creation.\"\n    }\n  }\n}\n",
+        "show_line_numbers": true,
+        "width": "wide"
+      }
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Rule of thumb",
+        "text": "Use preconditions to test what must already be true before processing an object. Use postconditions to verify what the object promises after creation or evaluation.",
+        "tone": "success"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "When Terraform Evaluates These Conditions"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Both preconditions and postconditions can be checked during <code>plan</code> and <code>apply</code>, but only when the required values are known.</p><ul><li>If values are unknown during planning, Terraform may defer the check until apply.</li><li>If values are known during plan, Terraform can evaluate immediately.</li><li>If a condition fails, Terraform halts processing and prevents dependent resources from continuing.</li></ul><p>This behavior makes these validations useful both for early feedback and for catching apply-time reality checks.</p>"
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Choosing Between Variable Validation, Preconditions, and Postconditions"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>These three features overlap a little, but they are meant for different responsibilities:</p><ul><li><strong>Variable validation</strong> – reject bad module input as early as possible</li><li><strong>Preconditions</strong> – verify assumptions required before an object is processed</li><li><strong>Postconditions</strong> – verify guarantees provided after an object is evaluated</li></ul><p>A useful way to think about it is this:</p><ul><li>If the value is supplied <em>into</em> the module, start with variable validation.</li><li>If the value is discovered <em>by</em> the module and must already be valid, use a precondition.</li><li>If the object must provide a dependable property to downstream consumers, use a postcondition.</li></ul>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "How to choose a validation mechanism",
+        "diagram": "flowchart TD\nA[What are you validating?] --> B{Input from module consumer?}\nB -- Yes --> C[Use variable type + validation]\nB -- No --> D{Must be true before object processing?}\nD -- Yes --> E[Use precondition]\nD -- No --> F{Must be true after object exists?}\nF -- Yes --> G[Use postcondition]\nF -- No --> H[Consider check block or test automation]",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Drift, Ongoing Validation, and the Limits of One-Time Checks"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Terraform is not just about initial deployment. It is also about ongoing management. Over time, environments drift. Drift means that real infrastructure no longer matches the desired state in code.</p><p>Some drift is easy for Terraform to see during a normal refresh and plan. For example, if someone changes an EC2 instance type manually, Terraform will often detect that and propose corrective action.</p><p>Other drift patterns are more subtle:</p><ul><li>External tools continuously changing resource tags</li><li>New unmanaged resources being added outside Terraform</li><li>Operational changes such as instances being stopped or network objects being added manually</li></ul><p>This is where regular planning, lifecycle controls like <code>ignore_changes</code>, and continuous validation become important.</p>"
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Check Blocks for Continuous Validation"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>A <code>check</code> block is different from variable validation, preconditions, and postconditions. It is a top-level Terraform block designed for validation that is <strong>not tied to one specific resource</strong> and does <strong>not interrupt the run</strong>.</p><p>A check block runs near the end of plan and apply. It contains one or more <code>assert</code> blocks. If an assertion fails, Terraform emits a <strong>warning</strong> rather than a hard error.</p><p>This makes check blocks ideal for continuous validation scenarios where you want visibility without stopping every run.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Basic check block structure",
+        "language": "text",
+        "code": "check \"subnet_count\" {\n  assert {\n    condition     = length(data.aws_subnets.current.ids) == var.availability_zones * 2\n    error_message = \"The number of subnets in the VPC does not match the expected public + private subnet count.\"\n  }\n}\n",
+        "show_line_numbers": true,
+        "width": "wide"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Check blocks can also contain nested data sources that are scoped only to the check. This is powerful because it lets you query the current environment specifically for validation purposes.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Non-blocking continuous validation with check blocks",
+        "diagram": "flowchart LR\nA[terraform plan or apply] --> B[Resources and Data Sources Evaluated]\nB --> C[Check Blocks Run Last]\nC --> D{Assertion passes?}\nD -- Yes --> E[No warning]\nD -- No --> F[Warning reported but run continues]",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Examples of Useful Check Blocks"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Check blocks are especially useful for environmental checks that should be observed regularly but not necessarily fail every run.</p><p>Examples include:</p><ul><li>verifying that a website returns HTTP 200</li><li>checking that the number of subnets in a VPC matches expectations</li><li>confirming that an EC2 instance is powered on</li><li>verifying that versioning remains enabled on a shared S3 bucket</li></ul><p>In other words, they are excellent for <strong>continuous validation</strong> and <strong>drift detection signals</strong>.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Example: checking instance power state",
+        "language": "text",
+        "code": "check \"ec2_power_status\" {\n  data \"aws_instance\" \"web_status\" {\n    instance_id = aws_instance.web.id\n  }\n\n  assert {\n    condition     = data.aws_instance.web_status.instance_state == \"running\"\n    error_message = \"The EC2 instance is not in the running state.\"\n  }\n}\n",
+        "show_line_numbers": true,
+        "width": "wide"
+      }
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Important distinction",
+        "text": "Preconditions and postconditions are disruptive when they fail. Check blocks are intentionally non-disruptive and better suited to recurring validation and drift observation.",
+        "tone": "warning"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Testing Terraform Code with terraform test"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Validation features help Terraform reject bad states, but they are only part of the quality story. Terraform code also needs automated tests. Starting with Terraform 1.6, HashiCorp introduced the built-in <code>terraform test</code> framework for this purpose.</p><p>The testing framework lets you define test files that execute one or more Terraform runs in sequence. Each run can be a <code>plan</code> or an <code>apply</code>. You can then use assertions or expected failures to validate behavior.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Terraform test workflow",
+        "diagram": "flowchart TD\nA[terraform test] --> B[Read .tftest.hcl files]\nB --> C[Execute run blocks in order]\nC --> D[Plan or Apply per run]\nD --> E[Assert conditions or expect failures]\nE --> F[Destroy temporary infrastructure from apply runs]\nF --> G[Report pass or fail]",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Kinds of Terraform Tests"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Terraform testing maps reasonably well to common software testing ideas:</p><ul><li><strong>Unit-style tests</strong> – verify formatting, syntax, internal validity, and successful plans for valid inputs</li><li><strong>Contract-style tests</strong> – verify what valid input and valid outputs actually mean, using validation, preconditions, and postconditions</li><li><strong>Integration tests</strong> – deploy real infrastructure temporarily and verify that it behaves correctly</li></ul><p>The higher you go, the more time and money the tests usually cost. That is why catching issues in validation and planning stages is so valuable.</p>"
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Test File Structure"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Terraform test files are typically stored in the current directory or in a <code>tests</code> subdirectory. Files use the <code>.tftest.hcl</code> extension. Inside a test file, common top-level blocks include:</p><ul><li><strong>variables</strong> – default test inputs</li><li><strong>provider</strong> – test-specific provider settings</li><li><strong>run</strong> – one or more test runs, executed in order</li></ul><p>A run can contain assertions or expected failures, and it can optionally use another module for setup or verification.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Simple terraform test file",
+        "language": "text",
+        "code": "variables {\n  environment        = \"dev\"\n  aws_region         = \"us-east-1\"\n  availability_zones = 2\n}\n\nrun \"good_plan\" {\n  command = plan\n}\n\nrun \"bad_environment\" {\n  command = plan\n\n  variables {\n    environment = \"qa\"\n  }\n\n  expect_failures = [var.environment]\n}\n",
+        "show_line_numbers": true,
+        "width": "wide"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>This example first proves that the configuration can produce a valid plan with good values, and then verifies that validation correctly rejects an invalid environment.</p>"
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Integration Testing a Real Deployment"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>For integration testing, Terraform can temporarily deploy real infrastructure with an <code>apply</code> run. A later run can then query or validate that environment. When the test finishes, Terraform destroys what it created for the test.</p><p>A practical example is deploying a web application to an EC2 instance and then using a helper module with an HTTP data source to verify that the site returns status code 200.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Example integration test pattern",
+        "language": "text",
+        "code": "run \"setup\" {\n  command = apply\n}\n\nrun \"test_site\" {\n  command = apply\n\n  module {\n    source = \"../setup/http_test\"\n  }\n\n  variables {\n    url = run.setup.application_url\n  }\n\n  assert {\n    condition     = data.http.site_check.status_code == 200\n    error_message = \"The deployed site did not return HTTP 200.\"\n  }\n}\n",
+        "show_line_numbers": true,
+        "width": "wide"
+      }
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Testing strategy",
+        "text": "Use fast plan-based tests for broad coverage, and reserve apply-based integration tests for important end-to-end infrastructure behaviors that cannot be validated from plan output alone.",
+        "tone": "success"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Advanced Testing Features: Mocking, Overrides, and Parallel Runs"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>The testing framework also supports more advanced capabilities for reducing cost and improving speed:</p><ul><li><strong>Mock providers</strong> – simulate provider behavior without real infrastructure</li><li><strong>Mock resources and mock data sources</strong> – provide synthetic computed values</li><li><strong>Overrides</strong> – change values for specific resources, data sources, or module outputs</li><li><strong>Parallel runs</strong> – execute independent tests concurrently when they do not share state or outputs</li></ul><p>These features are particularly useful when real environments are unavailable, too expensive, or too slow for frequent testing.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Advanced testing options in Terraform",
+        "diagram": "flowchart TD\nA[terraform test] --> B[Real provider runs]\nA --> C[Mock provider runs]\nC --> D[Mock resources and data sources]\nC --> E[Overrides for specific targets]\nA --> F[Parallel run execution when safe]",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "A Practical Mental Model for Terraform Validation and Testing"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>If you want a practical workflow to follow in real projects, use this layered approach:</p><ol><li><strong>Start with strong variable types and validation</strong> so bad input is rejected immediately.</li><li><strong>Add preconditions</strong> where a resource or data source depends on assumptions being true.</li><li><strong>Add postconditions</strong> where downstream consumers rely on specific guarantees.</li><li><strong>Use check blocks</strong> for non-blocking environment validation and drift observation.</li><li><strong>Automate plan and apply tests</strong> with <code>terraform test</code> so regressions are caught early.</li></ol><p>This layered model gives you earlier feedback, clearer module contracts, safer infrastructure changes, and more confidence that your Terraform behaves the way you think it does.</p>"
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Conclusion"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Terraform validation and testing are not optional polish for mature teams. They are core techniques for building dependable Infrastructure as Code. Variable validation protects the module boundary. Preconditions and postconditions document and enforce assumptions and guarantees. Check blocks add continuous, non-disruptive validation. The testing framework turns all of this into something you can automate.</p><p>If you adopt these features intentionally, your Terraform code becomes easier to trust, easier to reuse, and much easier to evolve safely over time.</p>"
+    }
+  ]
+},
+  {
+  "slug": "terraform-automation-and-gitops-from-manual-cli-to-pipeline-driven-iac",
+  "title": "Terraform Automation and GitOps: From Manual CLI to Pipeline-Driven Infrastructure",
+  "excerpt": "Learn how to automate Terraform workflows with Git, pre-commit hooks, GitHub Actions CI/CD, multi-environment promotion, release-based production deployments, and HCP Terraform.",
+  "category_slug": "infrastructure-as-code",
+  "tag_slugs": [
+    "terraform",
+    "iac",
+    "automation",
+    "devops",
+    "aws"
+  ],
+  "author_username": "Michał Antolik",
+  "published_at": "2026-04-16T12:00:00+01:00",
+  "live": true,
+  "body": [
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Why Terraform Automation Matters"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Running <code>terraform init</code>, <code>terraform plan</code>, and <code>terraform apply</code> manually works when you are experimenting alone, but it does not scale well for teams or repeated deployments. Automation removes manual repetition, improves consistency, and creates a reviewable workflow around infrastructure changes.</p><p>The central idea is simple: infrastructure changes should move through a predictable process. You change code, validate it, generate a plan, review it, and then deploy it to the right environment. Instead of relying on memory and discipline, you let automation enforce that process.</p>"
+    },
+    {
+      "type": "callout",
+      "value": {
+        "text": "Terraform automation is not only about speed. It is mainly about consistency, visibility, safer deployments, and reducing human error.",
+        "tone": "info"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "The Core Terraform Workflow"
+      }
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "A repeatable Terraform delivery loop",
+        "diagram": "flowchart LR\nA[Change Terraform code] --> B[Validate and lint]\nB --> C[Generate plan]\nC --> D[Review plan]\nD --> E[Apply to environment]\nE --> F[Test and verify]\nF --> G[Promote to next environment]",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Every Terraform team follows some version of this loop. The question is whether the loop is informal and manual, or formalized and automated. Good automation turns this into a controlled delivery pipeline.</p>"
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "GitOps Foundations"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>GitOps means using Git as the source of truth for your infrastructure definitions and using repository events to trigger automation. In practice, this means feature branches, pull requests, code review, merge-based promotion, and release tags for controlled production rollouts.</p><p>Git and GitHub are not the same thing. Git is the version control system. GitHub is a platform that hosts Git repositories and provides collaboration and automation features such as pull requests and GitHub Actions.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "GitOps flow for Terraform changes",
+        "diagram": "flowchart TD\nA[Developer creates feature branch] --> B[Commit Terraform changes]\nB --> C[Open pull request]\nC --> D[CI validates code and generates plans]\nD --> E[Team reviews proposed changes]\nE --> F[Merge to main]\nF --> G[CD deploys lower environments]\nG --> H[Release tag triggers production deployment]",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Repository Structure for Multi-Environment Terraform"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>A practical Terraform automation setup often separates reusable code from environment-specific configuration. One clean pattern is to keep a single root module and provide environment-specific backend settings and variable files externally.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Example directory layout",
+        "language": "text",
+        "code": "taco-wagon-app/\n├─ backend/\n│  ├─ dev.hcl\n│  ├─ staging.hcl\n│  ├─ prodeast.hcl\n│  └─ prodwest.hcl\n├─ environments/\n│  ├─ dev.tfvars\n│  ├─ staging.tfvars\n│  ├─ prodeast.tfvars\n│  └─ prodwest.tfvars\n├─ .github/workflows/\n│  ├─ ci.yml\n│  ├─ cd.yml\n│  ├─ release.yml\n│  └─ deploy-environment.yml\n├─ providers.tf\n├─ versions.tf\n├─ variables.tf\n└─ outputs.tf",
+        "show_line_numbers": false,
+        "width": "wide"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>This pattern keeps the code reusable while allowing each environment to supply its own backend and variable values.</p>"
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "What Should Be Automated?"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>There are three broad Terraform workflows worth automating:</p><ul><li><strong>Code validation</strong> – formatting, syntax, linting, and documentation updates</li><li><strong>Plan generation and review</strong> – producing readable plans for pull requests</li><li><strong>Apply and promotion</strong> – deploying changes through dev, staging, and production</li></ul><p>Code validation is best executed early and often. Plan and apply steps are usually safer in centralized automation platforms where access can be controlled and logs are preserved.</p>"
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Local Validation with Pre-commit Hooks"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>The first useful automation layer lives on the developer workstation. A pre-commit hook can run before Git creates a commit, preventing invalid or poorly formatted infrastructure code from being committed in the first place.</p><p>A common tool for this is <code>pre-commit</code>, which reads hook definitions from YAML and installs them into the repository as Git hooks.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Local validation before code ever leaves the workstation",
+        "diagram": "flowchart LR\nA[git commit] --> B[pre-commit hook]\nB --> C[terraform fmt]\nB --> D[terraform validate]\nB --> E[tflint]\nB --> F[terraform-docs]\nC --> G{All checks pass?}\nD --> G\nE --> G\nF --> G\nG -->|Yes| H[Commit created]\nG -->|No| I[Commit blocked]",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Typical local commands",
+        "language": "bash",
+        "code": "terraform init -backend=false\npre-commit run -a\npre-commit install\ngit add .\ngit commit -m \"Add pre-commit hooks\"",
+        "show_line_numbers": false,
+        "width": "content"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Using <code>terraform init -backend=false</code> is important when validation needs provider plugins but the remote backend is not configured yet.</p>"
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Why this matters",
+        "text": "The closer feedback is to the developer, the cheaper the fix is. Pre-commit hooks catch issues before code review and before CI time is wasted.",
+        "tone": "success"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Useful Validation and Review Tools"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Terraform automation gets stronger when you use specialized tools for each stage:</p><ul><li><strong>terraform fmt</strong> for formatting</li><li><strong>terraform validate</strong> for syntax and internal consistency</li><li><strong>TFLint</strong> for Terraform-specific linting and best practices</li><li><strong>terraform-docs</strong> for generated documentation</li><li><strong>Trivy</strong>, <strong>Checkov</strong>, or <strong>KICS</strong> for policy and security scanning</li><li><strong>tf-summarize</strong> for human-friendly plan summaries</li></ul><p>Together, these tools make CI feedback both stricter and easier to understand.</p>"
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Continuous Integration for Terraform"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Continuous integration means that when a pull request is opened or updated, automation validates the code and generates plans that teammates can review. In Terraform, CI is less about compiling software and more about verifying configuration quality and showing proposed infrastructure changes.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "A Terraform-oriented CI workflow",
+        "diagram": "flowchart TD\nA[Pull request opened or updated] --> B[Format check]\nA --> C[Validate]\nA --> D[TFLint]\nA --> E[Security scan]\nB --> F[Plan job]\nC --> F\nD --> F\nE --> F\nF --> G[Store plan artifact]\nF --> H[Post plan summary to PR]",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Typical CI environment variables for Terraform",
+        "language": "yaml",
+        "code": "env:\n  TF_LOG: INFO\n  TF_INPUT: false\n  TF_IN_AUTOMATION: true",
+        "show_line_numbers": false,
+        "width": "content"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>These environment variables make Terraform friendlier for automation. <code>TF_INPUT=false</code> prevents interactive prompts. <code>TF_IN_AUTOMATION=true</code> reduces interactive-style output and signals that Terraform is running unattended.</p>"
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Example GitHub Actions CI Design"
+      }
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "High-level CI job structure",
+        "language": "yaml",
+        "code": "name: CI\non:\n  pull_request:\n    branches: [main]\n\njobs:\n  format:\n    runs-on: ubuntu-latest\n  validate:\n    runs-on: ubuntu-latest\n  lint:\n    runs-on: ubuntu-latest\n  security:\n    runs-on: ubuntu-latest\n  plan:\n    needs: [format, validate, lint, security]\n    runs-on: ubuntu-latest",
+        "show_line_numbers": false,
+        "width": "wide"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>The checks can run in parallel for speed. The plan should wait until the earlier checks pass, because there is little value in generating a plan for code that already fails formatting, validation, linting, or security checks.</p>"
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Why Save the Plan as an Artifact?"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Storing the plan file as a pipeline artifact gives later workflows a stable deployment input. This is useful when your delivery workflow wants to apply the exact plan reviewed during CI rather than recomputing a fresh plan later.</p><p>That said, this is also a design decision. Some teams prefer to re-plan during delivery to ensure freshness. Others prefer artifact promotion to preserve the exact reviewed output. The correct choice depends on your change control requirements and tolerance for drift between plan and apply.</p>"
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Key trade-off",
+        "text": "Applying a reviewed saved plan increases fidelity between review and deployment. Re-planning later increases freshness but may produce a different result than what reviewers approved.",
+        "tone": "warning"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Continuous Delivery After Merge"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Once a pull request is merged, a delivery workflow can deploy changes to lower environments such as development and staging. A common pattern is to retrieve the CI run identifier, download the saved plan artifact, initialize Terraform with the correct backend and environment values, and then apply the plan.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Merge-based delivery to lower environments",
+        "diagram": "flowchart TD\nA[Pull request merged to main] --> B[Find related CI run]\nB --> C[Download saved plan artifact]\nC --> D[terraform init for dev]\nD --> E[terraform apply plan in dev]\nE --> F{Deployment successful?}\nF -->|Yes| G[Deploy staging]\nF -->|No| H[Stop pipeline and investigate]",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>This pattern provides controlled promotion. You can deploy environment by environment in sequence so that failures halt further promotion.</p>"
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Deployment Trigger Options"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>There is more than one way to trigger Terraform deployment:</p><ul><li><strong>After merge</strong> – simple and common</li><li><strong>By pull request comment</strong> – deploy before merge for extra confidence</li><li><strong>By release tag</strong> – especially useful for production</li></ul><p>The course emphasizes that each option has trade-offs. Deploying after merge keeps the main workflow simple, but if deployment fails, broken code is already on the main branch. Deploying before merge keeps unstable code isolated to the feature branch, but the environment may temporarily diverge from main.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Comparing deployment timing choices",
+        "diagram": "flowchart LR\nA[Feature branch] --> B[PR opened]\nB --> C[Plan reviewed]\nC --> D{Deployment trigger}\nD -->|After merge| E[Merge to main first]\nD -->|PR comment| F[Deploy from PR before merge]\nD -->|Release tag| G[Deploy later from tagged version]",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Handling Multiple Environments"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Supporting multiple Terraform environments is easy in theory and difficult in practice. The course compares three common approaches:</p><ul><li><strong>Workspaces</strong></li><li><strong>Separate folders or directories</strong></li><li><strong>Pipeline-driven environments</strong></li></ul><p>Each approach solves the problem differently, and none is universally best.</p>"
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Terraform Community Workspaces: Useful but Limited"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Terraform Community Edition workspaces let you reuse the same root module with separate instances of state. This can be useful for temporary environments, but there are important limitations for long-lived environments.</p><ul><li>All workspaces share the same backend type and often the same broad access pattern</li><li>There is no strong built-in access control between environments</li><li>It is easy to apply the wrong code to the wrong workspace if your operational process is weak</li><li>Managing environment-specific variables through workspace-aware logic becomes hard to maintain at scale</li></ul><p>They are convenient for testing, but not always ideal as the long-term answer for serious environment promotion.</p>"
+    },
+    {
+      "type": "callout",
+      "value": {
+        "text": "A short-lived testing environment is a good fit for Community Edition workspaces. A tightly controlled promotion pipeline across dev, staging, and production usually needs more structure.",
+        "tone": "info"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Folders, Branches, and Pipelines Compared"
+      }
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Three common approaches to multi-environment Terraform",
+        "diagram": "flowchart TD\nA[Multi-environment Terraform] --> B[Separate folders]\nA --> C[Long-lived branches]\nA --> D[Pipeline-managed environments]\nB --> B1[Clear separation but duplication risk]\nC --> C1[Consistent root module but branch promotion complexity]\nD --> D1[Single trunk with orchestrated promotion]",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p><strong>Folders</strong> make environments visible but can drift if files are copied inconsistently. <strong>Branches</strong> preserve a single root module per environment branch but add promotion complexity. <strong>Pipelines</strong> centralize orchestration and fit well with trunk-based development, though environments may temporarily run slightly different versions while promotion is in progress.</p>"
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Pipeline-Based Promotion"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>The pipeline-based model is a strong choice when you want one main branch and a clear promotion chain. A pull request generates plans for all target environments. After merge, lower environments are deployed in sequence. Once they are validated, a release tag triggers production deployment.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Promotion path across environments",
+        "diagram": "flowchart LR\nA[PR CI: plan dev, staging, prodeast, prodwest] --> B[Merge to main]\nB --> C[Deploy dev]\nC --> D[Validate dev]\nD --> E[Deploy staging]\nE --> F[Validate staging]\nF --> G[Create release tag]\nG --> H[Deploy prodeast]\nG --> I[Deploy prodwest]",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>This approach keeps short-lived feature branches and uses the pipeline itself to manage ordering, promotion, and safety boundaries.</p>"
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Scaling CI with Matrices"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>GitHub Actions matrix jobs are a convenient way to generate plans for multiple environments without duplicating job definitions. Each matrix entry can select the correct backend file, tfvars file, and artifact name for its environment.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Conceptual matrix strategy",
+        "language": "yaml",
+        "code": "strategy:\n  fail-fast: false\n  matrix:\n    environment: [dev, staging, prodeast, prodwest]",
+        "show_line_numbers": false,
+        "width": "content"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Turning off fail-fast ensures that even if one environment plan fails, the others can still complete and provide useful information for reviewers.</p>"
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Release-Based Production Deployments"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Production deployments deserve stronger control. A common pattern is to promote through dev and staging first, and only then create a release tag that triggers the production deployment pipeline. That makes production deployment intentional and traceable.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Release-triggered production rollout",
+        "diagram": "flowchart TD\nA[Lower environments validated] --> B[Create version tag, for example v1.0.0]\nB --> C[Release pipeline starts]\nC --> D[Find reviewed plan artifacts]\nD --> E[Deploy prodeast]\nD --> F[Deploy prodwest]\nE --> G[Production verified]\nF --> G",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>When infrastructure spans regions, production deployment may run in parallel or serially depending on risk tolerance, platform limits, and rollback strategy.</p>"
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Important Terraform Automation Considerations"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>A strong automation pipeline also depends on operational details that are easy to overlook:</p><ul><li>Use <code>.gitignore</code> to exclude <code>.terraform</code>, state files, and sensitive files</li><li>Consider checking in <code>.terraform.lock.hcl</code> for provider version consistency</li><li>Use plugin caching where available to speed up repeated runs</li><li>Provide credentials securely through pipeline secrets, machine identity, or dynamic credentials</li><li>Decide whether to stop immediately on failure or allow broader diagnostics first</li><li>Think carefully about logging, retry behavior, and auditability</li></ul>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Common Terraform automation environment variables",
+        "language": "bash",
+        "code": "export TF_IN_AUTOMATION=true\nexport TF_INPUT=false\nexport TF_LOG=INFO\nexport TF_LOG_PATH=terraform.log\nexport TF_CLI_ARGS=\"-no-color\"",
+        "show_line_numbers": false,
+        "width": "content"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>These variables help make Terraform more predictable in non-interactive environments.</p>"
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Manual Deploy and Manual Destroy Workflows"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Even with strong CI/CD, teams often need operational escape hatches. Manual deployment workflows can be useful when a deployment must be retried for a single environment. Manual destroy workflows help clean up dev, staging, or full stacks after testing.</p><p>These workflows should be treated as controlled operational tools, not the default delivery path.</p>"
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "HCP Terraform: Why Use a Dedicated IaC Platform?"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>GitHub Actions can automate Terraform very effectively, but it also means you build and maintain much of the process yourself. A platform such as HCP Terraform provides state management, workspace-level execution, run history, policy checks, variable storage, access control, and VCS integration out of the box.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "What HCP Terraform adds on top of Terraform Community Edition",
+        "diagram": "flowchart TD\nA[Terraform code] --> B[HCP Terraform workspace]\nB --> C[Remote state]\nB --> D[Run history]\nB --> E[Variable management]\nB --> F[Policy checks]\nB --> G[Access control]\nB --> H[VCS-triggered runs]",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>This reduces the amount of custom pipeline logic you need to own and maintain.</p>"
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "HCP Terraform Workspaces"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>In HCP Terraform, a workspace represents a combination of Terraform code, state, settings, variables, and automation behavior. Workspaces belong to projects, and projects belong to organizations. Settings such as credentials, variables, and policies can be inherited from higher levels.</p><p>HCP Terraform supports different workflows, including CLI-driven, VCS-driven, and API-driven runs. For GitOps-style infrastructure automation, the VCS workflow is usually the most natural fit.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "HCP Terraform hierarchy",
+        "diagram": "flowchart TD\nA[Organization] --> B[Project]\nB --> C[Workspace: dev]\nB --> D[Workspace: staging]\nB --> E[Workspace: prodeast]\nB --> F[Workspace: prodwest]",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Migrating from GitHub Actions to HCP Terraform"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>A practical migration path is not to replace everything at once. Keep local pre-commit hooks. Keep lightweight CI checks such as format, validate, lint, and security scanning in GitHub Actions. Then move planning and deployment responsibilities to HCP Terraform workspaces.</p><p>With VCS integration, pull requests can trigger speculative runs. Merges can trigger standard runs for lower environments. Tags can trigger production runs. Manual deploy and destroy workflows can often be retired because the platform already supports them.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Hybrid model during migration",
+        "diagram": "flowchart LR\nA[Developer commits code] --> B[Pre-commit hooks]\nB --> C[GitHub PR]\nC --> D[GitHub Actions validation]\nC --> E[HCP Terraform speculative plan]\nD --> F[Merge approved]\nE --> F\nF --> G[HCP Terraform dev run]\nG --> H[HCP Terraform staging run]\nH --> I[Release tag]\nI --> J[HCP Terraform production runs]",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Policy as Code with Sentinel"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>One of the valuable platform-level additions is policy as code. In the course example, a Sentinel policy verifies that VPC resources include required tags such as <code>owner</code> and <code>environment</code>. This allows governance rules to be enforced consistently during runs.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Example idea behind an infrastructure policy",
+        "language": "text",
+        "code": "Policy goal:\n- Every VPC must include an owner tag\n- Every VPC must include an environment tag\n- Violations are reported during the run\n- Enforcement can start as advisory before becoming mandatory",
+        "show_line_numbers": false,
+        "width": "content"
+      }
+    },
+    {
+      "type": "callout",
+      "value": {
+        "text": "Starting policy checks in advisory mode is a smart way to introduce governance without breaking every existing workflow on day one.",
+        "tone": "success"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "End-to-End Example Change Promotion"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>To see the whole model in action, imagine adding a default <code>owner</code> tag in the AWS provider configuration. The developer updates code locally, pre-commit runs, a pull request opens, CI validates the code, plans are reviewed, lower environments are deployed after merge, and production is promoted through a release.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "End-to-end GitOps promotion for a Terraform change",
+        "diagram": "sequenceDiagram\n    participant Dev as Developer\n    participant Git as GitHub\n    participant CI as CI Pipeline\n    participant CD as Delivery Pipeline\n    participant Prod as Release Pipeline\n\n    Dev->>Git: Push feature branch\n    Git->>CI: Trigger validation and plans\n    CI-->>Git: Post plan summaries to PR\n    Dev->>Git: Merge pull request\n    Git->>CD: Trigger dev deployment\n    CD->>CD: Validate and deploy staging\n    Dev->>Git: Create release tag\n    Git->>Prod: Trigger production deployment",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Key Lessons and Practical Recommendations"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<ul><li>Automate validation locally first, then centrally</li><li>Use pull requests to review Terraform plans, not just code diffs</li><li>Treat environments as a promotion pipeline, not isolated manual targets</li><li>Be deliberate about when deployment happens: after merge, before merge, or by release</li><li>Prefer simple, visible patterns over clever but fragile ones</li><li>Use a dedicated IaC platform when you need stronger state management, policy, access control, and run orchestration</li></ul><p>The most important idea is that Terraform automation is not one specific toolchain. It is a design problem. Your pipeline should reflect your team structure, your compliance requirements, your risk tolerance, and the number of environments you manage.</p>"
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Final takeaway",
+        "text": "The best Terraform automation solution is the one that makes infrastructure changes reviewable, repeatable, and safe enough for your real operating model.",
+        "tone": "info"
+      }
+    }
+  ]
+},
+  {
+  "slug": "terraform-resource-lifecycle-management-explained",
+  "title": "Terraform Resource Lifecycle Management Explained",
+  "excerpt": "Learn how Terraform manages resource creation, updates, replacement, imports, moves, and removals. This standalone guide explains the resource graph, depends_on, lifecycle rules, terraform_data, query, import, moved, and removed blocks with practical examples.",
+  "category_slug": "infrastructure-as-code",
+  "tag_slugs": [
+    "terraform",
+    "iac",
+    "aws",
+    "devops"
+  ],
+  "author_username": "Michał Antolik",
+  "published_at": "2026-04-16T10:00:00Z",
+  "live": true,
+  "body": [
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Why Resource Lifecycle Management Matters"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Terraform is not only a provisioning tool. Its real strength is that it manages infrastructure across the full resource lifecycle: <strong>create</strong>, <strong>update</strong>, <strong>replace</strong>, and <strong>destroy</strong>.</p><p>In real environments, infrastructure is rarely static. Resources are renamed, upgraded, imported from manual deployments, split across modules, or removed from management without being destroyed. Lifecycle management is the part of Terraform that lets you handle those changes safely and deliberately.</p>"
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Core idea",
+        "text": "Terraform is constantly comparing configuration, state, and real infrastructure. Lifecycle features let you control how Terraform reacts when those three no longer line up perfectly.",
+        "tone": "info"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "The Terraform Resource Lifecycle"
+      }
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "The main lifecycle phases of a Terraform-managed resource",
+        "diagram": "flowchart LR\nA[Create] --> B[Update in place]\nB --> C{Change requires replacement?}\nC -->|No| B\nC -->|Yes| D[Replace]\nD --> E[Destroy old resource]\nB --> F[Retire from management or destroy]",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>At the simplest level, every managed resource follows the same broad lifecycle:</p><ul><li><strong>Create</strong> – Terraform provisions the resource for the first time</li><li><strong>Update</strong> – Terraform changes mutable attributes in place</li><li><strong>Replace</strong> – Terraform destroys and recreates a resource when an immutable attribute changes</li><li><strong>Destroy</strong> – Terraform removes the resource entirely</li></ul><p>In practice, Terraform also supports several advanced lifecycle operations:</p><ul><li>Importing an existing resource into state</li><li>Moving a resource to a new address</li><li>Migrating resources between configurations</li><li>Stopping management of a resource without destroying it</li></ul>"
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "How Terraform Decides What to Do: The Resource Graph"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>When you run <code>terraform plan</code>, Terraform builds an <strong>acyclic dependency graph</strong>. Each managed object becomes a node, and references between objects become edges in that graph.</p><p>This graph is what Terraform uses to determine:</p><ul><li>which resources depend on others</li><li>what can be created in parallel</li><li>what must happen first</li><li>what actions are required to reach the desired state</li></ul>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Example dependency graph: a VPC and two subnets",
+        "diagram": "flowchart TD\nVPC[aws_vpc.main]\nSUB1[aws_subnet.public_a]\nSUB2[aws_subnet.public_b]\nSUB1 --> VPC\nSUB2 --> VPC",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>In this example, both subnets reference the VPC ID. Because the VPC ID does not exist until the VPC is created, Terraform knows it must create the VPC first. After that, it can create both subnets in parallel.</p><p>This is one of Terraform’s most important behaviors: <strong>references imply dependencies</strong>.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Generate and inspect the dependency graph",
+        "language": "bash",
+        "code": "terraform graph\nterraform graph -type=plan\nterraform plan -out=tfplan\nterraform graph tfplan",
+        "show_line_numbers": false,
+        "width": "content"
+      }
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Practical tip",
+        "text": "The raw output of terraform graph is Graphviz dot text. It becomes much easier to understand when pasted into a Graphviz visualizer.",
+        "tone": "success"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Implicit vs Explicit Dependencies"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Most dependencies in Terraform should be expressed through direct references. For example, if an EC2 instance uses a subnet ID, that reference already tells Terraform about the dependency.</p><p>Sometimes, though, you need to enforce ordering even when one resource does not directly reference another. That is when you use <code>depends_on</code>.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Explicit dependency with depends_on",
+        "language": "hcl",
+        "code": "resource \"aws_instance\" \"app\" {\n  ami           = var.ami_id\n  instance_type = \"t3.micro\"\n\n  depends_on = [aws_s3_bucket.logging]\n}",
+        "show_line_numbers": true,
+        "width": "content"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>This tells Terraform to complete all actions on the logging bucket before it acts on the EC2 instance.</p><p>Use <code>depends_on</code> carefully. It is helpful for special cases, but explicit references are usually better because they express the real relationship more precisely.</p>"
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "The lifecycle Block: Fine-Grained Control Over Resource Behavior"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>The <code>lifecycle</code> block is Terraform’s main mechanism for altering default resource behavior. It is supported by managed resources and allows you to influence creation, replacement, destruction, and drift handling.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Lifecycle block structure",
+        "language": "hcl",
+        "code": "resource \"aws_s3_bucket\" \"example\" {\n  bucket = \"example-bucket\"\n\n  lifecycle {\n    create_before_destroy = true\n    prevent_destroy       = true\n    ignore_changes        = [tags]\n    replace_triggered_by  = [terraform_data.application_version]\n  }\n}",
+        "show_line_numbers": true,
+        "width": "content"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>The most important lifecycle arguments covered in this course are:</p><ul><li><code>create_before_destroy</code></li><li><code>prevent_destroy</code></li><li><code>ignore_changes</code></li><li><code>replace_triggered_by</code></li></ul><p>Together, they let you change how Terraform handles replacement and drift.</p>"
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "create_before_destroy: Reverse the Default Replacement Order"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>By default, when Terraform must replace a resource, it typically destroys the old object first and then creates the new one. That is often represented in the plan as <code>-/+</code>.</p><p>Some resources cannot be destroyed while they are still attached or in use. A security group attached to a running EC2 instance is a classic example. In such cases, destroying first will fail.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Default replacement vs create_before_destroy",
+        "diagram": "flowchart TD\nA[Default replacement] --> B[Destroy old resource]\nB --> C[Create new resource]\nD[With create_before_destroy] --> E[Create new resource]\nE --> F[Switch dependencies]\nF --> G[Destroy old resource]",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Create the replacement before destroying the old object",
+        "language": "hcl",
+        "code": "resource \"aws_security_group\" \"app\" {\n  name   = \"globomantics-app-sg\"\n  vpc_id = aws_vpc.main.id\n\n  lifecycle {\n    create_before_destroy = true\n  }\n}",
+        "show_line_numbers": true,
+        "width": "content"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>This is especially useful when a platform requires the old resource to remain available until references have been switched to the new one.</p><p>There are two important caveats:</p><ul><li>Some platforms require globally unique names, so creating the replacement first may fail unless the new resource uses a different name or identifier</li><li>Terraform may mark the old resource as <em>deposed</em> in state and attempt to delete it later if deletion fails during the same apply</li></ul>"
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "replace_triggered_by: Replace a Resource When Another Thing Changes"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Sometimes a resource should be replaced when something related changes, even though Terraform would not normally infer that relationship. For example, you might want to recreate an S3 cache bucket when a new application version is released.</p><p>That is what <code>replace_triggered_by</code> is for.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Using terraform_data to trigger replacement from an arbitrary value",
+        "language": "hcl",
+        "code": "variable \"application_version\" {\n  type = string\n}\n\nresource \"terraform_data\" \"application_version\" {\n  input = var.application_version\n}\n\nresource \"aws_s3_bucket\" \"asset_cache\" {\n  bucket = \"my-app-cache\"\n\n  lifecycle {\n    replace_triggered_by = [terraform_data.application_version]\n  }\n}",
+        "show_line_numbers": true,
+        "width": "content"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>This pattern works because <code>replace_triggered_by</code> can only reference <strong>managed resources</strong>, not variables, locals, or data sources directly. The built-in <code>terraform_data</code> resource acts as a bridge between an arbitrary value and Terraform’s replacement engine.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "How terraform_data enables value-based replacement",
+        "diagram": "flowchart LR\nA[application_version variable] --> B[terraform_data.application_version]\nB --> C[replace_triggered_by]\nC --> D[Recreate asset cache bucket]",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "prevent_destroy: Block Accidental Destruction"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Some resources are too important to delete casually. Databases, audit logs, long-lived buckets, and compliance-related artifacts often fall into this category.</p><p>Terraform provides a guardrail through <code>prevent_destroy</code>.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Protect a resource from recreation or destruction",
+        "language": "hcl",
+        "code": "resource \"aws_s3_bucket\" \"logging\" {\n  bucket = \"my-app-logging\"\n\n  lifecycle {\n    prevent_destroy = true\n  }\n}",
+        "show_line_numbers": true,
+        "width": "content"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>When <code>prevent_destroy</code> is enabled, Terraform will block any plan that would destroy or replace that resource. In-place updates are still allowed.</p><p>This is not a substitute for platform-level protection such as IAM controls or deletion locks, but it is a valuable extra safeguard inside the Terraform workflow.</p>"
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Important limitation",
+        "text": "Anyone who can edit the Terraform configuration can remove or disable prevent_destroy. Treat it as a deliberate guardrail, not an absolute protection mechanism.",
+        "tone": "warning"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "ignore_changes: Let Another System Manage Selected Attributes"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Sometimes Terraform creates a resource, but another system is responsible for maintaining part of it afterward. Common examples include tags updated by organization policies, settings enforced by Kubernetes controllers, or changes made by Ansible.</p><p>If Terraform keeps trying to revert those external changes, you get a tug-of-war between systems. <code>ignore_changes</code> solves that problem.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Ignore changes to externally managed tags",
+        "language": "hcl",
+        "code": "resource \"aws_instance\" \"app\" {\n  ami           = var.ami_id\n  instance_type = \"t3.micro\"\n\n  tags = {\n    Name = \"app-server\"\n  }\n\n  lifecycle {\n    ignore_changes = [tags]\n  }\n}",
+        "show_line_numbers": true,
+        "width": "content"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Terraform still uses the configured value during creation, but later plans will ignore differences for the listed attributes.</p><p>Two subtle points matter here:</p><ul><li>If the resource is recreated, Terraform uses the values from configuration again</li><li>Even ignored attributes can still be refreshed into state during apply or refresh-only operations</li></ul>"
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Forcing Replacement Manually with -replace"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Sometimes you know a resource is unhealthy even though Terraform does not detect any configuration drift. In that situation, you can explicitly force replacement during planning or apply.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Force replacement of a single resource",
+        "language": "bash",
+        "code": "terraform plan  -replace=aws_instance.app\nterraform apply -replace=aws_instance.app",
+        "show_line_numbers": false,
+        "width": "content"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>This is useful when the real infrastructure is broken in a way Terraform cannot infer from configuration or state alone.</p>"
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Importing Existing Infrastructure into Terraform"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Terraform is often adopted after infrastructure already exists. In that case, you need to bring existing resources under management without destroying and recreating them.</p><p>The course covers two import styles:</p><ul><li><strong>Imperative import</strong> using <code>terraform import</code></li><li><strong>Declarative import</strong> using <code>import</code> blocks</li></ul>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Two import approaches",
+        "diagram": "flowchart TD\nA[Existing resource in cloud] --> B{Import approach}\nB --> C[terraform import command]\nB --> D[import block + plan + apply]\nC --> E[State updated directly]\nD --> F[Reviewed through execution plan]",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>The older <code>terraform import</code> command updates state directly and handles one resource at a time. The newer declarative <code>import</code> block fits Terraform’s normal review workflow much better.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Older imperative import command",
+        "language": "bash",
+        "code": "terraform import aws_vpc.main vpc-1234567890abcdef0",
+        "show_line_numbers": false,
+        "width": "content"
+      }
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Preferred declarative import block",
+        "language": "hcl",
+        "code": "import {\n  to = aws_vpc.main\n  id = \"vpc-1234567890abcdef0\"\n}",
+        "show_line_numbers": true,
+        "width": "content"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>With import blocks, Terraform can show exactly what will be imported during <code>terraform plan</code>. It can even attempt to generate configuration using <code>-generate-config-out</code>, although the generated blocks are often verbose and require cleanup.</p>"
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Discovering Existing Resources with terraform query"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>One of the hardest parts of importing is discovering the identifiers of unmanaged resources. Terraform 1.14 introduces a native answer: <code>terraform query</code>.</p><p>The query workflow uses files ending in <code>.tfquery.hcl</code> and a special <code>list</code> block for provider-supported resource discovery.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "A simple query file for EC2 discovery",
+        "language": "hcl",
+        "code": "list \"aws_instance\" \"burrito_barn\" {\n  provider = aws\n\n  config {\n    filter {\n      name   = \"tag:Team\"\n      values = [\"BurritoBarn\"]\n    }\n  }\n}",
+        "show_line_numbers": true,
+        "width": "content"
+      }
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Run a Terraform query",
+        "language": "bash",
+        "code": "terraform query\nterraform query -json",
+        "show_line_numbers": false,
+        "width": "content"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>This is especially helpful when teams have created resources outside Terraform and you need a Terraform-native way to discover what is already there.</p>"
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Moving Resources Within a Configuration"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Refactoring Terraform code should not force infrastructure recreation. If a resource is renamed or moved into a module, its address changes. Without guidance, Terraform assumes the old resource disappeared and a new one should be created.</p><p>The <code>moved</code> block lets you declare that the resource address changed, but the real object did not.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Move a resource to a new address",
+        "language": "hcl",
+        "code": "moved {\n  from = aws_s3_bucket.main\n  to   = aws_s3_bucket.logging\n}",
+        "show_line_numbers": true,
+        "width": "content"
+      }
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Move a root resource into a child module",
+        "language": "hcl",
+        "code": "moved {\n  from = aws_vpc.main\n  to   = module.vpc.aws_vpc.main\n}",
+        "show_line_numbers": true,
+        "width": "content"
+      }
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "What moved blocks really do",
+        "diagram": "flowchart LR\nA[Old address in state] --> B[moved block]\nB --> C[New address in state]\nC --> D[No infrastructure recreation]",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Moved blocks are ideal when refactoring within a root module or inside a reusable module. They preserve infrastructure while aligning state with the new code structure.</p>"
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Migrating Resources to Another Configuration"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Moving resources to an entirely different root module is more involved. The clean declarative approach is:</p><ol><li>Add <code>import</code> blocks and resource blocks to the destination configuration</li><li>Apply the destination configuration so it starts managing the resources</li><li>Add <code>removed</code> blocks to the source configuration</li><li>Apply the source configuration so those resources are removed from state without being destroyed</li></ol>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Remove a resource from Terraform management without destroying it",
+        "language": "hcl",
+        "code": "removed {\n  from = aws_instance.web\n\n  lifecycle {\n    destroy = false\n  }\n}",
+        "show_line_numbers": true,
+        "width": "content"
+      }
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Declarative migration between configurations",
+        "diagram": "flowchart LR\nA[Source config manages resource] --> B[Destination imports resource]\nB --> C[Both configs temporarily know about it]\nC --> D[Source uses removed block]\nD --> E[Source state forgets resource]\nE --> F[Destination remains sole manager]",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>This approach avoids direct state surgery and keeps the migration visible in code and in execution plans.</p>"
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Why this matters",
+        "text": "Compared with imperative state commands, the combination of import and removed blocks is safer, reviewable, repeatable, and easier for teams to understand later.",
+        "tone": "success"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Imperative State Commands vs Declarative Workflow"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>The course also covers older state manipulation commands such as <code>terraform state mv</code> and <code>terraform state rm</code>. These commands still exist and can be useful in edge cases, especially with local state, but they operate directly on state outside the normal plan and apply workflow.</p><p>That is the main reason the declarative model is preferred whenever possible.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Examples of imperative state commands",
+        "language": "bash",
+        "code": "terraform state mv aws_instance.web module.app.aws_instance.web\nterraform state rm aws_instance.web",
+        "show_line_numbers": false,
+        "width": "content"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Use these only when you fully understand the consequences. In team environments, keeping lifecycle changes in code is usually the better long-term choice.</p>"
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "A Practical Mental Model for Lifecycle Decisions"
+      }
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Choosing the right Terraform lifecycle feature",
+        "diagram": "flowchart TD\nA[What are you trying to do?] --> B{Need ordering only?}\nB -->|Yes| C[Use references or depends_on]\nB -->|No| D{Need to alter replacement behavior?}\nD -->|Yes| E[Use lifecycle block]\nE --> E1[create_before_destroy]\nE --> E2[prevent_destroy]\nE --> E3[ignore_changes]\nE --> E4[replace_triggered_by]\nD -->|No| F{Existing unmanaged resource?}\nF -->|Yes| G[Use import block and possibly terraform query]\nF -->|No| H{Address changed?}\nH -->|Yes| I[Use moved block]\nH -->|No| J{Stop managing without deleting?}\nJ -->|Yes| K[Use removed block]",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>If you keep this decision tree in mind, most lifecycle scenarios become much easier to reason about.</p>"
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Key Takeaways"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<ul><li>Terraform builds a dependency graph from references and uses it to determine order of operations</li><li><code>depends_on</code> is for rare cases where you must declare a dependency explicitly</li><li><code>create_before_destroy</code> helps when destroy-first replacement would fail</li><li><code>replace_triggered_by</code> lets one resource force replacement of another</li><li><code>prevent_destroy</code> adds a guardrail against accidental destruction</li><li><code>ignore_changes</code> prevents drift battles with other systems</li><li><code>import</code>, <code>terraform query</code>, <code>moved</code>, and <code>removed</code> are essential for adopting Terraform safely in real-world environments</li></ul><p>Resource lifecycle management is where Terraform becomes much more than a simple provisioning tool. It becomes an operational framework for evolving infrastructure safely over time.</p>"
+    }
+  ]
+},
+  {
+  "slug": "terraform-managing-multiple-configurations-data-sources-and-sharing",
+  "title": "Terraform: Managing Multiple Configurations — Data Sources, Remote State, and Cross-Configuration Sharing",
+  "excerpt": "Learn how Terraform data sources work, how to split a large configuration into smaller ones, when to use terraform_remote_state, why teams move to SSM Parameter Store or other external stores, and how to manage cross-configuration dependencies safely.",
+  "category_slug": "infrastructure-as-code",
+  "tag_slugs": ["terraform", "iac", "aws", "devops"],
+  "author_username": "Michał Antolik",
+  "published_at": "2026-04-16T10:00:00Z",
+  "live": true,
+  "body": [
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Why Managing Multiple Terraform Configurations Matters"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>When teams first adopt Terraform, they often begin with a single configuration that keeps growing over time. At first this is convenient, but eventually it becomes harder to maintain, slower to evolve, and more difficult to divide across teams.</p><p>That is where <strong>multiple related configurations</strong> come in. Instead of one large Terraform setup, you split infrastructure into smaller units such as networking, application, IAM, or database layers. The challenge is that once you split configurations, you still need a reliable way to <strong>pass information between them</strong>.</p><p>This article explains the key techniques for doing exactly that: <strong>data sources</strong>, <strong>remote state</strong>, and <strong>external shared stores</strong> such as AWS SSM Parameter Store.</p>"
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Core idea",
+        "text": "Splitting Terraform into multiple configurations improves ownership and maintainability, but it also creates a new problem: configurations still need to exchange information safely.",
+        "tone": "success"
+      }
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "How a monolithic Terraform setup evolves into multiple configurations",
+        "diagram": "flowchart LR\nA[Single Terraform configuration] --> B[Growth in size and complexity]\nB --> C[Split by concerns or teams]\nC --> D[Networking config]\nC --> E[App config]\nC --> F[Database config]\nC --> G[IAM config]\nD --> H[Need to share data]\nE --> H\nF --> H\nG --> H",
+        "width": "wide"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "What Is a Terraform Data Source?"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>A <strong>data source</strong> in Terraform is a provider-defined object used to <strong>query information</strong> from an external platform or service. Unlike a resource, a data source does not create or modify infrastructure. It simply retrieves information that your configuration can use.</p><p>You can think of a data source as a <strong>read-only resource</strong>. It has a block syntax similar to resources, and its attributes are available for use elsewhere in the configuration.</p><p>Terraform refreshes data sources while building an execution plan, which means their values can change over time depending on what they query.</p>"
+    },
+    {
+      "type": "callout",
+      "value": {
+        "text": "Resources create or manage infrastructure. Data sources read or generate information for use in your configuration.",
+        "tone": "info"
+      }
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Resources vs data sources",
+        "diagram": "flowchart TD\nA[Terraform configuration] --> B[Resources]\nA --> C[Data sources]\nB --> D[Create / update infrastructure]\nC --> E[Read or generate information]",
+        "width": "wide"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Ways to Bring External Information into Terraform"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Terraform configurations commonly use three approaches when they need information from outside the current code:</p><ul><li><strong>Input variables</strong> – values supplied at runtime</li><li><strong>File functions</strong> – values loaded from files or templates</li><li><strong>Data sources</strong> – values queried from providers or generated by special data source types</li></ul><p>All three are useful, but data sources are especially powerful because they can make your configuration more <strong>dynamic</strong> and less dependent on hardcoded values.</p>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Common Uses for Data Sources"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Data sources are ideal when your configuration should discover information instead of requiring someone to type it manually. Typical use cases include:</p><ul><li>Querying the list of AWS availability zones in the current region</li><li>Finding the latest AMI that matches a filter</li><li>Looking up an existing VPC and subnets for an application deployment</li><li>Reading shared configuration values from another service</li></ul><p>Whenever Terraform needs to use information that already exists somewhere else, data sources are often the right tool.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Examples of dynamic lookups with data sources",
+        "diagram": "flowchart LR\nA[Terraform config] --> B[Availability zones]\nA --> C[Latest AMI]\nA --> D[Existing VPC]\nA --> E[Shared configuration values]",
+        "width": "wide"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Data Source Syntax"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>The syntax of a data source closely resembles a resource block. The main difference is the leading <code>data</code> keyword.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "General data source syntax",
+        "language": "text",
+        "code": "data \"<data_source_type>\" \"<name_label>\" {\n  # arguments specific to the data source\n}",
+        "show_line_numbers": true,
+        "width": "content"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Data sources also support common meta-arguments such as <code>count</code>, <code>for_each</code>, <code>provider</code>, and <code>depends_on</code>. Some support lifecycle <code>precondition</code> and <code>postcondition</code> blocks as well.</p>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Referencing a Data Source"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>When you reference a data source, the identifier begins with <code>data</code>. This is easy to forget if you are used to referencing resources directly.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Reference pattern",
+        "language": "text",
+        "code": "data.<data_source_type>.<name_label>.<attribute>",
+        "show_line_numbers": true,
+        "width": "content"
+      }
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Example: VPC IDs from aws_vpcs",
+        "language": "text",
+        "code": "data.aws_vpcs.app_net.ids",
+        "show_line_numbers": true,
+        "width": "content"
+      }
+    },
+    {
+      "type": "callout",
+      "value": {
+        "text": "If Terraform says there is no matching resource for a reference, check whether you forgot to prefix it with data.",
+        "tone": "warning"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "A Real Example: Making a Terraform App More Dynamic"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>In the course scenario, a Taco Wagon application deploys a VPC, two public subnets, a security group, and an EC2 instance. The original configuration relied on input variables for:</p><ul><li>Availability zones</li><li>AMI ID</li><li>A startup script embedded directly as a heredoc</li></ul><p>That worked, but it was too manual. It required users to look up AZs and AMIs ahead of time and paste them into <code>terraform.tfvars</code>. This is exactly the kind of friction data sources are meant to reduce.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Original deployment model",
+        "diagram": "flowchart TD\nA[terraform.tfvars] --> B[Availability zones]\nA --> C[AMI ID]\nA --> D[Other variables]\nB --> E[Subnets]\nC --> F[EC2 instance]\nD --> E\nD --> F",
+        "width": "wide"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Replacing Availability Zone Input with a Data Source"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Instead of manually passing AZ names, the configuration can use <code>aws_availability_zones</code> to query the currently available zones in the active AWS region. This reduces manual work and makes the configuration more portable.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Availability zones data source",
+        "language": "hcl",
+        "code": "data \"aws_availability_zones\" \"available\" {\n  state = \"available\"\n}\n\nvariable \"availability_zones_count\" {\n  type = number\n}\n\nresource \"aws_subnet\" \"public\" {\n  count             = var.availability_zones_count\n  vpc_id            = aws_vpc.main.id\n  availability_zone = data.aws_availability_zones.available.names[count.index]\n}\n",
+        "show_line_numbers": true,
+        "width": "wide"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>This changes the design from “tell Terraform exactly which zones to use” to “tell Terraform how many zones to use, and let it discover them.” That is a much better level of abstraction.</p>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Replacing a Hardcoded AMI with a Data Source"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Hardcoding an AMI ID is fragile because AMI IDs differ by region and become outdated over time. Terraform can query the most recent matching image using the <code>aws_ami</code> data source.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Finding the latest Amazon Linux 2 AMI",
+        "language": "hcl",
+        "code": "data \"aws_ami\" \"amazon_linux_2\" {\n  owners      = [\"amazon\"]\n  most_recent = true\n\n  filter {\n    name   = \"name\"\n    values = [\"amzn2-ami-hvm-*-x86_64-gp2\"]\n  }\n}\n\nresource \"aws_instance\" \"app\" {\n  ami = data.aws_ami.amazon_linux_2.id\n}\n",
+        "show_line_numbers": true,
+        "width": "wide"
+      }
+    },
+    {
+      "type": "callout",
+      "value": {
+        "text": "Using a data source for AMIs makes the configuration far easier to reuse across regions and helps avoid stale image IDs.",
+        "tone": "success"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Inspecting Data Source Values"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>After adding data sources, Terraform will load them during planning and refresh operations. You can inspect values in several ways, including <code>terraform console</code>.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Inspecting a data source",
+        "language": "bash",
+        "code": "terraform console\n> data.aws_availability_zones.available.names",
+        "show_line_numbers": true,
+        "width": "content"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>This is a simple but very useful debugging technique whenever you want to verify exactly what a data source is returning.</p>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Generative Data Sources"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Not all data sources read from remote platforms. Some are used to <strong>generate structured documents</strong> inside Terraform. Two important examples are:</p><ul><li><code>aws_iam_policy_document</code> – builds IAM policy JSON</li><li><code>cloudinit_config</code> – builds cloud-init or startup content for instances</li></ul><p>These data sources are not querying a provider for existing objects. Instead, they help Terraform produce correctly formatted output that other resources can consume.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Two categories of data sources",
+        "diagram": "flowchart LR\nA[Data sources] --> B[Query external systems]\nA --> C[Generate structured documents]\nB --> D[aws_availability_zones]\nB --> E[aws_ami]\nC --> F[aws_iam_policy_document]\nC --> G[cloudinit_config]",
+        "width": "wide"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Replacing Heredoc Startup Scripts with cloudinit_config"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>A heredoc string embedded directly inside a resource works for a quick demo, but it becomes hard to maintain as startup logic grows. A better approach is to store script content in a template file and use the <code>cloudinit_config</code> data source to generate the final payload.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "cloudinit_config with a templated shell script",
+        "language": "hcl",
+        "code": "data \"cloudinit_config\" \"user_data\" {\n  gzip          = false\n  base64_encode = false\n\n  part {\n    content_type = \"text/x-shellscript\"\n    content = templatefile(\"${path.module}/templates/startup.sh.tftpl\", {\n      company_name = var.company_name\n      environment  = var.environment\n    })\n  }\n}\n\nresource \"aws_instance\" \"app\" {\n  user_data = data.cloudinit_config.user_data.rendered\n}\n",
+        "show_line_numbers": true,
+        "width": "wide"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>This approach scales better because the script can live in its own file, accept variables through <code>templatefile()</code>, and later grow into multiple cloud-init parts if needed.</p>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Why Teams Split Terraform Configurations"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>As infrastructure grows, it often stops making sense to manage everything from one root module. Teams may split by ownership, responsibility, deployment cadence, or blast radius.</p><p>For example, one team may manage networking, another IAM, another databases, and application teams may own only their application stack.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "From one terralith to team-owned configurations",
+        "diagram": "flowchart TD\nA[Monolithic Terraform config] --> B[Networking config]\nA --> C[Database config]\nA --> D[IAM config]\nA --> E[Application config]\nB --> F[Network team]\nC --> G[DB team]\nD --> H[Security team]\nE --> I[Application team]",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Important trade-off",
+        "text": "Splitting infrastructure improves maintainability and ownership, but it removes Terraform’s single global dependency graph.",
+        "tone": "warning"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Sharing Data Across Configurations with terraform_remote_state"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Inside one configuration, Terraform can pass data directly using resource references, module inputs, and outputs. Across separate configurations, you need a different mechanism. One option is <code>terraform_remote_state</code>.</p><p>This data source allows one configuration to read the <strong>root module outputs</strong> of another configuration’s state file.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "terraform_remote_state example",
+        "language": "hcl",
+        "code": "data \"terraform_remote_state\" \"network\" {\n  backend = \"s3\"\n\n  config = {\n    bucket = \"my-network-state-bucket\"\n    key    = \"taco-wagon-net.tfstate\"\n    region = \"us-west-2\"\n  }\n}\n\nresource \"aws_security_group\" \"web\" {\n  vpc_id = data.terraform_remote_state.network.outputs.vpc_id\n}\n",
+        "show_line_numbers": true,
+        "width": "wide"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>If the source configuration publishes <code>vpc_id</code> and <code>public_subnet_ids</code> as outputs, another configuration can consume them. This is conceptually similar to how parent and child modules exchange outputs and inputs.</p>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Moving State to S3 for Separate Configurations"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>In the course scenario, the Taco Wagon team split their infrastructure into two configurations:</p><ul><li><strong>Network</strong> – VPC, subnets, and related networking components</li><li><strong>App</strong> – security group and EC2 instance</li></ul><p>Because the configurations now live independently, each uses its own state backend in S3. The app configuration then reads outputs from the network configuration through <code>terraform_remote_state</code>.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Remote state sharing between split configurations",
+        "diagram": "flowchart LR\nA[Network config] --> B[S3 state backend]\nB --> C[terraform_remote_state]\nC --> D[App config]\nA --> E[Outputs: vpc_id, public_subnet_ids]",
+        "width": "wide"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "The Two Big Drawbacks of terraform_remote_state"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>The course highlights two major concerns with using <code>terraform_remote_state</code> as a long-term integration mechanism.</p><ol><li><strong>Security</strong> – the caller needs read access to the entire state object, not just outputs</li><li><strong>Tight coupling</strong> – downstream configurations depend directly on the state backend shape and output names of the source configuration</li></ol><p>If the source configuration changes its backend, output names, or output types, dependent configurations may break.</p>"
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Why this matters",
+        "text": "Even if a downstream config only reads outputs, the credentials behind terraform_remote_state typically need access to the full state file, which may contain sensitive data.",
+        "tone": "danger"
+      }
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Why remote state can become risky",
+        "diagram": "flowchart TD\nA[Source config state] --> B[Outputs]\nA --> C[All other state data]\nD[Downstream config] --> E[Read access required]\nE --> A\nC --> F[Potential exposure]\nB --> G[Needed values]\n",
+        "width": "wide"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "A Better Security Option in HCP Terraform: tfe_outputs"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>If your organization uses HCP Terraform or Terraform Enterprise, the course recommends considering <code>tfe_outputs</code> instead of <code>terraform_remote_state</code>. This data source queries outputs through the API rather than direct state access.</p><p>That gives two improvements:</p><ul><li>the calling configuration can be granted access only to outputs</li><li>sensitive outputs are handled more intentionally</li></ul><p>This does not eliminate logical coupling between configurations, but it improves the security model significantly.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "tfe_outputs example",
+        "language": "hcl",
+        "code": "data \"tfe_outputs\" \"networking\" {\n  organization = \"my-org\"\n  workspace    = \"taco-wagon-net\"\n}\n\n# Non-sensitive outputs\n# data.tfe_outputs.networking.nonsensitive_values.vpc_id\n",
+        "show_line_numbers": true,
+        "width": "wide"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "External Shared Stores: Decoupling Configurations Properly"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>If you want to reduce both security concerns and tight coupling, a stronger pattern is to publish shared configuration data to an external service instead of directly exposing Terraform state.</p><p>The course mentions several categories:</p><ul><li>Key-value stores such as AWS SSM Parameter Store</li><li>Configuration stores such as Azure App Configuration</li><li>Secrets systems such as AWS Secrets Manager or HashiCorp Vault</li><li>DNS for names and addresses</li><li>Other stores such as Redis, Consul, or Kubernetes ConfigMaps</li></ul><p>In this model, the consuming configuration only cares that the data is published in the expected location. It no longer cares how the producing team internally manages its Terraform state.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Decoupled sharing through an external system",
+        "diagram": "flowchart LR\nA[Network config] --> B[Publish values]\nB --> C[AWS SSM Parameter Store]\nC --> D[App config data source]\nD --> E[Use vpc_id and subnet IDs]\n",
+        "width": "wide"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Migrating from Remote State to AWS SSM Parameter Store"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>In the final stage of the scenario, the networking team stops exposing outputs through remote state and instead writes shared values into AWS SSM Parameter Store. The application team then reads those values with data sources.</p><p>This removes direct dependence on the network state backend and gives more control over exactly what is shared.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Publishing network data to SSM Parameter Store",
+        "language": "hcl",
+        "code": "resource \"aws_ssm_parameter\" \"vpc_id\" {\n  name           = \"/taco-wagon-networking/${var.environment}/vpc-id\"\n  description    = \"VPC ID for the taco wagon app\"\n  type           = \"String\"\n  insecure_value = aws_vpc.main.id\n\n  tags = {\n    environment = var.environment\n    application = \"taco-wagon\"\n  }\n}\n\nresource \"aws_ssm_parameter\" \"public_subnet_ids\" {\n  name           = \"/taco-wagon-networking/${var.environment}/public-subnet-ids\"\n  description    = \"Public subnet IDs for the taco wagon app\"\n  type           = \"StringList\"\n  insecure_value = join(\",\", aws_subnet.public[*].id)\n\n  tags = {\n    environment = var.environment\n    application = \"taco-wagon\"\n  }\n}\n",
+        "show_line_numbers": true,
+        "width": "wide"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Notice that <code>StringList</code> values still need to be supplied as strings to the API. That is why the subnet ID list is joined into a comma-separated string before being written.</p>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Reading Shared SSM Parameters from the App Configuration"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>The application configuration can then read the published parameters using <code>aws_ssm_parameter</code> data sources. In the course, a <code>for_each</code> pattern is used so multiple parameters can be queried consistently.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Reading network values from SSM",
+        "language": "hcl",
+        "code": "variable \"network_parameter_path\" {\n  type = string\n}\n\ndata \"aws_ssm_parameter\" \"network\" {\n  for_each = toset([\n    \"vpc-id\",\n    \"public-subnet-ids\"\n  ])\n\n  name = \"${var.network_parameter_path}/${var.environment}/${each.value}\"\n}\n\nresource \"aws_security_group\" \"web\" {\n  vpc_id = data.aws_ssm_parameter.network[\"vpc-id\"].insecure_value\n}\n\nresource \"aws_instance\" \"app\" {\n  subnet_id = split(\",\", data.aws_ssm_parameter.network[\"public-subnet-ids\"].insecure_value)[0]\n}\n",
+        "show_line_numbers": true,
+        "width": "wide"
+      }
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Why this is better",
+        "text": "The app configuration now depends on published network values in SSM, not on the implementation details of the network team’s Terraform state.",
+        "tone": "success"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Other Special Data Sources"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>The course also mentions a few flexible or fallback-style data sources that can help when no first-class provider exists for your integration target:</p><ul><li><strong>local_file</strong> / <strong>local_sensitive_file</strong> – read from files</li><li><strong>http</strong> – query an HTTP endpoint</li><li><strong>external</strong> – run a program that accepts JSON on stdin and returns JSON on stdout</li></ul><p>The <code>external</code> data source is especially flexible, but it creates a dependency on an external script or executable, so it should usually be treated as a last resort rather than a first choice.</p>"
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "A Hidden Problem: Cross-Configuration Dependencies"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Once infrastructure is split into multiple configurations, Terraform loses visibility into dependencies outside the currently running root module. That means a change in one configuration may require changes in another, but Terraform will not automatically know that.</p><p>Examples include:</p><ul><li>Replacing subnets used by an app configuration</li><li>Renaming a resource that another configuration references indirectly</li><li>Moving resources to another configuration without updating consumers</li></ul><p>This is one of the biggest operational differences between a single terralith and a multi-configuration environment.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Dependency visibility before and after splitting configurations",
+        "diagram": "flowchart TD\nA[Single configuration] --> B[One dependency graph]\nC[Split configurations] --> D[Network graph]\nC --> E[App graph]\nC --> F[DB graph]\nD -. hidden dependency .-> E\nD -. hidden dependency .-> F\n",
+        "width": "wide"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Practical Advice for Managing Multiple Terraform Configurations"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>The course ends with practical guidance that is worth treating as best practice:</p><ul><li>Minimize dependencies split across configurations whenever possible</li><li>Document cross-configuration dependencies clearly in README files</li><li>Trigger downstream plans when source configurations are applied successfully</li><li>Consider orchestration tools such as HCP Terraform Stacks, Terragrunt, or Terramate</li></ul><p>Splitting Terraform is not just a code decision. It is also a <strong>team process</strong> and <strong>operational design</strong> decision.</p>"
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Final takeaway",
+        "text": "The right sharing mechanism depends on your organization. terraform_remote_state is simple, tfe_outputs improves security in HCP Terraform, and external shared stores such as SSM Parameter Store reduce tight coupling.",
+        "tone": "info"
+      }
+    },
+
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Summary"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Managing multiple Terraform configurations is really about balancing <strong>modularity</strong>, <strong>safety</strong>, and <strong>team ownership</strong>. Data sources help Terraform discover external information dynamically. Generative data sources help produce structured content like policies and startup payloads. Remote state can connect configurations quickly, but it introduces security and coupling trade-offs. External systems such as AWS SSM Parameter Store often provide a cleaner long-term integration pattern.</p><p>If you understand those trade-offs, you can design Terraform configurations that are not only technically correct, but also practical for real organizations and real teams.</p>"
+    }
+  ]
 }
 ]
