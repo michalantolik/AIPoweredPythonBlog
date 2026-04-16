@@ -212,5 +212,330 @@
       }
     }
   ]
+},
+  {
+  "slug": "csharp-strategy-pattern-explained",
+  "title": "C# Strategy Pattern Explained: Runtime Behavior Without Conditionals Everywhere",
+  "excerpt": "Learn how the Strategy pattern works in C#, why it improves extensibility and testability, and how to apply it for tax calculation, invoice delivery, shipping providers, and existing .NET APIs like Array.Sort.",
+  "author_username": "Michał Antolik",
+  "category_slug": "architecture-patterns",
+  "tag_slugs": ["dotnet", "csharp", "architecture", "patterns", "design-patterns", "strategy", "testing", "backend"],
+  "live": true,
+  "body": [
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "What the Strategy pattern solves"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>The Strategy pattern is one of the most practical design patterns in everyday C# development. It helps when an application needs to perform the same kind of operation in multiple different ways, and the exact behavior should be selected at runtime.</p><p>Instead of placing all variations inside one growing class filled with <code>if</code>, <code>switch</code>, or nested conditionals, Strategy moves each algorithm into its own implementation behind a shared interface.</p><p>The result is a design where behavior becomes replaceable. The object using the behavior does not need to know the implementation details. It only needs to know the contract.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Core idea of the Strategy pattern",
+        "diagram": "flowchart LR\nContext --> IStrategy\nIStrategy --> StrategyA[ConcreteStrategyA]\nIStrategy --> StrategyB[ConcreteStrategyB]\nIStrategy --> StrategyC[ConcreteStrategyC]",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "The three core participants"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>The Strategy pattern is usually described through three roles.</p><ul><li><strong>Context</strong>: the object that needs some behavior but should not own all implementation details.</li><li><strong>Strategy</strong>: an interface that defines the operation the context can use.</li><li><strong>Concrete Strategy</strong>: a specific implementation of that operation.</li></ul><p>In business code, the context is often something like an order service, checkout workflow, pricing engine, or export processor. The strategy interface captures the behavior that varies, and the concrete strategies implement the actual rules.</p>"
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "A good rule of thumb",
+        "text": "When the same business action can happen in several valid ways and the choice should be made at runtime, Strategy is often a strong candidate.",
+        "tone": "info"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "A simple C# example"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>This is the minimal shape of a Strategy pattern in C#. The <code>Order</code> is the context. It delegates tax calculation to whatever implementation of <code>ISalesTaxStrategy</code> it receives.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Minimal Strategy pattern in C#",
+        "language": "csharp",
+        "code": "public interface ISalesTaxStrategy\n{\n    decimal GetTaxFor(Order order);\n}\n\npublic sealed class SwedenSalesTaxStrategy : ISalesTaxStrategy\n{\n    public decimal GetTaxFor(Order order)\n    {\n        return order.LineItems.Sum(item => item.Price * 0.25m);\n    }\n}\n\npublic sealed class UnitedStatesSalesTaxStrategy : ISalesTaxStrategy\n{\n    public decimal GetTaxFor(Order order)\n    {\n        return order.LineItems.Sum(item => item.Price * 0.07m);\n    }\n}\n\npublic sealed class Order\n{\n    public List<LineItem> LineItems { get; } = new();\n    public ISalesTaxStrategy? SalesTaxStrategy { get; set; }\n\n    public decimal GetTax()\n    {\n        if (SalesTaxStrategy is null)\n        {\n            return 0m;\n        }\n\n        return SalesTaxStrategy.GetTaxFor(this);\n    }\n}\n\npublic sealed class LineItem\n{\n    public decimal Price { get; set; }\n}\n",
+        "show_line_numbers": true,
+        "width": "wide"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Why this is better than a large conditional"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Without Strategy, the context often accumulates country checks, delivery type checks, provider checks, and API-specific logic. That produces code that is harder to maintain, harder to test, and more dangerous to change.</p><p>With Strategy, each variation lives in a focused class. Adding a new behavior usually means adding a new implementation instead of editing a giant conditional that already handles many unrelated cases.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "From conditional-heavy design to replaceable behavior",
+        "diagram": "flowchart TD\nBefore[Large context class] --> IfElse[if/switch on country or option]\nIfElse --> MixedLogic[Mixed rules and implementation details]\n\nAfter[Context] --> StrategyInterface[IStrategy]\nStrategyInterface --> FocusedA[Focused Strategy A]\nStrategyInterface --> FocusedB[Focused Strategy B]\nStrategyInterface --> FocusedC[Focused Strategy C]",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Sales tax example: a strong real-world fit"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>A tax calculator is a natural example for Strategy because tax rules vary by country, region, and sometimes item type. The context should not need to know the implementation details for every possible region.</p><p>One strategy can calculate Swedish tax rules, another can calculate United States tax rules, and both remain isolated from each other. This keeps the design open for extension without forcing the central order logic to keep growing.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "A more realistic Swedish tax strategy",
+        "language": "csharp",
+        "code": "public sealed class SwedenSalesTaxStrategy : ISalesTaxStrategy\n{\n    public decimal GetTaxFor(Order order)\n    {\n        decimal totalTax = 0m;\n\n        foreach (var item in order.LineItems)\n        {\n            decimal rate = item.Type switch\n            {\n                ItemType.Food => 0.06m,\n                ItemType.Literature => 0.08m,\n                ItemType.Service => 0.25m,\n                ItemType.Hardware => 0.25m,\n                _ => 0m\n            };\n\n            totalTax += item.Price * rate;\n        }\n\n        return totalTax;\n    }\n}\n\npublic enum ItemType\n{\n    Food,\n    Literature,\n    Service,\n    Hardware\n}\n",
+        "show_line_numbers": true,
+        "width": "wide"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>This is where Strategy becomes especially valuable. You can improve one country-specific implementation without risking accidental changes to the others.</p><p>That isolation also makes tests much more focused. A change to Swedish tax rules should not break tests for the United States tax implementation.</p>"
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Runtime selection is the key benefit"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>The real power of Strategy is not just extracting classes. It is selecting behavior at runtime based on user input, configuration, or business rules.</p><p>For example, if the destination country is Sweden, the application can choose <code>SwedenSalesTaxStrategy</code>. If the destination is the United States, it can choose <code>UnitedStatesSalesTaxStrategy</code>. The context stays unchanged.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Runtime decision flow",
+        "diagram": "flowchart LR\nUserInput[User input / order data] --> Resolver[Strategy selection]\nResolver --> Sweden[SwedenSalesTaxStrategy]\nResolver --> USA[UnitedStatesSalesTaxStrategy]\nResolver --> Other[Other region strategy]\nSweden --> Context\nUSA --> Context\nOther --> Context",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "An alternative approach: pass the strategy into the method"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>The strategy does not have to be stored as a property on the context. Another valid approach is to pass the strategy directly into the method that needs it.</p><p>This is useful when the behavior is more temporary, when you want a one-off override, or when you want to keep the context itself lighter.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Passing the strategy directly to the method",
+        "language": "csharp",
+        "code": "public decimal GetTax(ISalesTaxStrategy? strategy = null)\n{\n    var effectiveStrategy = strategy ?? SalesTaxStrategy;\n\n    if (effectiveStrategy is null)\n    {\n        return 0m;\n    }\n\n    return effectiveStrategy.GetTaxFor(this);\n}\n",
+        "show_line_numbers": true,
+        "width": "content"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>This is still Strategy. The important idea is not where the interface is stored. The important idea is that behavior is represented as an interchangeable implementation behind a contract.</p>"
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Invoice delivery is another excellent Strategy example"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Invoice generation often needs multiple delivery mechanisms: email, file export, print-on-demand, database storage, or perhaps an external billing API.</p><p>These are clearly different implementations of the same business capability: generate or deliver an invoice. That makes them a strong fit for Strategy.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Invoice delivery strategies",
+        "diagram": "flowchart LR\nOrder --> IInvoiceStrategy\nIInvoiceStrategy --> Email[EmailInvoiceStrategy]\nIInvoiceStrategy --> File[FileInvoiceStrategy]\nIInvoiceStrategy --> Print[PrintOnDemandInvoiceStrategy]",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Invoice Strategy with shared base functionality",
+        "language": "csharp",
+        "code": "public interface IInvoiceStrategy\n{\n    void Generate(Order order);\n}\n\npublic abstract class InvoiceStrategy : IInvoiceStrategy\n{\n    public abstract void Generate(Order order);\n\n    protected string GenerateTextInvoice(Order order)\n    {\n        var lines = new List<string>\n        {\n            $\"Invoice date: {DateTime.UtcNow:yyyy-MM-dd}\",\n            \"Items:\"\n        };\n\n        foreach (var item in order.LineItems)\n        {\n            lines.Add($\"- {item.Name}: {item.Price:C}\");\n        }\n\n        lines.Add($\"Tax: {order.GetTax():C}\");\n        lines.Add($\"Total: {order.LineItems.Sum(x => x.Price) + order.GetTax():C}\");\n\n        return string.Join(Environment.NewLine, lines);\n    }\n}\n\npublic sealed class EmailInvoiceStrategy : InvoiceStrategy\n{\n    public override void Generate(Order order)\n    {\n        var body = GenerateTextInvoice(order);\n        // Send email using SMTP or an email provider API\n    }\n}\n\npublic sealed class FileInvoiceStrategy : InvoiceStrategy\n{\n    public override void Generate(Order order)\n    {\n        var body = GenerateTextInvoice(order);\n        File.WriteAllText(\"invoice.txt\", body);\n    }\n}\n",
+        "show_line_numbers": true,
+        "width": "wide"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Shipping providers show Strategy beyond pure computation"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Strategy is not limited to calculations. It also works when different providers, services, or APIs must be called in different ways.</p><p>A shipping workflow is a perfect example. DHL, FedEx, UPS, USPS, and local postal services may all require different request shapes, validation rules, authentication, and response handling. The business intent is the same, but the algorithm and integration details vary.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Shipping providers as strategies",
+        "language": "csharp",
+        "code": "public interface IShippingStrategy\n{\n    Task ShipAsync(Order order);\n}\n\npublic sealed class DhlShippingStrategy : IShippingStrategy\n{\n    public Task ShipAsync(Order order)\n    {\n        // Build request for DHL API\n        Console.WriteLine(\"Shipping with DHL\");\n        return Task.CompletedTask;\n    }\n}\n\npublic sealed class UpsShippingStrategy : IShippingStrategy\n{\n    public Task ShipAsync(Order order)\n    {\n        // Build request for UPS API\n        Console.WriteLine(\"Shipping with UPS\");\n        return Task.CompletedTask;\n    }\n}\n",
+        "show_line_numbers": true,
+        "width": "wide"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>This keeps each provider-specific integration local to one class. The order or order service simply asks for shipping to happen. It does not need to know how a specific provider works.</p>"
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "The context can be a service, not only a domain entity"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>In small examples, the context is often modeled as the domain object itself, such as <code>Order</code>. In larger applications, it is often cleaner for the context to be a service layer object like <code>OrderService</code>, <code>CheckoutService</code>, or <code>InvoiceService</code>.</p><p>That approach keeps the domain model focused on business state while orchestration and dependency coordination live in the service layer.</p>"
+    },
+    {
+      "type": "mermaid",
+      "value": {
+        "caption": "Service-oriented version of the Strategy pattern",
+        "diagram": "flowchart LR\nController --> OrderService\nOrderService --> TaxStrategy\nOrderService --> InvoiceStrategy\nOrderService --> ShippingStrategy\nOrderService --> Order",
+        "width": "wide"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Testing becomes much easier"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>One of the strongest practical benefits of Strategy is testability.</p><p>Each concrete strategy can be tested independently with focused input. At the same time, the context can be tested using mocked or fake strategies to verify orchestration without executing real email, filesystem, tax, or HTTP logic.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Testing a context with a fake strategy",
+        "language": "csharp",
+        "code": "public sealed class FakeSalesTaxStrategy : ISalesTaxStrategy\n{\n    public decimal GetTaxFor(Order order) => 42m;\n}\n\n[Fact]\npublic void GetTax_Uses_Configured_Strategy()\n{\n    var order = new Order\n    {\n        SalesTaxStrategy = new FakeSalesTaxStrategy()\n    };\n\n    var result = order.GetTax();\n\n    Assert.Equal(42m, result);\n}\n",
+        "show_line_numbers": true,
+        "width": "wide"
+      }
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Why testability improves",
+        "text": "The context no longer owns the implementation details. That lets you test the context and each algorithm separately instead of trying to verify one giant class that does everything.",
+        "tone": "success"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Existing Strategy pattern example in .NET"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>The Strategy pattern appears all over .NET, often without explicitly using the word <code>Strategy</code>. A good example is <code>Array.Sort</code> with <code>IComparer&lt;T&gt;</code>.</p><p>When you pass a comparer, you are effectively injecting the strategy for how two elements should be compared. The sorting algorithm stays the same, but the comparison behavior can change.</p>"
+    },
+    {
+      "type": "code",
+      "value": {
+        "caption": "Array.Sort with IComparer<T> as a strategy",
+        "language": "csharp",
+        "code": "public sealed class OrderAmountComparer : IComparer<Order>\n{\n    public int Compare(Order? x, Order? y)\n    {\n        var xTotal = x?.LineItems.Sum(i => i.Price) ?? 0m;\n        var yTotal = y?.LineItems.Sum(i => i.Price) ?? 0m;\n        return xTotal.CompareTo(yTotal);\n    }\n}\n\nvar orders = new[] { order1, order2, order3 };\nArray.Sort(orders, new OrderAmountComparer());\n",
+        "show_line_numbers": true,
+        "width": "wide"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>This is an important lesson: if a method accepts an interface or abstraction that changes behavior, there is a good chance Strategy is already in play.</p>"
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Benefits of the Strategy pattern"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<ul><li><strong>Extensibility</strong>: new behaviors can be added by creating new strategies.</li><li><strong>Cleaner separation of concerns</strong>: the context coordinates work, while each strategy owns one algorithm.</li><li><strong>Reduced conditional complexity</strong>: large branching logic is replaced with focused implementations.</li><li><strong>Testability</strong>: strategies and contexts can be tested independently.</li><li><strong>Runtime flexibility</strong>: behavior can be selected based on user input or configuration.</li></ul>"
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Trade-offs and cautions"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<p>Like every pattern, Strategy improves some things and costs some things.</p><ul><li>It introduces more classes and abstractions.</li><li>It can be overkill if there are only one or two trivial variations.</li><li>Bad naming can make the design harder to understand.</li><li>If strategy selection logic becomes messy, the creation side may need its own refactoring, often with a factory or resolver.</li></ul><p>Use it where variability is real and likely to grow, not just because an interface can be introduced.</p>"
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "A common mistake",
+        "text": "Do not apply Strategy only to look architecturally sophisticated. Apply it when behavior truly varies and you need to swap algorithms cleanly.",
+        "tone": "warning"
+      }
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "When Strategy is a strong fit"
+      }
+    },
+    {
+      "type": "rich_text",
+      "value": "<ul><li>You have multiple ways to perform the same operation.</li><li>The choice should happen at runtime.</li><li>Conditionals are starting to spread through the codebase.</li><li>Different rules should evolve independently.</li><li>You want to isolate integrations with different external providers.</li><li>You want easier unit testing with mocks, stubs, or fake implementations.</li></ul>"
+    },
+    {
+      "type": "section_heading",
+      "value": {
+        "title": "Quick summary"
+      }
+    },
+    {
+      "type": "callout",
+      "value": {
+        "title": "Strategy in one sentence",
+        "text": "Define a family of interchangeable behaviors behind a shared interface, then choose the appropriate implementation at runtime without changing the context.",
+        "tone": "info"
+      }
+    }
+  ]
 }
 ]

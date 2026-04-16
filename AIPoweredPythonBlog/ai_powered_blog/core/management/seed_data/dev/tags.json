@@ -75,5 +75,6 @@
   { "slug": "skaffold", "name": "Skaffold" },
   { "slug": "kompose", "name": "Kompose" },
   { "slug": "helm", "name": "Helm" },
-  { "slug": "hcl", "name": "HCL" }
+  { "slug": "hcl", "name": "HCL" },
+  { "slug": "csharp", "name": "C#" }
 ]
