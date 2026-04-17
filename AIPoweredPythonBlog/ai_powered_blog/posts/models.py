@@ -55,3 +55,21 @@ class Post(TimeStampedModel):
 
     def __str__(self):
         return self.title
+
+    @property
+    def display_author_name(self):
+        if not self.author:
+            return ""
+
+        full_name = self.author.get_full_name()
+        if full_name:
+            return full_name
+
+        return self.author.username
+
+    @property
+    def has_meaningful_update(self):
+        if not self.published_at or not self.updated_at:
+            return False
+
+        return self.updated_at.date() > self.published_at.date()

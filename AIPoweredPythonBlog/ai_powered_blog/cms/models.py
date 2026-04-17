@@ -237,3 +237,21 @@ class BlogPostPage(Page):
 
     class Meta:
         verbose_name = "Blog post page"
+
+    @property
+    def display_author_name(self):
+        if not self.author:
+            return ""
+
+        full_name = self.author.get_full_name()
+        if full_name:
+            return full_name
+
+        return self.author.get_username()
+
+    @property
+    def has_meaningful_update(self):
+        if not self.first_published_at or not self.last_published_at:
+            return False
+
+        return self.last_published_at.date() > self.first_published_at.date()

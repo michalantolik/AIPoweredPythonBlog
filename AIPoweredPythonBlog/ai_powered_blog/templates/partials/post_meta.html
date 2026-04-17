@@ -1,0 +1,29 @@
+<div class="post-meta">
+    {% if published_date %}
+        {% if show_published_label %}
+            <span class="post-meta__label">Published</span>
+        {% endif %}
+        <span class="post-meta__item">{{ published_date|date:"M j, Y" }}</span>
+    {% endif %}
+
+    {% if author %}
+        {% if published_date %}
+            <span class="post-meta__separator">·</span>
+        {% endif %}
+
+        {% if author.get_full_name %}
+            <span class="post-meta__item">{{ author.get_full_name }}</span>
+        {% else %}
+            <span class="post-meta__item">{{ author.username }}</span>
+        {% endif %}
+    {% endif %}
+</div>
+
+{% if show_updated and updated_date and published_date and updated_date|date:"Y-m-d" != published_date|date:"Y-m-d" %}
+    <div class="post-meta post-meta--secondary">
+        {% if show_updated_label %}
+            <span class="post-meta__label">Updated</span>
+        {% endif %}
+        <span class="post-meta__item">{{ updated_date|date:"M j, Y" }}</span>
+    </div>
+{% endif %}

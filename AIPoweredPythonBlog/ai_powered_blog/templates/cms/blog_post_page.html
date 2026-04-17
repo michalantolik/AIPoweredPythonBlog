@@ -60,18 +60,7 @@
 
                     <h1 class="detail-title">{{ page.title }}</h1>
 
-                    <div class="detail-meta">
-                        <span>{{ page.first_published_at|date:"F j, Y" }}</span>
-
-                        {% if page.author %}
-                            <span>•</span>
-                            {% if page.author.get_full_name %}
-                                <span>{{ page.author.get_full_name }}</span>
-                            {% else %}
-                                <span>{{ page.author.get_username }}</span>
-                            {% endif %}
-                        {% endif %}
-                    </div>
+ {% with published_date=page.first_published_at updated_date=page.last_published_at author=page.author show_published_label=True show_updated=True show_updated_label=True %}{% include "partials/post_meta.html" %}{% endwith %}
 
                     {% if page.excerpt %}
                         <p class="detail-excerpt">{{ page.excerpt }}</p>

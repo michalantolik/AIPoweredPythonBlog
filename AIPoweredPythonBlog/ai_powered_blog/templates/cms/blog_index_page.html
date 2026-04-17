@@ -126,17 +126,13 @@
                                             <span class="mini-chip muted">No tags</span>
                                         {% endfor %}
                                     </div>
-
-                                    <div class="meta-inline">
-                                        {% if post.author %}
-                                            <span>by {{ post.author.username }}</span>
-                                        {% endif %}
-                                    </div>
                                 </div>
 
                                 <h3 class="post-preview-title">
                                     <a href="{{ post.url }}">{{ post.title }}</a>
                                 </h3>
+
+{% with published_date=post.first_published_at updated_date=post.last_published_at author=post.author show_published_label=False show_updated=False show_updated_label=False %}{% include "partials/post_meta.html" %}{% endwith %}
 
                                 <p class="post-preview-text">
                                     {% if post.excerpt %}

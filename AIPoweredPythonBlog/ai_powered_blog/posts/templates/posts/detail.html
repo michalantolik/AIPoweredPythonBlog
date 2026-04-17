@@ -26,13 +26,7 @@
 
                     <h1 class="detail-title">{{ post.title }}</h1>
 
-                    <div class="detail-meta">
-                        <span>By {{ post.author.username }}</span>
-                        {% if post.published_at %}
-                            <span>•</span>
-                            <span>{{ post.published_at|date:"F j, Y" }}</span>
-                        {% endif %}
-                    </div>
+{% with published_date=post.published_at updated_date=post.updated_at author=post.author show_published_label=True show_updated=True show_updated_label=True %}{% include "partials/post_meta.html" %}{% endwith %}
 
                     {% if post.excerpt %}
                         <p class="detail-excerpt">{{ post.excerpt }}</p>
@@ -65,15 +59,13 @@
                                                 <span class="mini-chip muted">No tags</span>
                                             {% endfor %}
                                         </div>
-
-                                        <div class="meta-inline">
-                                            <span>By {{ related.author.username }}</span>
-                                        </div>
                                     </div>
 
                                     <h3 class="post-preview-title">
                                         <a href="{% url 'posts:detail' related.slug %}">{{ related.title }}</a>
                                     </h3>
+
+          {% with published_date=related.published_at updated_date=related.updated_at author=related.author show_published_label=False show_updated=False show_updated_label=False %}{% include "partials/post_meta.html" %}{% endwith %}
 
                                     <p class="post-preview-text">
                                         {% if related.excerpt %}
